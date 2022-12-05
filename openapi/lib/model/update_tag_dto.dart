@@ -10,14 +10,12 @@
 
 part of openapi.api;
 
-class UpdateAssetDto {
-  /// Returns a new [UpdateAssetDto] instance.
-  UpdateAssetDto({
-    this.tagIds = const [],
-    this.isFavorite,
+class UpdateTagDto {
+  /// Returns a new [UpdateTagDto] instance.
+  UpdateTagDto({
+    this.name,
+    this.renameTagId,
   });
-
-  List<String> tagIds;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -25,37 +23,49 @@ class UpdateAssetDto {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  bool? isFavorite;
+  String? name;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? renameTagId;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is UpdateAssetDto &&
-     other.tagIds == tagIds &&
-     other.isFavorite == isFavorite;
+  bool operator ==(Object other) => identical(this, other) || other is UpdateTagDto &&
+     other.name == name &&
+     other.renameTagId == renameTagId;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (tagIds.hashCode) +
-    (isFavorite == null ? 0 : isFavorite!.hashCode);
+    (name == null ? 0 : name!.hashCode) +
+    (renameTagId == null ? 0 : renameTagId!.hashCode);
 
   @override
-  String toString() => 'UpdateAssetDto[tagIds=$tagIds, isFavorite=$isFavorite]';
+  String toString() => 'UpdateTagDto[name=$name, renameTagId=$renameTagId]';
 
   Map<String, dynamic> toJson() {
     final _json = <String, dynamic>{};
-      _json[r'tagIds'] = tagIds;
-    if (isFavorite != null) {
-      _json[r'isFavorite'] = isFavorite;
+    if (name != null) {
+      _json[r'name'] = name;
     } else {
-      _json[r'isFavorite'] = null;
+      _json[r'name'] = null;
+    }
+    if (renameTagId != null) {
+      _json[r'renameTagId'] = renameTagId;
+    } else {
+      _json[r'renameTagId'] = null;
     }
     return _json;
   }
 
-  /// Returns a new [UpdateAssetDto] instance and imports its values from
+  /// Returns a new [UpdateTagDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static UpdateAssetDto? fromJson(dynamic value) {
+  static UpdateTagDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -64,27 +74,25 @@ class UpdateAssetDto {
       // Note 2: this code is stripped in release mode!
       assert(() {
         requiredKeys.forEach((key) {
-          assert(json.containsKey(key), 'Required key "UpdateAssetDto[$key]" is missing from JSON.');
-          assert(json[key] != null, 'Required key "UpdateAssetDto[$key]" has a null value in JSON.');
+          assert(json.containsKey(key), 'Required key "UpdateTagDto[$key]" is missing from JSON.');
+          assert(json[key] != null, 'Required key "UpdateTagDto[$key]" has a null value in JSON.');
         });
         return true;
       }());
 
-      return UpdateAssetDto(
-        tagIds: json[r'tagIds'] is List
-            ? (json[r'tagIds'] as List).cast<String>()
-            : const [],
-        isFavorite: mapValueOfType<bool>(json, r'isFavorite'),
+      return UpdateTagDto(
+        name: mapValueOfType<String>(json, r'name'),
+        renameTagId: mapValueOfType<String>(json, r'renameTagId'),
       );
     }
     return null;
   }
 
-  static List<UpdateAssetDto>? listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <UpdateAssetDto>[];
+  static List<UpdateTagDto>? listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <UpdateTagDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = UpdateAssetDto.fromJson(row);
+        final value = UpdateTagDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -93,12 +101,12 @@ class UpdateAssetDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, UpdateAssetDto> mapFromJson(dynamic json) {
-    final map = <String, UpdateAssetDto>{};
+  static Map<String, UpdateTagDto> mapFromJson(dynamic json) {
+    final map = <String, UpdateTagDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = UpdateAssetDto.fromJson(entry.value);
+        final value = UpdateTagDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -107,13 +115,13 @@ class UpdateAssetDto {
     return map;
   }
 
-  // maps a json object with a list of UpdateAssetDto-objects as value to a dart map
-  static Map<String, List<UpdateAssetDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<UpdateAssetDto>>{};
+  // maps a json object with a list of UpdateTagDto-objects as value to a dart map
+  static Map<String, List<UpdateTagDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<UpdateTagDto>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = UpdateAssetDto.listFromJson(entry.value, growable: growable,);
+        final value = UpdateTagDto.listFromJson(entry.value, growable: growable,);
         if (value != null) {
           map[entry.key] = value;
         }
