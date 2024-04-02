@@ -11,18 +11,23 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-// tests for SystemConfigThumbnailDto
+// tests for SystemConfigImageDto
 void main() {
-  // final instance = SystemConfigThumbnailDto();
+  // final instance = SystemConfigImageDto();
 
-  group('test SystemConfigThumbnailDto', () {
+  group('test SystemConfigImageDto', () {
     // Colorspace colorspace
     test('to test the property `colorspace`', () async {
       // TODO
     });
 
-    // int jpegSize
-    test('to test the property `jpegSize`', () async {
+    // ImageFormat previewFormat
+    test('to test the property `previewFormat`', () async {
+      // TODO
+    });
+
+    // int previewSize
+    test('to test the property `previewSize`', () async {
       // TODO
     });
 
@@ -31,8 +36,13 @@ void main() {
       // TODO
     });
 
-    // int webpSize
-    test('to test the property `webpSize`', () async {
+    // ImageFormat thumbnailFormat
+    test('to test the property `thumbnailFormat`', () async {
+      // TODO
+    });
+
+    // int thumbnailSize
+    test('to test the property `thumbnailSize`', () async {
       // TODO
     });
 
