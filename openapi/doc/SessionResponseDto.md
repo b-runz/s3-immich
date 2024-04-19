@@ -1,4 +1,4 @@
-# openapi.model.AuthDeviceResponseDto
+# openapi.model.SessionResponseDto
 
 ## Load the model package
 ```dart

@@ -11,11 +11,11 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-// tests for AuthDeviceResponseDto
+// tests for SessionResponseDto
 void main() {
-  // final instance = AuthDeviceResponseDto();
+  // final instance = SessionResponseDto();
 
-  group('test AuthDeviceResponseDto', () {
+  group('test SessionResponseDto', () {
     // String createdAt
     test('to test the property `createdAt`', () async {
       // TODO

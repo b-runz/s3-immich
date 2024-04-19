@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class AuthDeviceResponseDto {
-  /// Returns a new [AuthDeviceResponseDto] instance.
-  AuthDeviceResponseDto({
+class SessionResponseDto {
+  /// Returns a new [SessionResponseDto] instance.
+  SessionResponseDto({
     required this.createdAt,
     required this.current,
     required this.deviceOS,
@@ -34,7 +34,7 @@ class AuthDeviceResponseDto {
   String updatedAt;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AuthDeviceResponseDto &&
+  bool operator ==(Object other) => identical(this, other) || other is SessionResponseDto &&
     other.createdAt == createdAt &&
     other.current == current &&
     other.deviceOS == deviceOS &&
@@ -53,7 +53,7 @@ class AuthDeviceResponseDto {
     (updatedAt.hashCode);
 
   @override
-  String toString() => 'AuthDeviceResponseDto[createdAt=$createdAt, current=$current, deviceOS=$deviceOS, deviceType=$deviceType, id=$id, updatedAt=$updatedAt]';
+  String toString() => 'SessionResponseDto[createdAt=$createdAt, current=$current, deviceOS=$deviceOS, deviceType=$deviceType, id=$id, updatedAt=$updatedAt]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -66,14 +66,14 @@ class AuthDeviceResponseDto {
     return json;
   }
 
-  /// Returns a new [AuthDeviceResponseDto] instance and imports its values from
+  /// Returns a new [SessionResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static AuthDeviceResponseDto? fromJson(dynamic value) {
+  static SessionResponseDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return AuthDeviceResponseDto(
+      return SessionResponseDto(
         createdAt: mapValueOfType<String>(json, r'createdAt')!,
         current: mapValueOfType<bool>(json, r'current')!,
         deviceOS: mapValueOfType<String>(json, r'deviceOS')!,
@@ -85,11 +85,11 @@ class AuthDeviceResponseDto {
     return null;
   }
 
-  static List<AuthDeviceResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <AuthDeviceResponseDto>[];
+  static List<SessionResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <SessionResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = AuthDeviceResponseDto.fromJson(row);
+        final value = SessionResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -98,12 +98,12 @@ class AuthDeviceResponseDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, AuthDeviceResponseDto> mapFromJson(dynamic json) {
-    final map = <String, AuthDeviceResponseDto>{};
+  static Map<String, SessionResponseDto> mapFromJson(dynamic json) {
+    final map = <String, SessionResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = AuthDeviceResponseDto.fromJson(entry.value);
+        final value = SessionResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -112,14 +112,14 @@ class AuthDeviceResponseDto {
     return map;
   }
 
-  // maps a json object with a list of AuthDeviceResponseDto-objects as value to a dart map
-  static Map<String, List<AuthDeviceResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<AuthDeviceResponseDto>>{};
+  // maps a json object with a list of SessionResponseDto-objects as value to a dart map
+  static Map<String, List<SessionResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<SessionResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = AuthDeviceResponseDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = SessionResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
