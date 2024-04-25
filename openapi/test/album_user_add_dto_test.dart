@@ -11,19 +11,18 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-// tests for AddUsersDto
+// tests for AlbumUserAddDto
 void main() {
-  // final instance = AddUsersDto();
+  // final instance = AlbumUserAddDto();
 
-  group('test AddUsersDto', () {
-    // List<AlbumUserAddDto> albumUsers (default value: const [])
-    test('to test the property `albumUsers`', () async {
+  group('test AlbumUserAddDto', () {
+    // AlbumUserRole role
+    test('to test the property `role`', () async {
       // TODO
     });
 
-    // Deprecated in favor of albumUsers
-    // List<String> sharedUserIds (default value: const [])
-    test('to test the property `sharedUserIds`', () async {
+    // String userId
+    test('to test the property `userId`', () async {
       // TODO
     });
 
