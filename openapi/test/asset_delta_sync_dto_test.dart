@@ -11,21 +11,22 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-
-/// tests for SyncApi
+// tests for AssetDeltaSyncDto
 void main() {
-  // final instance = SyncApi();
+  // final instance = AssetDeltaSyncDto();
 
-  group('tests for SyncApi', () {
-    //Future<AssetDeltaSyncResponseDto> getDeltaSync(AssetDeltaSyncDto assetDeltaSyncDto) async
-    test('test getDeltaSync', () async {
+  group('test AssetDeltaSyncDto', () {
+    // DateTime updatedAfter
+    test('to test the property `updatedAfter`', () async {
       // TODO
     });
 
-    //Future<List<AssetResponseDto>> getFullSyncForUser(AssetFullSyncDto assetFullSyncDto) async
-    test('test getFullSyncForUser', () async {
+    // List<String> userIds (default value: const [])
+    test('to test the property `userIds`', () async {
       // TODO
     });
+
 
   });
+
 }
