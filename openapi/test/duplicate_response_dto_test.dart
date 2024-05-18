@@ -11,16 +11,22 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-
-/// tests for DuplicateApi
+// tests for DuplicateResponseDto
 void main() {
-  // final instance = DuplicateApi();
+  // final instance = DuplicateResponseDto();
 
-  group('tests for DuplicateApi', () {
-    //Future<List<DuplicateResponseDto>> getAssetDuplicates() async
-    test('test getAssetDuplicates', () async {
+  group('test DuplicateResponseDto', () {
+    // List<AssetResponseDto> assets (default value: const [])
+    test('to test the property `assets`', () async {
       // TODO
     });
 
+    // String duplicateId
+    test('to test the property `duplicateId`', () async {
+      // TODO
+    });
+
+
   });
+
 }
