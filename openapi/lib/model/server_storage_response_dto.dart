@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class ServerInfoResponseDto {
-  /// Returns a new [ServerInfoResponseDto] instance.
-  ServerInfoResponseDto({
+class ServerStorageResponseDto {
+  /// Returns a new [ServerStorageResponseDto] instance.
+  ServerStorageResponseDto({
     required this.diskAvailable,
     required this.diskAvailableRaw,
     required this.diskSize,
@@ -37,7 +37,7 @@ class ServerInfoResponseDto {
   int diskUseRaw;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is ServerInfoResponseDto &&
+  bool operator ==(Object other) => identical(this, other) || other is ServerStorageResponseDto &&
     other.diskAvailable == diskAvailable &&
     other.diskAvailableRaw == diskAvailableRaw &&
     other.diskSize == diskSize &&
@@ -58,7 +58,7 @@ class ServerInfoResponseDto {
     (diskUseRaw.hashCode);
 
   @override
-  String toString() => 'ServerInfoResponseDto[diskAvailable=$diskAvailable, diskAvailableRaw=$diskAvailableRaw, diskSize=$diskSize, diskSizeRaw=$diskSizeRaw, diskUsagePercentage=$diskUsagePercentage, diskUse=$diskUse, diskUseRaw=$diskUseRaw]';
+  String toString() => 'ServerStorageResponseDto[diskAvailable=$diskAvailable, diskAvailableRaw=$diskAvailableRaw, diskSize=$diskSize, diskSizeRaw=$diskSizeRaw, diskUsagePercentage=$diskUsagePercentage, diskUse=$diskUse, diskUseRaw=$diskUseRaw]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -72,14 +72,14 @@ class ServerInfoResponseDto {
     return json;
   }
 
-  /// Returns a new [ServerInfoResponseDto] instance and imports its values from
+  /// Returns a new [ServerStorageResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static ServerInfoResponseDto? fromJson(dynamic value) {
+  static ServerStorageResponseDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return ServerInfoResponseDto(
+      return ServerStorageResponseDto(
         diskAvailable: mapValueOfType<String>(json, r'diskAvailable')!,
         diskAvailableRaw: mapValueOfType<int>(json, r'diskAvailableRaw')!,
         diskSize: mapValueOfType<String>(json, r'diskSize')!,
@@ -92,11 +92,11 @@ class ServerInfoResponseDto {
     return null;
   }
 
-  static List<ServerInfoResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <ServerInfoResponseDto>[];
+  static List<ServerStorageResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <ServerStorageResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = ServerInfoResponseDto.fromJson(row);
+        final value = ServerStorageResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -105,12 +105,12 @@ class ServerInfoResponseDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, ServerInfoResponseDto> mapFromJson(dynamic json) {
-    final map = <String, ServerInfoResponseDto>{};
+  static Map<String, ServerStorageResponseDto> mapFromJson(dynamic json) {
+    final map = <String, ServerStorageResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = ServerInfoResponseDto.fromJson(entry.value);
+        final value = ServerStorageResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -119,14 +119,14 @@ class ServerInfoResponseDto {
     return map;
   }
 
-  // maps a json object with a list of ServerInfoResponseDto-objects as value to a dart map
-  static Map<String, List<ServerInfoResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<ServerInfoResponseDto>>{};
+  // maps a json object with a list of ServerStorageResponseDto-objects as value to a dart map
+  static Map<String, List<ServerStorageResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<ServerStorageResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = ServerInfoResponseDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = ServerStorageResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
