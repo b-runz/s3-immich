@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class CreateUserDto {
-  /// Returns a new [CreateUserDto] instance.
-  CreateUserDto({
+class UserAdminCreateDto {
+  /// Returns a new [UserAdminCreateDto] instance.
+  UserAdminCreateDto({
     required this.email,
     this.memoriesEnabled,
     required this.name,
@@ -59,7 +59,7 @@ class CreateUserDto {
   String? storageLabel;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is CreateUserDto &&
+  bool operator ==(Object other) => identical(this, other) || other is UserAdminCreateDto &&
     other.email == email &&
     other.memoriesEnabled == memoriesEnabled &&
     other.name == name &&
@@ -82,7 +82,7 @@ class CreateUserDto {
     (storageLabel == null ? 0 : storageLabel!.hashCode);
 
   @override
-  String toString() => 'CreateUserDto[email=$email, memoriesEnabled=$memoriesEnabled, name=$name, notify=$notify, password=$password, quotaSizeInBytes=$quotaSizeInBytes, shouldChangePassword=$shouldChangePassword, storageLabel=$storageLabel]';
+  String toString() => 'UserAdminCreateDto[email=$email, memoriesEnabled=$memoriesEnabled, name=$name, notify=$notify, password=$password, quotaSizeInBytes=$quotaSizeInBytes, shouldChangePassword=$shouldChangePassword, storageLabel=$storageLabel]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -117,14 +117,14 @@ class CreateUserDto {
     return json;
   }
 
-  /// Returns a new [CreateUserDto] instance and imports its values from
+  /// Returns a new [UserAdminCreateDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static CreateUserDto? fromJson(dynamic value) {
+  static UserAdminCreateDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return CreateUserDto(
+      return UserAdminCreateDto(
         email: mapValueOfType<String>(json, r'email')!,
         memoriesEnabled: mapValueOfType<bool>(json, r'memoriesEnabled'),
         name: mapValueOfType<String>(json, r'name')!,
@@ -138,11 +138,11 @@ class CreateUserDto {
     return null;
   }
 
-  static List<CreateUserDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <CreateUserDto>[];
+  static List<UserAdminCreateDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <UserAdminCreateDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = CreateUserDto.fromJson(row);
+        final value = UserAdminCreateDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -151,12 +151,12 @@ class CreateUserDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, CreateUserDto> mapFromJson(dynamic json) {
-    final map = <String, CreateUserDto>{};
+  static Map<String, UserAdminCreateDto> mapFromJson(dynamic json) {
+    final map = <String, UserAdminCreateDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = CreateUserDto.fromJson(entry.value);
+        final value = UserAdminCreateDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -165,14 +165,14 @@ class CreateUserDto {
     return map;
   }
 
-  // maps a json object with a list of CreateUserDto-objects as value to a dart map
-  static Map<String, List<CreateUserDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<CreateUserDto>>{};
+  // maps a json object with a list of UserAdminCreateDto-objects as value to a dart map
+  static Map<String, List<UserAdminCreateDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<UserAdminCreateDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = CreateUserDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = UserAdminCreateDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;

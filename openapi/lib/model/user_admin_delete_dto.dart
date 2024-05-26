@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class DeleteUserDto {
-  /// Returns a new [DeleteUserDto] instance.
-  DeleteUserDto({
+class UserAdminDeleteDto {
+  /// Returns a new [UserAdminDeleteDto] instance.
+  UserAdminDeleteDto({
     this.force,
   });
 
@@ -25,7 +25,7 @@ class DeleteUserDto {
   bool? force;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is DeleteUserDto &&
+  bool operator ==(Object other) => identical(this, other) || other is UserAdminDeleteDto &&
     other.force == force;
 
   @override
@@ -34,7 +34,7 @@ class DeleteUserDto {
     (force == null ? 0 : force!.hashCode);
 
   @override
-  String toString() => 'DeleteUserDto[force=$force]';
+  String toString() => 'UserAdminDeleteDto[force=$force]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -46,25 +46,25 @@ class DeleteUserDto {
     return json;
   }
 
-  /// Returns a new [DeleteUserDto] instance and imports its values from
+  /// Returns a new [UserAdminDeleteDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static DeleteUserDto? fromJson(dynamic value) {
+  static UserAdminDeleteDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return DeleteUserDto(
+      return UserAdminDeleteDto(
         force: mapValueOfType<bool>(json, r'force'),
       );
     }
     return null;
   }
 
-  static List<DeleteUserDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <DeleteUserDto>[];
+  static List<UserAdminDeleteDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <UserAdminDeleteDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = DeleteUserDto.fromJson(row);
+        final value = UserAdminDeleteDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -73,12 +73,12 @@ class DeleteUserDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, DeleteUserDto> mapFromJson(dynamic json) {
-    final map = <String, DeleteUserDto>{};
+  static Map<String, UserAdminDeleteDto> mapFromJson(dynamic json) {
+    final map = <String, UserAdminDeleteDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = DeleteUserDto.fromJson(entry.value);
+        final value = UserAdminDeleteDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -87,14 +87,14 @@ class DeleteUserDto {
     return map;
   }
 
-  // maps a json object with a list of DeleteUserDto-objects as value to a dart map
-  static Map<String, List<DeleteUserDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<DeleteUserDto>>{};
+  // maps a json object with a list of UserAdminDeleteDto-objects as value to a dart map
+  static Map<String, List<UserAdminDeleteDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<UserAdminDeleteDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = DeleteUserDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = UserAdminDeleteDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
