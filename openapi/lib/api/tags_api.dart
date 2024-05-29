@@ -11,21 +11,21 @@
 part of openapi.api;
 
 
-class LibraryApi {
-  LibraryApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class TagsApi {
+  TagsApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// Performs an HTTP 'POST /libraries' operation and returns the [Response].
+  /// Performs an HTTP 'POST /tags' operation and returns the [Response].
   /// Parameters:
   ///
-  /// * [CreateLibraryDto] createLibraryDto (required):
-  Future<Response> createLibraryWithHttpInfo(CreateLibraryDto createLibraryDto,) async {
+  /// * [CreateTagDto] createTagDto (required):
+  Future<Response> createTagWithHttpInfo(CreateTagDto createTagDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries';
+    final path = r'/tags';
 
     // ignore: prefer_final_locals
-    Object? postBody = createLibraryDto;
+    Object? postBody = createTagDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -47,9 +47,9 @@ class LibraryApi {
 
   /// Parameters:
   ///
-  /// * [CreateLibraryDto] createLibraryDto (required):
-  Future<LibraryResponseDto?> createLibrary(CreateLibraryDto createLibraryDto,) async {
-    final response = await createLibraryWithHttpInfo(createLibraryDto,);
+  /// * [CreateTagDto] createTagDto (required):
+  Future<TagResponseDto?> createTag(CreateTagDto createTagDto,) async {
+    final response = await createTagWithHttpInfo(createTagDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -57,19 +57,19 @@ class LibraryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryResponseDto',) as LibraryResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'TagResponseDto',) as TagResponseDto;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'DELETE /libraries/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'DELETE /tags/{id}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> deleteLibraryWithHttpInfo(String id,) async {
+  Future<Response> deleteTagWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}'
+    final path = r'/tags/{id}'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -96,17 +96,17 @@ class LibraryApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<void> deleteLibrary(String id,) async {
-    final response = await deleteLibraryWithHttpInfo(id,);
+  Future<void> deleteTag(String id,) async {
+    final response = await deleteTagWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
   }
 
-  /// Performs an HTTP 'GET /libraries' operation and returns the [Response].
-  Future<Response> getAllLibrariesWithHttpInfo() async {
+  /// Performs an HTTP 'GET /tags' operation and returns the [Response].
+  Future<Response> getAllTagsWithHttpInfo() async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries';
+    final path = r'/tags';
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -129,8 +129,8 @@ class LibraryApi {
     );
   }
 
-  Future<List<LibraryResponseDto>?> getAllLibraries() async {
-    final response = await getAllLibrariesWithHttpInfo();
+  Future<List<TagResponseDto>?> getAllTags() async {
+    final response = await getAllTagsWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -139,21 +139,21 @@ class LibraryApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<LibraryResponseDto>') as List)
-        .cast<LibraryResponseDto>()
+      return (await apiClient.deserializeAsync(responseBody, 'List<TagResponseDto>') as List)
+        .cast<TagResponseDto>()
         .toList(growable: false);
 
     }
     return null;
   }
 
-  /// Performs an HTTP 'GET /libraries/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'GET /tags/{id}/assets' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> getLibraryWithHttpInfo(String id,) async {
+  Future<Response> getTagAssetsWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}'
+    final path = r'/tags/{id}/assets'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -180,8 +180,8 @@ class LibraryApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<LibraryResponseDto?> getLibrary(String id,) async {
-    final response = await getLibraryWithHttpInfo(id,);
+  Future<List<AssetResponseDto>?> getTagAssets(String id,) async {
+    final response = await getTagAssetsWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -189,19 +189,22 @@ class LibraryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryResponseDto',) as LibraryResponseDto;
-    
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<AssetResponseDto>') as List)
+        .cast<AssetResponseDto>()
+        .toList(growable: false);
+
     }
     return null;
   }
 
-  /// Performs an HTTP 'GET /libraries/{id}/statistics' operation and returns the [Response].
+  /// Performs an HTTP 'GET /tags/{id}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> getLibraryStatisticsWithHttpInfo(String id,) async {
+  Future<Response> getTagByIdWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}/statistics'
+    final path = r'/tags/{id}'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -228,8 +231,8 @@ class LibraryApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<LibraryStatsResponseDto?> getLibraryStatistics(String id,) async {
-    final response = await getLibraryStatisticsWithHttpInfo(id,);
+  Future<TagResponseDto?> getTagById(String id,) async {
+    final response = await getTagByIdWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -237,109 +240,25 @@ class LibraryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryStatsResponseDto',) as LibraryStatsResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'TagResponseDto',) as TagResponseDto;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'POST /libraries/{id}/removeOffline' operation and returns the [Response].
+  /// Performs an HTTP 'PUT /tags/{id}/assets' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> removeOfflineFilesWithHttpInfo(String id,) async {
+  ///
+  /// * [AssetIdsDto] assetIdsDto (required):
+  Future<Response> tagAssetsWithHttpInfo(String id, AssetIdsDto assetIdsDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}/removeOffline'
+    final path = r'/tags/{id}/assets'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
-    Object? postBody;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>[];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'POST',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  Future<void> removeOfflineFiles(String id,) async {
-    final response = await removeOfflineFilesWithHttpInfo(id,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-  }
-
-  /// Performs an HTTP 'POST /libraries/{id}/scan' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  ///
-  /// * [ScanLibraryDto] scanLibraryDto (required):
-  Future<Response> scanLibraryWithHttpInfo(String id, ScanLibraryDto scanLibraryDto,) async {
-    // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}/scan'
-      .replaceAll('{id}', id);
-
-    // ignore: prefer_final_locals
-    Object? postBody = scanLibraryDto;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>['application/json'];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'POST',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  ///
-  /// * [ScanLibraryDto] scanLibraryDto (required):
-  Future<void> scanLibrary(String id, ScanLibraryDto scanLibraryDto,) async {
-    final response = await scanLibraryWithHttpInfo(id, scanLibraryDto,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-  }
-
-  /// Performs an HTTP 'PUT /libraries/{id}' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  ///
-  /// * [UpdateLibraryDto] updateLibraryDto (required):
-  Future<Response> updateLibraryWithHttpInfo(String id, UpdateLibraryDto updateLibraryDto,) async {
-    // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}'
-      .replaceAll('{id}', id);
-
-    // ignore: prefer_final_locals
-    Object? postBody = updateLibraryDto;
+    Object? postBody = assetIdsDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -363,9 +282,9 @@ class LibraryApi {
   ///
   /// * [String] id (required):
   ///
-  /// * [UpdateLibraryDto] updateLibraryDto (required):
-  Future<LibraryResponseDto?> updateLibrary(String id, UpdateLibraryDto updateLibraryDto,) async {
-    final response = await updateLibraryWithHttpInfo(id, updateLibraryDto,);
+  /// * [AssetIdsDto] assetIdsDto (required):
+  Future<List<AssetIdsResponseDto>?> tagAssets(String id, AssetIdsDto assetIdsDto,) async {
+    final response = await tagAssetsWithHttpInfo(id, assetIdsDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -373,25 +292,28 @@ class LibraryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryResponseDto',) as LibraryResponseDto;
-    
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<AssetIdsResponseDto>') as List)
+        .cast<AssetIdsResponseDto>()
+        .toList(growable: false);
+
     }
     return null;
   }
 
-  /// Performs an HTTP 'POST /libraries/{id}/validate' operation and returns the [Response].
+  /// Performs an HTTP 'DELETE /tags/{id}/assets' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
   ///
-  /// * [ValidateLibraryDto] validateLibraryDto (required):
-  Future<Response> validateWithHttpInfo(String id, ValidateLibraryDto validateLibraryDto,) async {
+  /// * [AssetIdsDto] assetIdsDto (required):
+  Future<Response> untagAssetsWithHttpInfo(String id, AssetIdsDto assetIdsDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/libraries/{id}/validate'
+    final path = r'/tags/{id}/assets'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
-    Object? postBody = validateLibraryDto;
+    Object? postBody = assetIdsDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -402,7 +324,7 @@ class LibraryApi {
 
     return apiClient.invokeAPI(
       path,
-      'POST',
+      'DELETE',
       queryParams,
       postBody,
       headerParams,
@@ -415,9 +337,9 @@ class LibraryApi {
   ///
   /// * [String] id (required):
   ///
-  /// * [ValidateLibraryDto] validateLibraryDto (required):
-  Future<ValidateLibraryResponseDto?> validate(String id, ValidateLibraryDto validateLibraryDto,) async {
-    final response = await validateWithHttpInfo(id, validateLibraryDto,);
+  /// * [AssetIdsDto] assetIdsDto (required):
+  Future<List<AssetIdsResponseDto>?> untagAssets(String id, AssetIdsDto assetIdsDto,) async {
+    final response = await untagAssetsWithHttpInfo(id, assetIdsDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -425,7 +347,62 @@ class LibraryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'ValidateLibraryResponseDto',) as ValidateLibraryResponseDto;
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<AssetIdsResponseDto>') as List)
+        .cast<AssetIdsResponseDto>()
+        .toList(growable: false);
+
+    }
+    return null;
+  }
+
+  /// Performs an HTTP 'PATCH /tags/{id}' operation and returns the [Response].
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  ///
+  /// * [UpdateTagDto] updateTagDto (required):
+  Future<Response> updateTagWithHttpInfo(String id, UpdateTagDto updateTagDto,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/tags/{id}'
+      .replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody = updateTagDto;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PATCH',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  ///
+  /// * [UpdateTagDto] updateTagDto (required):
+  Future<TagResponseDto?> updateTag(String id, UpdateTagDto updateTagDto,) async {
+    final response = await updateTagWithHttpInfo(id, updateTagDto,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'TagResponseDto',) as TagResponseDto;
     
     }
     return null;

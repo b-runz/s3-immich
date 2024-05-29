@@ -11,15 +11,18 @@
 part of openapi.api;
 
 
-class JobApi {
-  JobApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class FacesApi {
+  FacesApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// Performs an HTTP 'GET /jobs' operation and returns the [Response].
-  Future<Response> getAllJobsStatusWithHttpInfo() async {
+  /// Performs an HTTP 'GET /faces' operation and returns the [Response].
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<Response> getFacesWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/jobs';
+    final path = r'/faces';
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -27,6 +30,8 @@ class JobApi {
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
+
+      queryParams.addAll(_queryParams('', 'id', id));
 
     const contentTypes = <String>[];
 
@@ -42,8 +47,11 @@ class JobApi {
     );
   }
 
-  Future<AllJobStatusResponseDto?> getAllJobsStatus() async {
-    final response = await getAllJobsStatusWithHttpInfo();
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<List<AssetFaceResponseDto>?> getFaces(String id,) async {
+    final response = await getFacesWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -51,25 +59,28 @@ class JobApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'AllJobStatusResponseDto',) as AllJobStatusResponseDto;
-    
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<AssetFaceResponseDto>') as List)
+        .cast<AssetFaceResponseDto>()
+        .toList(growable: false);
+
     }
     return null;
   }
 
-  /// Performs an HTTP 'PUT /jobs/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'PUT /faces/{id}' operation and returns the [Response].
   /// Parameters:
   ///
-  /// * [JobName] id (required):
+  /// * [String] id (required):
   ///
-  /// * [JobCommandDto] jobCommandDto (required):
-  Future<Response> sendJobCommandWithHttpInfo(JobName id, JobCommandDto jobCommandDto,) async {
+  /// * [FaceDto] faceDto (required):
+  Future<Response> reassignFacesByIdWithHttpInfo(String id, FaceDto faceDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/jobs/{id}'
-      .replaceAll('{id}', id.toString());
+    final path = r'/faces/{id}'
+      .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
-    Object? postBody = jobCommandDto;
+    Object? postBody = faceDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -91,11 +102,11 @@ class JobApi {
 
   /// Parameters:
   ///
-  /// * [JobName] id (required):
+  /// * [String] id (required):
   ///
-  /// * [JobCommandDto] jobCommandDto (required):
-  Future<JobStatusDto?> sendJobCommand(JobName id, JobCommandDto jobCommandDto,) async {
-    final response = await sendJobCommandWithHttpInfo(id, jobCommandDto,);
+  /// * [FaceDto] faceDto (required):
+  Future<PersonResponseDto?> reassignFacesById(String id, FaceDto faceDto,) async {
+    final response = await reassignFacesByIdWithHttpInfo(id, faceDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -103,7 +114,7 @@ class JobApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'JobStatusDto',) as JobStatusDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PersonResponseDto',) as PersonResponseDto;
     
     }
     return null;

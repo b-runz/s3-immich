@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class ActivityApi {
-  ActivityApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class ActivitiesApi {
+  ActivitiesApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

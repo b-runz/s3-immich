@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class AlbumApi {
-  AlbumApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class AlbumsApi {
+  AlbumsApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

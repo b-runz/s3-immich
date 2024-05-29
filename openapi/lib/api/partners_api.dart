@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class PartnerApi {
-  PartnerApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class PartnersApi {
+  PartnersApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class APIKeyApi {
-  APIKeyApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class APIKeysApi {
+  APIKeysApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

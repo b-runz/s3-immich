@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class SharedLinkApi {
-  SharedLinkApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class SharedLinksApi {
+  SharedLinksApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

@@ -11,21 +11,21 @@
 part of openapi.api;
 
 
-class PersonApi {
-  PersonApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class LibrariesApi {
+  LibrariesApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// Performs an HTTP 'POST /people' operation and returns the [Response].
+  /// Performs an HTTP 'POST /libraries' operation and returns the [Response].
   /// Parameters:
   ///
-  /// * [PersonCreateDto] personCreateDto (required):
-  Future<Response> createPersonWithHttpInfo(PersonCreateDto personCreateDto,) async {
+  /// * [CreateLibraryDto] createLibraryDto (required):
+  Future<Response> createLibraryWithHttpInfo(CreateLibraryDto createLibraryDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people';
+    final path = r'/libraries';
 
     // ignore: prefer_final_locals
-    Object? postBody = personCreateDto;
+    Object? postBody = createLibraryDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -47,9 +47,9 @@ class PersonApi {
 
   /// Parameters:
   ///
-  /// * [PersonCreateDto] personCreateDto (required):
-  Future<PersonResponseDto?> createPerson(PersonCreateDto personCreateDto,) async {
-    final response = await createPersonWithHttpInfo(personCreateDto,);
+  /// * [CreateLibraryDto] createLibraryDto (required):
+  Future<LibraryResponseDto?> createLibrary(CreateLibraryDto createLibraryDto,) async {
+    final response = await createLibraryWithHttpInfo(createLibraryDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -57,70 +57,19 @@ class PersonApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PersonResponseDto',) as PersonResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryResponseDto',) as LibraryResponseDto;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'GET /people' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [bool] withHidden:
-  Future<Response> getAllPeopleWithHttpInfo({ bool? withHidden, }) async {
-    // ignore: prefer_const_declarations
-    final path = r'/people';
-
-    // ignore: prefer_final_locals
-    Object? postBody;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    if (withHidden != null) {
-      queryParams.addAll(_queryParams('', 'withHidden', withHidden));
-    }
-
-    const contentTypes = <String>[];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'GET',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Parameters:
-  ///
-  /// * [bool] withHidden:
-  Future<PeopleResponseDto?> getAllPeople({ bool? withHidden, }) async {
-    final response = await getAllPeopleWithHttpInfo( withHidden: withHidden, );
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PeopleResponseDto',) as PeopleResponseDto;
-    
-    }
-    return null;
-  }
-
-  /// Performs an HTTP 'GET /people/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'DELETE /libraries/{id}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> getPersonWithHttpInfo(String id,) async {
+  Future<Response> deleteLibraryWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}'
+    final path = r'/libraries/{id}'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -135,7 +84,7 @@ class PersonApi {
 
     return apiClient.invokeAPI(
       path,
-      'GET',
+      'DELETE',
       queryParams,
       postBody,
       headerParams,
@@ -147,29 +96,17 @@ class PersonApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<PersonResponseDto?> getPerson(String id,) async {
-    final response = await getPersonWithHttpInfo(id,);
+  Future<void> deleteLibrary(String id,) async {
+    final response = await deleteLibraryWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PersonResponseDto',) as PersonResponseDto;
-    
-    }
-    return null;
   }
 
-  /// Performs an HTTP 'GET /people/{id}/assets' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  Future<Response> getPersonAssetsWithHttpInfo(String id,) async {
+  /// Performs an HTTP 'GET /libraries' operation and returns the [Response].
+  Future<Response> getAllLibrariesWithHttpInfo() async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}/assets'
-      .replaceAll('{id}', id);
+    final path = r'/libraries';
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -192,11 +129,8 @@ class PersonApi {
     );
   }
 
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  Future<List<AssetResponseDto>?> getPersonAssets(String id,) async {
-    final response = await getPersonAssetsWithHttpInfo(id,);
+  Future<List<LibraryResponseDto>?> getAllLibraries() async {
+    final response = await getAllLibrariesWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -205,21 +139,21 @@ class PersonApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<AssetResponseDto>') as List)
-        .cast<AssetResponseDto>()
+      return (await apiClient.deserializeAsync(responseBody, 'List<LibraryResponseDto>') as List)
+        .cast<LibraryResponseDto>()
         .toList(growable: false);
 
     }
     return null;
   }
 
-  /// Performs an HTTP 'GET /people/{id}/statistics' operation and returns the [Response].
+  /// Performs an HTTP 'GET /libraries/{id}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> getPersonStatisticsWithHttpInfo(String id,) async {
+  Future<Response> getLibraryWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}/statistics'
+    final path = r'/libraries/{id}'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -246,8 +180,8 @@ class PersonApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<PersonStatisticsResponseDto?> getPersonStatistics(String id,) async {
-    final response = await getPersonStatisticsWithHttpInfo(id,);
+  Future<LibraryResponseDto?> getLibrary(String id,) async {
+    final response = await getLibraryWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -255,19 +189,19 @@ class PersonApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PersonStatisticsResponseDto',) as PersonStatisticsResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryResponseDto',) as LibraryResponseDto;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'GET /people/{id}/thumbnail' operation and returns the [Response].
+  /// Performs an HTTP 'GET /libraries/{id}/statistics' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> getPersonThumbnailWithHttpInfo(String id,) async {
+  Future<Response> getLibraryStatisticsWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}/thumbnail'
+    final path = r'/libraries/{id}/statistics'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -294,8 +228,8 @@ class PersonApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<MultipartFile?> getPersonThumbnail(String id,) async {
-    final response = await getPersonThumbnailWithHttpInfo(id,);
+  Future<LibraryStatsResponseDto?> getLibraryStatistics(String id,) async {
+    final response = await getLibraryStatisticsWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -303,25 +237,65 @@ class PersonApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'MultipartFile',) as MultipartFile;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryStatsResponseDto',) as LibraryStatsResponseDto;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'POST /people/{id}/merge' operation and returns the [Response].
+  /// Performs an HTTP 'POST /libraries/{id}/removeOffline' operation and returns the [Response].
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<Response> removeOfflineFilesWithHttpInfo(String id,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/libraries/{id}/removeOffline'
+      .replaceAll('{id}', id);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<void> removeOfflineFiles(String id,) async {
+    final response = await removeOfflineFilesWithHttpInfo(id,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
+  /// Performs an HTTP 'POST /libraries/{id}/scan' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
   ///
-  /// * [MergePersonDto] mergePersonDto (required):
-  Future<Response> mergePersonWithHttpInfo(String id, MergePersonDto mergePersonDto,) async {
+  /// * [ScanLibraryDto] scanLibraryDto (required):
+  Future<Response> scanLibraryWithHttpInfo(String id, ScanLibraryDto scanLibraryDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}/merge'
+    final path = r'/libraries/{id}/scan'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
-    Object? postBody = mergePersonDto;
+    Object? postBody = scanLibraryDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -345,38 +319,27 @@ class PersonApi {
   ///
   /// * [String] id (required):
   ///
-  /// * [MergePersonDto] mergePersonDto (required):
-  Future<List<BulkIdResponseDto>?> mergePerson(String id, MergePersonDto mergePersonDto,) async {
-    final response = await mergePersonWithHttpInfo(id, mergePersonDto,);
+  /// * [ScanLibraryDto] scanLibraryDto (required):
+  Future<void> scanLibrary(String id, ScanLibraryDto scanLibraryDto,) async {
+    final response = await scanLibraryWithHttpInfo(id, scanLibraryDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<BulkIdResponseDto>') as List)
-        .cast<BulkIdResponseDto>()
-        .toList(growable: false);
-
-    }
-    return null;
   }
 
-  /// Performs an HTTP 'PUT /people/{id}/reassign' operation and returns the [Response].
+  /// Performs an HTTP 'PUT /libraries/{id}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
   ///
-  /// * [AssetFaceUpdateDto] assetFaceUpdateDto (required):
-  Future<Response> reassignFacesWithHttpInfo(String id, AssetFaceUpdateDto assetFaceUpdateDto,) async {
+  /// * [UpdateLibraryDto] updateLibraryDto (required):
+  Future<Response> updateLibraryWithHttpInfo(String id, UpdateLibraryDto updateLibraryDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}/reassign'
+    final path = r'/libraries/{id}'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
-    Object? postBody = assetFaceUpdateDto;
+    Object? postBody = updateLibraryDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -400,9 +363,9 @@ class PersonApi {
   ///
   /// * [String] id (required):
   ///
-  /// * [AssetFaceUpdateDto] assetFaceUpdateDto (required):
-  Future<List<PersonResponseDto>?> reassignFaces(String id, AssetFaceUpdateDto assetFaceUpdateDto,) async {
-    final response = await reassignFacesWithHttpInfo(id, assetFaceUpdateDto,);
+  /// * [UpdateLibraryDto] updateLibraryDto (required):
+  Future<LibraryResponseDto?> updateLibrary(String id, UpdateLibraryDto updateLibraryDto,) async {
+    final response = await updateLibraryWithHttpInfo(id, updateLibraryDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -410,78 +373,25 @@ class PersonApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<PersonResponseDto>') as List)
-        .cast<PersonResponseDto>()
-        .toList(growable: false);
-
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LibraryResponseDto',) as LibraryResponseDto;
+    
     }
     return null;
   }
 
-  /// Performs an HTTP 'PUT /people' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [PeopleUpdateDto] peopleUpdateDto (required):
-  Future<Response> updatePeopleWithHttpInfo(PeopleUpdateDto peopleUpdateDto,) async {
-    // ignore: prefer_const_declarations
-    final path = r'/people';
-
-    // ignore: prefer_final_locals
-    Object? postBody = peopleUpdateDto;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>['application/json'];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'PUT',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Parameters:
-  ///
-  /// * [PeopleUpdateDto] peopleUpdateDto (required):
-  Future<List<BulkIdResponseDto>?> updatePeople(PeopleUpdateDto peopleUpdateDto,) async {
-    final response = await updatePeopleWithHttpInfo(peopleUpdateDto,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<BulkIdResponseDto>') as List)
-        .cast<BulkIdResponseDto>()
-        .toList(growable: false);
-
-    }
-    return null;
-  }
-
-  /// Performs an HTTP 'PUT /people/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'POST /libraries/{id}/validate' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
   ///
-  /// * [PersonUpdateDto] personUpdateDto (required):
-  Future<Response> updatePersonWithHttpInfo(String id, PersonUpdateDto personUpdateDto,) async {
+  /// * [ValidateLibraryDto] validateLibraryDto (required):
+  Future<Response> validateWithHttpInfo(String id, ValidateLibraryDto validateLibraryDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/people/{id}'
+    final path = r'/libraries/{id}/validate'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
-    Object? postBody = personUpdateDto;
+    Object? postBody = validateLibraryDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -492,7 +402,7 @@ class PersonApi {
 
     return apiClient.invokeAPI(
       path,
-      'PUT',
+      'POST',
       queryParams,
       postBody,
       headerParams,
@@ -505,9 +415,9 @@ class PersonApi {
   ///
   /// * [String] id (required):
   ///
-  /// * [PersonUpdateDto] personUpdateDto (required):
-  Future<PersonResponseDto?> updatePerson(String id, PersonUpdateDto personUpdateDto,) async {
-    final response = await updatePersonWithHttpInfo(id, personUpdateDto,);
+  /// * [ValidateLibraryDto] validateLibraryDto (required):
+  Future<ValidateLibraryResponseDto?> validate(String id, ValidateLibraryDto validateLibraryDto,) async {
+    final response = await validateWithHttpInfo(id, validateLibraryDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -515,7 +425,7 @@ class PersonApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'PersonResponseDto',) as PersonResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'ValidateLibraryResponseDto',) as ValidateLibraryResponseDto;
     
     }
     return null;

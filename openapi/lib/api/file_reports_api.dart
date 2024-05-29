@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class FileReportApi {
-  FileReportApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class FileReportsApi {
+  FileReportsApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

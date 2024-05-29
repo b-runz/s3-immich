@@ -11,83 +11,38 @@
 part of openapi.api;
 
 
-class MemoryApi {
-  MemoryApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class UsersApi {
+  UsersApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// Performs an HTTP 'PUT /memories/{id}/assets' operation and returns the [Response].
+  /// Performs an HTTP 'POST /users/profile-image' operation and returns the [Response].
   /// Parameters:
   ///
-  /// * [String] id (required):
-  ///
-  /// * [BulkIdsDto] bulkIdsDto (required):
-  Future<Response> addMemoryAssetsWithHttpInfo(String id, BulkIdsDto bulkIdsDto,) async {
+  /// * [MultipartFile] file (required):
+  Future<Response> createProfileImageWithHttpInfo(MultipartFile file,) async {
     // ignore: prefer_const_declarations
-    final path = r'/memories/{id}/assets'
-      .replaceAll('{id}', id);
+    final path = r'/users/profile-image';
 
     // ignore: prefer_final_locals
-    Object? postBody = bulkIdsDto;
+    Object? postBody;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
 
-    const contentTypes = <String>['application/json'];
+    const contentTypes = <String>['multipart/form-data'];
 
-
-    return apiClient.invokeAPI(
-      path,
-      'PUT',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  ///
-  /// * [BulkIdsDto] bulkIdsDto (required):
-  Future<List<BulkIdResponseDto>?> addMemoryAssets(String id, BulkIdsDto bulkIdsDto,) async {
-    final response = await addMemoryAssetsWithHttpInfo(id, bulkIdsDto,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    bool hasFields = false;
+    final mp = MultipartRequest('POST', Uri.parse(path));
+    if (file != null) {
+      hasFields = true;
+      mp.fields[r'file'] = file.field;
+      mp.files.add(file);
     }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<BulkIdResponseDto>') as List)
-        .cast<BulkIdResponseDto>()
-        .toList(growable: false);
-
+    if (hasFields) {
+      postBody = mp;
     }
-    return null;
-  }
-
-  /// Performs an HTTP 'POST /memories' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [MemoryCreateDto] memoryCreateDto (required):
-  Future<Response> createMemoryWithHttpInfo(MemoryCreateDto memoryCreateDto,) async {
-    // ignore: prefer_const_declarations
-    final path = r'/memories';
-
-    // ignore: prefer_final_locals
-    Object? postBody = memoryCreateDto;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>['application/json'];
-
 
     return apiClient.invokeAPI(
       path,
@@ -102,9 +57,9 @@ class MemoryApi {
 
   /// Parameters:
   ///
-  /// * [MemoryCreateDto] memoryCreateDto (required):
-  Future<MemoryResponseDto?> createMemory(MemoryCreateDto memoryCreateDto,) async {
-    final response = await createMemoryWithHttpInfo(memoryCreateDto,);
+  /// * [MultipartFile] file (required):
+  Future<CreateProfileImageResponseDto?> createProfileImage(MultipartFile file,) async {
+    final response = await createProfileImageWithHttpInfo(file,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -112,20 +67,16 @@ class MemoryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'MemoryResponseDto',) as MemoryResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'CreateProfileImageResponseDto',) as CreateProfileImageResponseDto;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'DELETE /memories/{id}' operation and returns the [Response].
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  Future<Response> deleteMemoryWithHttpInfo(String id,) async {
+  /// Performs an HTTP 'DELETE /users/profile-image' operation and returns the [Response].
+  Future<Response> deleteProfileImageWithHttpInfo() async {
     // ignore: prefer_const_declarations
-    final path = r'/memories/{id}'
-      .replaceAll('{id}', id);
+    final path = r'/users/profile-image';
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -148,23 +99,102 @@ class MemoryApi {
     );
   }
 
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  Future<void> deleteMemory(String id,) async {
-    final response = await deleteMemoryWithHttpInfo(id,);
+  Future<void> deleteProfileImage() async {
+    final response = await deleteProfileImageWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
   }
 
-  /// Performs an HTTP 'GET /memories/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'GET /users/me/preferences' operation and returns the [Response].
+  Future<Response> getMyPreferencesWithHttpInfo() async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/me/preferences';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  Future<UserPreferencesResponseDto?> getMyPreferences() async {
+    final response = await getMyPreferencesWithHttpInfo();
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserPreferencesResponseDto',) as UserPreferencesResponseDto;
+    
+    }
+    return null;
+  }
+
+  /// Performs an HTTP 'GET /users/me' operation and returns the [Response].
+  Future<Response> getMyUserWithHttpInfo() async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/me';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  Future<UserAdminResponseDto?> getMyUser() async {
+    final response = await getMyUserWithHttpInfo();
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserAdminResponseDto',) as UserAdminResponseDto;
+    
+    }
+    return null;
+  }
+
+  /// Performs an HTTP 'GET /users/{id}/profile-image' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<Response> getMemoryWithHttpInfo(String id,) async {
+  Future<Response> getProfileImageWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/memories/{id}'
+    final path = r'/users/{id}/profile-image'
       .replaceAll('{id}', id);
 
     // ignore: prefer_final_locals
@@ -191,8 +221,8 @@ class MemoryApi {
   /// Parameters:
   ///
   /// * [String] id (required):
-  Future<MemoryResponseDto?> getMemory(String id,) async {
-    final response = await getMemoryWithHttpInfo(id,);
+  Future<MultipartFile?> getProfileImage(String id,) async {
+    final response = await getProfileImageWithHttpInfo(id,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -200,71 +230,20 @@ class MemoryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'MemoryResponseDto',) as MemoryResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'MultipartFile',) as MultipartFile;
     
     }
     return null;
   }
 
-  /// Performs an HTTP 'DELETE /memories/{id}/assets' operation and returns the [Response].
+  /// Performs an HTTP 'GET /users/{id}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] id (required):
-  ///
-  /// * [BulkIdsDto] bulkIdsDto (required):
-  Future<Response> removeMemoryAssetsWithHttpInfo(String id, BulkIdsDto bulkIdsDto,) async {
+  Future<Response> getUserWithHttpInfo(String id,) async {
     // ignore: prefer_const_declarations
-    final path = r'/memories/{id}/assets'
+    final path = r'/users/{id}'
       .replaceAll('{id}', id);
-
-    // ignore: prefer_final_locals
-    Object? postBody = bulkIdsDto;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>['application/json'];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'DELETE',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Parameters:
-  ///
-  /// * [String] id (required):
-  ///
-  /// * [BulkIdsDto] bulkIdsDto (required):
-  Future<List<BulkIdResponseDto>?> removeMemoryAssets(String id, BulkIdsDto bulkIdsDto,) async {
-    final response = await removeMemoryAssetsWithHttpInfo(id, bulkIdsDto,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<BulkIdResponseDto>') as List)
-        .cast<BulkIdResponseDto>()
-        .toList(growable: false);
-
-    }
-    return null;
-  }
-
-  /// Performs an HTTP 'GET /memories' operation and returns the [Response].
-  Future<Response> searchMemoriesWithHttpInfo() async {
-    // ignore: prefer_const_declarations
-    final path = r'/memories';
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -287,8 +266,52 @@ class MemoryApi {
     );
   }
 
-  Future<List<MemoryResponseDto>?> searchMemories() async {
-    final response = await searchMemoriesWithHttpInfo();
+  /// Parameters:
+  ///
+  /// * [String] id (required):
+  Future<UserResponseDto?> getUser(String id,) async {
+    final response = await getUserWithHttpInfo(id,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserResponseDto',) as UserResponseDto;
+    
+    }
+    return null;
+  }
+
+  /// Performs an HTTP 'GET /users' operation and returns the [Response].
+  Future<Response> searchUsersWithHttpInfo() async {
+    // ignore: prefer_const_declarations
+    final path = r'/users';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  Future<List<UserResponseDto>?> searchUsers() async {
+    final response = await searchUsersWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -297,27 +320,24 @@ class MemoryApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<MemoryResponseDto>') as List)
-        .cast<MemoryResponseDto>()
+      return (await apiClient.deserializeAsync(responseBody, 'List<UserResponseDto>') as List)
+        .cast<UserResponseDto>()
         .toList(growable: false);
 
     }
     return null;
   }
 
-  /// Performs an HTTP 'PUT /memories/{id}' operation and returns the [Response].
+  /// Performs an HTTP 'PUT /users/me/preferences' operation and returns the [Response].
   /// Parameters:
   ///
-  /// * [String] id (required):
-  ///
-  /// * [MemoryUpdateDto] memoryUpdateDto (required):
-  Future<Response> updateMemoryWithHttpInfo(String id, MemoryUpdateDto memoryUpdateDto,) async {
+  /// * [UserPreferencesUpdateDto] userPreferencesUpdateDto (required):
+  Future<Response> updateMyPreferencesWithHttpInfo(UserPreferencesUpdateDto userPreferencesUpdateDto,) async {
     // ignore: prefer_const_declarations
-    final path = r'/memories/{id}'
-      .replaceAll('{id}', id);
+    final path = r'/users/me/preferences';
 
     // ignore: prefer_final_locals
-    Object? postBody = memoryUpdateDto;
+    Object? postBody = userPreferencesUpdateDto;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -339,11 +359,9 @@ class MemoryApi {
 
   /// Parameters:
   ///
-  /// * [String] id (required):
-  ///
-  /// * [MemoryUpdateDto] memoryUpdateDto (required):
-  Future<MemoryResponseDto?> updateMemory(String id, MemoryUpdateDto memoryUpdateDto,) async {
-    final response = await updateMemoryWithHttpInfo(id, memoryUpdateDto,);
+  /// * [UserPreferencesUpdateDto] userPreferencesUpdateDto (required):
+  Future<UserPreferencesResponseDto?> updateMyPreferences(UserPreferencesUpdateDto userPreferencesUpdateDto,) async {
+    final response = await updateMyPreferencesWithHttpInfo(userPreferencesUpdateDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -351,7 +369,54 @@ class MemoryApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'MemoryResponseDto',) as MemoryResponseDto;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserPreferencesResponseDto',) as UserPreferencesResponseDto;
+    
+    }
+    return null;
+  }
+
+  /// Performs an HTTP 'PUT /users/me' operation and returns the [Response].
+  /// Parameters:
+  ///
+  /// * [UserUpdateMeDto] userUpdateMeDto (required):
+  Future<Response> updateMyUserWithHttpInfo(UserUpdateMeDto userUpdateMeDto,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/me';
+
+    // ignore: prefer_final_locals
+    Object? postBody = userUpdateMeDto;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PUT',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Parameters:
+  ///
+  /// * [UserUpdateMeDto] userUpdateMeDto (required):
+  Future<UserAdminResponseDto?> updateMyUser(UserUpdateMeDto userUpdateMeDto,) async {
+    final response = await updateMyUserWithHttpInfo(userUpdateMeDto,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserAdminResponseDto',) as UserAdminResponseDto;
     
     }
     return null;

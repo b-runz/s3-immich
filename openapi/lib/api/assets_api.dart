@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class AssetApi {
-  AssetApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class AssetsApi {
+  AssetsApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 

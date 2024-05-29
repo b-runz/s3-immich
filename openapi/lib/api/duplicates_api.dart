@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class DuplicateApi {
-  DuplicateApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class DuplicatesApi {
+  DuplicatesApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
