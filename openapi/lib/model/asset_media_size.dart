@@ -11,9 +11,9 @@
 part of openapi.api;
 
 
-class ThumbnailFormat {
+class AssetMediaSize {
   /// Instantiate a new enum with the provided [value].
-  const ThumbnailFormat._(this.value);
+  const AssetMediaSize._(this.value);
 
   /// The underlying value of this enum member.
   final String value;
@@ -23,22 +23,22 @@ class ThumbnailFormat {
 
   String toJson() => value;
 
-  static const JPEG = ThumbnailFormat._(r'JPEG');
-  static const WEBP = ThumbnailFormat._(r'WEBP');
+  static const preview = AssetMediaSize._(r'preview');
+  static const thumbnail = AssetMediaSize._(r'thumbnail');
 
-  /// List of all possible values in this [enum][ThumbnailFormat].
-  static const values = <ThumbnailFormat>[
-    JPEG,
-    WEBP,
+  /// List of all possible values in this [enum][AssetMediaSize].
+  static const values = <AssetMediaSize>[
+    preview,
+    thumbnail,
   ];
 
-  static ThumbnailFormat? fromJson(dynamic value) => ThumbnailFormatTypeTransformer().decode(value);
+  static AssetMediaSize? fromJson(dynamic value) => AssetMediaSizeTypeTransformer().decode(value);
 
-  static List<ThumbnailFormat> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <ThumbnailFormat>[];
+  static List<AssetMediaSize> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <AssetMediaSize>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = ThumbnailFormat.fromJson(row);
+        final value = AssetMediaSize.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -48,16 +48,16 @@ class ThumbnailFormat {
   }
 }
 
-/// Transformation class that can [encode] an instance of [ThumbnailFormat] to String,
-/// and [decode] dynamic data back to [ThumbnailFormat].
-class ThumbnailFormatTypeTransformer {
-  factory ThumbnailFormatTypeTransformer() => _instance ??= const ThumbnailFormatTypeTransformer._();
+/// Transformation class that can [encode] an instance of [AssetMediaSize] to String,
+/// and [decode] dynamic data back to [AssetMediaSize].
+class AssetMediaSizeTypeTransformer {
+  factory AssetMediaSizeTypeTransformer() => _instance ??= const AssetMediaSizeTypeTransformer._();
 
-  const ThumbnailFormatTypeTransformer._();
+  const AssetMediaSizeTypeTransformer._();
 
-  String encode(ThumbnailFormat data) => data.value;
+  String encode(AssetMediaSize data) => data.value;
 
-  /// Decodes a [dynamic value][data] to a ThumbnailFormat.
+  /// Decodes a [dynamic value][data] to a AssetMediaSize.
   ///
   /// If [allowNull] is true and the [dynamic value][data] cannot be decoded successfully,
   /// then null is returned. However, if [allowNull] is false and the [dynamic value][data]
@@ -65,11 +65,11 @@ class ThumbnailFormatTypeTransformer {
   ///
   /// The [allowNull] is very handy when an API changes and a new enum value is added or removed,
   /// and users are still using an old app with the old code.
-  ThumbnailFormat? decode(dynamic data, {bool allowNull = true}) {
+  AssetMediaSize? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data) {
-        case r'JPEG': return ThumbnailFormat.JPEG;
-        case r'WEBP': return ThumbnailFormat.WEBP;
+        case r'preview': return AssetMediaSize.preview;
+        case r'thumbnail': return AssetMediaSize.thumbnail;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -79,7 +79,7 @@ class ThumbnailFormatTypeTransformer {
     return null;
   }
 
-  /// Singleton [ThumbnailFormatTypeTransformer] instance.
-  static ThumbnailFormatTypeTransformer? _instance;
+  /// Singleton [AssetMediaSizeTypeTransformer] instance.
+  static AssetMediaSizeTypeTransformer? _instance;
 }
 
