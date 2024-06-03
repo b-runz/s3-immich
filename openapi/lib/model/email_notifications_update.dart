@@ -10,12 +10,12 @@
 
 part of openapi.api;
 
-class UserPreferencesUpdateDto {
-  /// Returns a new [UserPreferencesUpdateDto] instance.
-  UserPreferencesUpdateDto({
-    this.avatar,
-    this.emailNotifications,
-    this.memories,
+class EmailNotificationsUpdate {
+  /// Returns a new [EmailNotificationsUpdate] instance.
+  EmailNotificationsUpdate({
+    this.albumInvite,
+    this.albumUpdate,
+    this.enabled,
   });
 
   ///
@@ -24,7 +24,7 @@ class UserPreferencesUpdateDto {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  AvatarUpdate? avatar;
+  bool? albumInvite;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -32,7 +32,7 @@ class UserPreferencesUpdateDto {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  EmailNotificationsUpdate? emailNotifications;
+  bool? albumUpdate;
 
   ///
   /// Please note: This property should have been non-nullable! Since the specification file
@@ -40,65 +40,65 @@ class UserPreferencesUpdateDto {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  MemoryUpdate? memories;
+  bool? enabled;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is UserPreferencesUpdateDto &&
-    other.avatar == avatar &&
-    other.emailNotifications == emailNotifications &&
-    other.memories == memories;
+  bool operator ==(Object other) => identical(this, other) || other is EmailNotificationsUpdate &&
+    other.albumInvite == albumInvite &&
+    other.albumUpdate == albumUpdate &&
+    other.enabled == enabled;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (avatar == null ? 0 : avatar!.hashCode) +
-    (emailNotifications == null ? 0 : emailNotifications!.hashCode) +
-    (memories == null ? 0 : memories!.hashCode);
+    (albumInvite == null ? 0 : albumInvite!.hashCode) +
+    (albumUpdate == null ? 0 : albumUpdate!.hashCode) +
+    (enabled == null ? 0 : enabled!.hashCode);
 
   @override
-  String toString() => 'UserPreferencesUpdateDto[avatar=$avatar, emailNotifications=$emailNotifications, memories=$memories]';
+  String toString() => 'EmailNotificationsUpdate[albumInvite=$albumInvite, albumUpdate=$albumUpdate, enabled=$enabled]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (this.avatar != null) {
-      json[r'avatar'] = this.avatar;
+    if (this.albumInvite != null) {
+      json[r'albumInvite'] = this.albumInvite;
     } else {
-    //  json[r'avatar'] = null;
+    //  json[r'albumInvite'] = null;
     }
-    if (this.emailNotifications != null) {
-      json[r'emailNotifications'] = this.emailNotifications;
+    if (this.albumUpdate != null) {
+      json[r'albumUpdate'] = this.albumUpdate;
     } else {
-    //  json[r'emailNotifications'] = null;
+    //  json[r'albumUpdate'] = null;
     }
-    if (this.memories != null) {
-      json[r'memories'] = this.memories;
+    if (this.enabled != null) {
+      json[r'enabled'] = this.enabled;
     } else {
-    //  json[r'memories'] = null;
+    //  json[r'enabled'] = null;
     }
     return json;
   }
 
-  /// Returns a new [UserPreferencesUpdateDto] instance and imports its values from
+  /// Returns a new [EmailNotificationsUpdate] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static UserPreferencesUpdateDto? fromJson(dynamic value) {
+  static EmailNotificationsUpdate? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return UserPreferencesUpdateDto(
-        avatar: AvatarUpdate.fromJson(json[r'avatar']),
-        emailNotifications: EmailNotificationsUpdate.fromJson(json[r'emailNotifications']),
-        memories: MemoryUpdate.fromJson(json[r'memories']),
+      return EmailNotificationsUpdate(
+        albumInvite: mapValueOfType<bool>(json, r'albumInvite'),
+        albumUpdate: mapValueOfType<bool>(json, r'albumUpdate'),
+        enabled: mapValueOfType<bool>(json, r'enabled'),
       );
     }
     return null;
   }
 
-  static List<UserPreferencesUpdateDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <UserPreferencesUpdateDto>[];
+  static List<EmailNotificationsUpdate> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <EmailNotificationsUpdate>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = UserPreferencesUpdateDto.fromJson(row);
+        final value = EmailNotificationsUpdate.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -107,12 +107,12 @@ class UserPreferencesUpdateDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, UserPreferencesUpdateDto> mapFromJson(dynamic json) {
-    final map = <String, UserPreferencesUpdateDto>{};
+  static Map<String, EmailNotificationsUpdate> mapFromJson(dynamic json) {
+    final map = <String, EmailNotificationsUpdate>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = UserPreferencesUpdateDto.fromJson(entry.value);
+        final value = EmailNotificationsUpdate.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -121,14 +121,14 @@ class UserPreferencesUpdateDto {
     return map;
   }
 
-  // maps a json object with a list of UserPreferencesUpdateDto-objects as value to a dart map
-  static Map<String, List<UserPreferencesUpdateDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<UserPreferencesUpdateDto>>{};
+  // maps a json object with a list of EmailNotificationsUpdate-objects as value to a dart map
+  static Map<String, List<EmailNotificationsUpdate>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<EmailNotificationsUpdate>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = UserPreferencesUpdateDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = EmailNotificationsUpdate.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
