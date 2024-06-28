@@ -11,8 +11,8 @@
 part of openapi.api;
 
 
-class ServerInfoApi {
-  ServerInfoApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class DeprecatedApi {
+  DeprecatedApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
