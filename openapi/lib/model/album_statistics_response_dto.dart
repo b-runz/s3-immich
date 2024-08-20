@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class AlbumCountResponseDto {
-  /// Returns a new [AlbumCountResponseDto] instance.
-  AlbumCountResponseDto({
+class AlbumStatisticsResponseDto {
+  /// Returns a new [AlbumStatisticsResponseDto] instance.
+  AlbumStatisticsResponseDto({
     required this.notShared,
     required this.owned,
     required this.shared,
@@ -25,7 +25,7 @@ class AlbumCountResponseDto {
   int shared;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AlbumCountResponseDto &&
+  bool operator ==(Object other) => identical(this, other) || other is AlbumStatisticsResponseDto &&
     other.notShared == notShared &&
     other.owned == owned &&
     other.shared == shared;
@@ -38,7 +38,7 @@ class AlbumCountResponseDto {
     (shared.hashCode);
 
   @override
-  String toString() => 'AlbumCountResponseDto[notShared=$notShared, owned=$owned, shared=$shared]';
+  String toString() => 'AlbumStatisticsResponseDto[notShared=$notShared, owned=$owned, shared=$shared]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -48,14 +48,14 @@ class AlbumCountResponseDto {
     return json;
   }
 
-  /// Returns a new [AlbumCountResponseDto] instance and imports its values from
+  /// Returns a new [AlbumStatisticsResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static AlbumCountResponseDto? fromJson(dynamic value) {
+  static AlbumStatisticsResponseDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return AlbumCountResponseDto(
+      return AlbumStatisticsResponseDto(
         notShared: mapValueOfType<int>(json, r'notShared')!,
         owned: mapValueOfType<int>(json, r'owned')!,
         shared: mapValueOfType<int>(json, r'shared')!,
@@ -64,11 +64,11 @@ class AlbumCountResponseDto {
     return null;
   }
 
-  static List<AlbumCountResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <AlbumCountResponseDto>[];
+  static List<AlbumStatisticsResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <AlbumStatisticsResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = AlbumCountResponseDto.fromJson(row);
+        final value = AlbumStatisticsResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -77,12 +77,12 @@ class AlbumCountResponseDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, AlbumCountResponseDto> mapFromJson(dynamic json) {
-    final map = <String, AlbumCountResponseDto>{};
+  static Map<String, AlbumStatisticsResponseDto> mapFromJson(dynamic json) {
+    final map = <String, AlbumStatisticsResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = AlbumCountResponseDto.fromJson(entry.value);
+        final value = AlbumStatisticsResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -91,14 +91,14 @@ class AlbumCountResponseDto {
     return map;
   }
 
-  // maps a json object with a list of AlbumCountResponseDto-objects as value to a dart map
-  static Map<String, List<AlbumCountResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<AlbumCountResponseDto>>{};
+  // maps a json object with a list of AlbumStatisticsResponseDto-objects as value to a dart map
+  static Map<String, List<AlbumStatisticsResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<AlbumStatisticsResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = AlbumCountResponseDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = AlbumStatisticsResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
