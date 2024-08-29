@@ -10,51 +10,58 @@
 
 part of openapi.api;
 
-class RatingResponse {
-  /// Returns a new [RatingResponse] instance.
-  RatingResponse({
-    this.enabled = false,
+class TagsResponse {
+  /// Returns a new [TagsResponse] instance.
+  TagsResponse({
+    this.enabled = true,
+    this.sidebarWeb = true,
   });
 
   bool enabled;
 
+  bool sidebarWeb;
+
   @override
-  bool operator ==(Object other) => identical(this, other) || other is RatingResponse &&
-    other.enabled == enabled;
+  bool operator ==(Object other) => identical(this, other) || other is TagsResponse &&
+    other.enabled == enabled &&
+    other.sidebarWeb == sidebarWeb;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (enabled.hashCode);
+    (enabled.hashCode) +
+    (sidebarWeb.hashCode);
 
   @override
-  String toString() => 'RatingResponse[enabled=$enabled]';
+  String toString() => 'TagsResponse[enabled=$enabled, sidebarWeb=$sidebarWeb]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'enabled'] = this.enabled;
+      json[r'sidebarWeb'] = this.sidebarWeb;
     return json;
   }
 
-  /// Returns a new [RatingResponse] instance and imports its values from
+  /// Returns a new [TagsResponse] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static RatingResponse? fromJson(dynamic value) {
+  static TagsResponse? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return RatingResponse(
+      return TagsResponse(
         enabled: mapValueOfType<bool>(json, r'enabled')!,
+        sidebarWeb: mapValueOfType<bool>(json, r'sidebarWeb')!,
       );
     }
     return null;
   }
 
-  static List<RatingResponse> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <RatingResponse>[];
+  static List<TagsResponse> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <TagsResponse>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = RatingResponse.fromJson(row);
+        final value = TagsResponse.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -63,12 +70,12 @@ class RatingResponse {
     return result.toList(growable: growable);
   }
 
-  static Map<String, RatingResponse> mapFromJson(dynamic json) {
-    final map = <String, RatingResponse>{};
+  static Map<String, TagsResponse> mapFromJson(dynamic json) {
+    final map = <String, TagsResponse>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = RatingResponse.fromJson(entry.value);
+        final value = TagsResponse.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -77,14 +84,14 @@ class RatingResponse {
     return map;
   }
 
-  // maps a json object with a list of RatingResponse-objects as value to a dart map
-  static Map<String, List<RatingResponse>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<RatingResponse>>{};
+  // maps a json object with a list of TagsResponse-objects as value to a dart map
+  static Map<String, List<TagsResponse>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<TagsResponse>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = RatingResponse.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = TagsResponse.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -93,6 +100,7 @@ class RatingResponse {
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'enabled',
+    'sidebarWeb',
   };
 }
 

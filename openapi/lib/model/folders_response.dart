@@ -10,51 +10,58 @@
 
 part of openapi.api;
 
-class MemoryResponse {
-  /// Returns a new [MemoryResponse] instance.
-  MemoryResponse({
-    required this.enabled,
+class FoldersResponse {
+  /// Returns a new [FoldersResponse] instance.
+  FoldersResponse({
+    this.enabled = false,
+    this.sidebarWeb = false,
   });
 
   bool enabled;
 
+  bool sidebarWeb;
+
   @override
-  bool operator ==(Object other) => identical(this, other) || other is MemoryResponse &&
-    other.enabled == enabled;
+  bool operator ==(Object other) => identical(this, other) || other is FoldersResponse &&
+    other.enabled == enabled &&
+    other.sidebarWeb == sidebarWeb;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (enabled.hashCode);
+    (enabled.hashCode) +
+    (sidebarWeb.hashCode);
 
   @override
-  String toString() => 'MemoryResponse[enabled=$enabled]';
+  String toString() => 'FoldersResponse[enabled=$enabled, sidebarWeb=$sidebarWeb]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'enabled'] = this.enabled;
+      json[r'sidebarWeb'] = this.sidebarWeb;
     return json;
   }
 
-  /// Returns a new [MemoryResponse] instance and imports its values from
+  /// Returns a new [FoldersResponse] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static MemoryResponse? fromJson(dynamic value) {
+  static FoldersResponse? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return MemoryResponse(
+      return FoldersResponse(
         enabled: mapValueOfType<bool>(json, r'enabled')!,
+        sidebarWeb: mapValueOfType<bool>(json, r'sidebarWeb')!,
       );
     }
     return null;
   }
 
-  static List<MemoryResponse> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <MemoryResponse>[];
+  static List<FoldersResponse> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <FoldersResponse>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = MemoryResponse.fromJson(row);
+        final value = FoldersResponse.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -63,12 +70,12 @@ class MemoryResponse {
     return result.toList(growable: growable);
   }
 
-  static Map<String, MemoryResponse> mapFromJson(dynamic json) {
-    final map = <String, MemoryResponse>{};
+  static Map<String, FoldersResponse> mapFromJson(dynamic json) {
+    final map = <String, FoldersResponse>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = MemoryResponse.fromJson(entry.value);
+        final value = FoldersResponse.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -77,14 +84,14 @@ class MemoryResponse {
     return map;
   }
 
-  // maps a json object with a list of MemoryResponse-objects as value to a dart map
-  static Map<String, List<MemoryResponse>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<MemoryResponse>>{};
+  // maps a json object with a list of FoldersResponse-objects as value to a dart map
+  static Map<String, List<FoldersResponse>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<FoldersResponse>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = MemoryResponse.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = FoldersResponse.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -93,6 +100,7 @@ class MemoryResponse {
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'enabled',
+    'sidebarWeb',
   };
 }
 
