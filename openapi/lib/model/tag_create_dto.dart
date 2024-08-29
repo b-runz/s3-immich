@@ -10,10 +10,12 @@
 
 part of openapi.api;
 
-class UpdateTagDto {
-  /// Returns a new [UpdateTagDto] instance.
-  UpdateTagDto({
-    this.name,
+class TagCreateDto {
+  /// Returns a new [TagCreateDto] instance.
+  TagCreateDto({
+    this.color,
+    required this.name,
+    this.parentId,
   });
 
   ///
@@ -22,49 +24,65 @@ class UpdateTagDto {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  String? name;
+  String? color;
+
+  String name;
+
+  String? parentId;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is UpdateTagDto &&
-    other.name == name;
+  bool operator ==(Object other) => identical(this, other) || other is TagCreateDto &&
+    other.color == color &&
+    other.name == name &&
+    other.parentId == parentId;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (name == null ? 0 : name!.hashCode);
+    (color == null ? 0 : color!.hashCode) +
+    (name.hashCode) +
+    (parentId == null ? 0 : parentId!.hashCode);
 
   @override
-  String toString() => 'UpdateTagDto[name=$name]';
+  String toString() => 'TagCreateDto[color=$color, name=$name, parentId=$parentId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (this.name != null) {
-      json[r'name'] = this.name;
+    if (this.color != null) {
+      json[r'color'] = this.color;
     } else {
-    //  json[r'name'] = null;
+    //  json[r'color'] = null;
+    }
+      json[r'name'] = this.name;
+    if (this.parentId != null) {
+      json[r'parentId'] = this.parentId;
+    } else {
+    //  json[r'parentId'] = null;
     }
     return json;
   }
 
-  /// Returns a new [UpdateTagDto] instance and imports its values from
+  /// Returns a new [TagCreateDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static UpdateTagDto? fromJson(dynamic value) {
+  static TagCreateDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return UpdateTagDto(
-        name: mapValueOfType<String>(json, r'name'),
+      return TagCreateDto(
+        color: mapValueOfType<String>(json, r'color'),
+        name: mapValueOfType<String>(json, r'name')!,
+        parentId: mapValueOfType<String>(json, r'parentId'),
       );
     }
     return null;
   }
 
-  static List<UpdateTagDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <UpdateTagDto>[];
+  static List<TagCreateDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <TagCreateDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = UpdateTagDto.fromJson(row);
+        final value = TagCreateDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -73,12 +91,12 @@ class UpdateTagDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, UpdateTagDto> mapFromJson(dynamic json) {
-    final map = <String, UpdateTagDto>{};
+  static Map<String, TagCreateDto> mapFromJson(dynamic json) {
+    final map = <String, TagCreateDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = UpdateTagDto.fromJson(entry.value);
+        final value = TagCreateDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -87,14 +105,14 @@ class UpdateTagDto {
     return map;
   }
 
-  // maps a json object with a list of UpdateTagDto-objects as value to a dart map
-  static Map<String, List<UpdateTagDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<UpdateTagDto>>{};
+  // maps a json object with a list of TagCreateDto-objects as value to a dart map
+  static Map<String, List<TagCreateDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<TagCreateDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = UpdateTagDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = TagCreateDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -102,6 +120,7 @@ class UpdateTagDto {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
+    'name',
   };
 }
 

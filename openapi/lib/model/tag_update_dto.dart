@@ -10,58 +10,55 @@
 
 part of openapi.api;
 
-class CreateTagDto {
-  /// Returns a new [CreateTagDto] instance.
-  CreateTagDto({
-    required this.name,
-    required this.type,
+class TagUpdateDto {
+  /// Returns a new [TagUpdateDto] instance.
+  TagUpdateDto({
+    this.color,
   });
 
-  String name;
-
-  TagTypeEnum type;
+  String? color;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is CreateTagDto &&
-    other.name == name &&
-    other.type == type;
+  bool operator ==(Object other) => identical(this, other) || other is TagUpdateDto &&
+    other.color == color;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (name.hashCode) +
-    (type.hashCode);
+    (color == null ? 0 : color!.hashCode);
 
   @override
-  String toString() => 'CreateTagDto[name=$name, type=$type]';
+  String toString() => 'TagUpdateDto[color=$color]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'name'] = this.name;
-      json[r'type'] = this.type;
+    if (this.color != null) {
+      json[r'color'] = this.color;
+    } else {
+    //  json[r'color'] = null;
+    }
     return json;
   }
 
-  /// Returns a new [CreateTagDto] instance and imports its values from
+  /// Returns a new [TagUpdateDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static CreateTagDto? fromJson(dynamic value) {
+  static TagUpdateDto? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return CreateTagDto(
-        name: mapValueOfType<String>(json, r'name')!,
-        type: TagTypeEnum.fromJson(json[r'type'])!,
+      return TagUpdateDto(
+        color: mapValueOfType<String>(json, r'color'),
       );
     }
     return null;
   }
 
-  static List<CreateTagDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <CreateTagDto>[];
+  static List<TagUpdateDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <TagUpdateDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = CreateTagDto.fromJson(row);
+        final value = TagUpdateDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -70,12 +67,12 @@ class CreateTagDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, CreateTagDto> mapFromJson(dynamic json) {
-    final map = <String, CreateTagDto>{};
+  static Map<String, TagUpdateDto> mapFromJson(dynamic json) {
+    final map = <String, TagUpdateDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = CreateTagDto.fromJson(entry.value);
+        final value = TagUpdateDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -84,14 +81,14 @@ class CreateTagDto {
     return map;
   }
 
-  // maps a json object with a list of CreateTagDto-objects as value to a dart map
-  static Map<String, List<CreateTagDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<CreateTagDto>>{};
+  // maps a json object with a list of TagUpdateDto-objects as value to a dart map
+  static Map<String, List<TagUpdateDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<TagUpdateDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = CreateTagDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = TagUpdateDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -99,8 +96,6 @@ class CreateTagDto {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'name',
-    'type',
   };
 }
 
