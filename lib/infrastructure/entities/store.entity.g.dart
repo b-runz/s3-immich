@@ -105,9 +105,7 @@ List<IsarLinkBase<dynamic>> _storeValueGetLinks(StoreValue object) {
   return [];
 }
 
-void _storeValueAttach(IsarCollection<dynamic> col, Id id, StoreValue object) {
-  object.id = id;
-}
+void _storeValueAttach(IsarCollection<dynamic> col, Id id, StoreValue object) {}
 
 extension StoreValueQueryWhereSort
     on QueryBuilder<StoreValue, StoreValue, QWhere> {
