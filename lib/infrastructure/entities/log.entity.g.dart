@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'logger_message.entity.dart';
+part of 'log.entity.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
