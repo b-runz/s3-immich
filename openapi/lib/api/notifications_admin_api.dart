@@ -11,20 +11,20 @@
 part of openapi.api;
 
 
-class NotificationsApi {
-  NotificationsApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class NotificationsAdminApi {
+  NotificationsAdminApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// Performs an HTTP 'POST /notifications/templates/{name}' operation and returns the [Response].
+  /// Performs an HTTP 'POST /notifications/admin/templates/{name}' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [String] name (required):
   ///
   /// * [TemplateDto] templateDto (required):
-  Future<Response> getNotificationTemplateWithHttpInfo(String name, TemplateDto templateDto,) async {
+  Future<Response> getNotificationTemplateAdminWithHttpInfo(String name, TemplateDto templateDto,) async {
     // ignore: prefer_const_declarations
-    final apiPath = r'/notifications/templates/{name}'
+    final apiPath = r'/notifications/admin/templates/{name}'
       .replaceAll('{name}', name);
 
     // ignore: prefer_final_locals
@@ -53,8 +53,8 @@ class NotificationsApi {
   /// * [String] name (required):
   ///
   /// * [TemplateDto] templateDto (required):
-  Future<TemplateResponseDto?> getNotificationTemplate(String name, TemplateDto templateDto,) async {
-    final response = await getNotificationTemplateWithHttpInfo(name, templateDto,);
+  Future<TemplateResponseDto?> getNotificationTemplateAdmin(String name, TemplateDto templateDto,) async {
+    final response = await getNotificationTemplateAdminWithHttpInfo(name, templateDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -68,13 +68,13 @@ class NotificationsApi {
     return null;
   }
 
-  /// Performs an HTTP 'POST /notifications/test-email' operation and returns the [Response].
+  /// Performs an HTTP 'POST /notifications/admin/test-email' operation and returns the [Response].
   /// Parameters:
   ///
   /// * [SystemConfigSmtpDto] systemConfigSmtpDto (required):
-  Future<Response> sendTestEmailWithHttpInfo(SystemConfigSmtpDto systemConfigSmtpDto,) async {
+  Future<Response> sendTestEmailAdminWithHttpInfo(SystemConfigSmtpDto systemConfigSmtpDto,) async {
     // ignore: prefer_const_declarations
-    final apiPath = r'/notifications/test-email';
+    final apiPath = r'/notifications/admin/test-email';
 
     // ignore: prefer_final_locals
     Object? postBody = systemConfigSmtpDto;
@@ -100,8 +100,8 @@ class NotificationsApi {
   /// Parameters:
   ///
   /// * [SystemConfigSmtpDto] systemConfigSmtpDto (required):
-  Future<TestEmailResponseDto?> sendTestEmail(SystemConfigSmtpDto systemConfigSmtpDto,) async {
-    final response = await sendTestEmailWithHttpInfo(systemConfigSmtpDto,);
+  Future<TestEmailResponseDto?> sendTestEmailAdmin(SystemConfigSmtpDto systemConfigSmtpDto,) async {
+    final response = await sendTestEmailAdminWithHttpInfo(systemConfigSmtpDto,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
