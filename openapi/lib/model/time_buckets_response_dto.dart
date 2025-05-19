@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class TimeBucketResponseDto {
-  /// Returns a new [TimeBucketResponseDto] instance.
-  TimeBucketResponseDto({
+class TimeBucketsResponseDto {
+  /// Returns a new [TimeBucketsResponseDto] instance.
+  TimeBucketsResponseDto({
     required this.count,
     required this.timeBucket,
   });
@@ -22,7 +22,7 @@ class TimeBucketResponseDto {
   String timeBucket;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is TimeBucketResponseDto &&
+  bool operator ==(Object other) => identical(this, other) || other is TimeBucketsResponseDto &&
     other.count == count &&
     other.timeBucket == timeBucket;
 
@@ -33,7 +33,7 @@ class TimeBucketResponseDto {
     (timeBucket.hashCode);
 
   @override
-  String toString() => 'TimeBucketResponseDto[count=$count, timeBucket=$timeBucket]';
+  String toString() => 'TimeBucketsResponseDto[count=$count, timeBucket=$timeBucket]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -42,15 +42,15 @@ class TimeBucketResponseDto {
     return json;
   }
 
-  /// Returns a new [TimeBucketResponseDto] instance and imports its values from
+  /// Returns a new [TimeBucketsResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static TimeBucketResponseDto? fromJson(dynamic value) {
-    upgradeDto(value, "TimeBucketResponseDto");
+  static TimeBucketsResponseDto? fromJson(dynamic value) {
+    upgradeDto(value, "TimeBucketsResponseDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return TimeBucketResponseDto(
+      return TimeBucketsResponseDto(
         count: mapValueOfType<int>(json, r'count')!,
         timeBucket: mapValueOfType<String>(json, r'timeBucket')!,
       );
@@ -58,11 +58,11 @@ class TimeBucketResponseDto {
     return null;
   }
 
-  static List<TimeBucketResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <TimeBucketResponseDto>[];
+  static List<TimeBucketsResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <TimeBucketsResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = TimeBucketResponseDto.fromJson(row);
+        final value = TimeBucketsResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -71,12 +71,12 @@ class TimeBucketResponseDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, TimeBucketResponseDto> mapFromJson(dynamic json) {
-    final map = <String, TimeBucketResponseDto>{};
+  static Map<String, TimeBucketsResponseDto> mapFromJson(dynamic json) {
+    final map = <String, TimeBucketsResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = TimeBucketResponseDto.fromJson(entry.value);
+        final value = TimeBucketsResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -85,14 +85,14 @@ class TimeBucketResponseDto {
     return map;
   }
 
-  // maps a json object with a list of TimeBucketResponseDto-objects as value to a dart map
-  static Map<String, List<TimeBucketResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<TimeBucketResponseDto>>{};
+  // maps a json object with a list of TimeBucketsResponseDto-objects as value to a dart map
+  static Map<String, List<TimeBucketsResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<TimeBucketsResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = TimeBucketResponseDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = TimeBucketsResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
