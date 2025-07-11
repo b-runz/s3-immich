@@ -10,11 +10,10 @@
 
 part of openapi.api;
 
-class SyncStreamDto {
-  /// Returns a new [SyncStreamDto] instance.
-  SyncStreamDto({
-    this.reset,
-    this.types = const [],
+class SessionUpdateDto {
+  /// Returns a new [SessionUpdateDto] instance.
+  SessionUpdateDto({
+    this.isPendingSyncReset,
   });
 
   ///
@@ -23,56 +22,50 @@ class SyncStreamDto {
   /// source code must fall back to having a nullable type.
   /// Consider adding a "default:" property in the specification file to hide this note.
   ///
-  bool? reset;
-
-  List<SyncRequestType> types;
+  bool? isPendingSyncReset;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SyncStreamDto &&
-    other.reset == reset &&
-    _deepEquality.equals(other.types, types);
+  bool operator ==(Object other) => identical(this, other) || other is SessionUpdateDto &&
+    other.isPendingSyncReset == isPendingSyncReset;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (reset == null ? 0 : reset!.hashCode) +
-    (types.hashCode);
+    (isPendingSyncReset == null ? 0 : isPendingSyncReset!.hashCode);
 
   @override
-  String toString() => 'SyncStreamDto[reset=$reset, types=$types]';
+  String toString() => 'SessionUpdateDto[isPendingSyncReset=$isPendingSyncReset]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (this.reset != null) {
-      json[r'reset'] = this.reset;
+    if (this.isPendingSyncReset != null) {
+      json[r'isPendingSyncReset'] = this.isPendingSyncReset;
     } else {
-    //  json[r'reset'] = null;
+    //  json[r'isPendingSyncReset'] = null;
     }
-      json[r'types'] = this.types;
     return json;
   }
 
-  /// Returns a new [SyncStreamDto] instance and imports its values from
+  /// Returns a new [SessionUpdateDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static SyncStreamDto? fromJson(dynamic value) {
-    upgradeDto(value, "SyncStreamDto");
+  static SessionUpdateDto? fromJson(dynamic value) {
+    upgradeDto(value, "SessionUpdateDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return SyncStreamDto(
-        reset: mapValueOfType<bool>(json, r'reset'),
-        types: SyncRequestType.listFromJson(json[r'types']),
+      return SessionUpdateDto(
+        isPendingSyncReset: mapValueOfType<bool>(json, r'isPendingSyncReset'),
       );
     }
     return null;
   }
 
-  static List<SyncStreamDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <SyncStreamDto>[];
+  static List<SessionUpdateDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <SessionUpdateDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = SyncStreamDto.fromJson(row);
+        final value = SessionUpdateDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -81,12 +74,12 @@ class SyncStreamDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, SyncStreamDto> mapFromJson(dynamic json) {
-    final map = <String, SyncStreamDto>{};
+  static Map<String, SessionUpdateDto> mapFromJson(dynamic json) {
+    final map = <String, SessionUpdateDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = SyncStreamDto.fromJson(entry.value);
+        final value = SessionUpdateDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -95,14 +88,14 @@ class SyncStreamDto {
     return map;
   }
 
-  // maps a json object with a list of SyncStreamDto-objects as value to a dart map
-  static Map<String, List<SyncStreamDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<SyncStreamDto>>{};
+  // maps a json object with a list of SessionUpdateDto-objects as value to a dart map
+  static Map<String, List<SessionUpdateDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<SessionUpdateDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = SyncStreamDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = SessionUpdateDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -110,7 +103,6 @@ class SyncStreamDto {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'types',
   };
 }
 
