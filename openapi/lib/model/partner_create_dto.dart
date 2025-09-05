@@ -10,52 +10,52 @@
 
 part of openapi.api;
 
-class UpdatePartnerDto {
-  /// Returns a new [UpdatePartnerDto] instance.
-  UpdatePartnerDto({
-    required this.inTimeline,
+class PartnerCreateDto {
+  /// Returns a new [PartnerCreateDto] instance.
+  PartnerCreateDto({
+    required this.sharedWithId,
   });
 
-  bool inTimeline;
+  String sharedWithId;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is UpdatePartnerDto &&
-    other.inTimeline == inTimeline;
+  bool operator ==(Object other) => identical(this, other) || other is PartnerCreateDto &&
+    other.sharedWithId == sharedWithId;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (inTimeline.hashCode);
+    (sharedWithId.hashCode);
 
   @override
-  String toString() => 'UpdatePartnerDto[inTimeline=$inTimeline]';
+  String toString() => 'PartnerCreateDto[sharedWithId=$sharedWithId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'inTimeline'] = this.inTimeline;
+      json[r'sharedWithId'] = this.sharedWithId;
     return json;
   }
 
-  /// Returns a new [UpdatePartnerDto] instance and imports its values from
+  /// Returns a new [PartnerCreateDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static UpdatePartnerDto? fromJson(dynamic value) {
-    upgradeDto(value, "UpdatePartnerDto");
+  static PartnerCreateDto? fromJson(dynamic value) {
+    upgradeDto(value, "PartnerCreateDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return UpdatePartnerDto(
-        inTimeline: mapValueOfType<bool>(json, r'inTimeline')!,
+      return PartnerCreateDto(
+        sharedWithId: mapValueOfType<String>(json, r'sharedWithId')!,
       );
     }
     return null;
   }
 
-  static List<UpdatePartnerDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <UpdatePartnerDto>[];
+  static List<PartnerCreateDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <PartnerCreateDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = UpdatePartnerDto.fromJson(row);
+        final value = PartnerCreateDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -64,12 +64,12 @@ class UpdatePartnerDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, UpdatePartnerDto> mapFromJson(dynamic json) {
-    final map = <String, UpdatePartnerDto>{};
+  static Map<String, PartnerCreateDto> mapFromJson(dynamic json) {
+    final map = <String, PartnerCreateDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = UpdatePartnerDto.fromJson(entry.value);
+        final value = PartnerCreateDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -78,14 +78,14 @@ class UpdatePartnerDto {
     return map;
   }
 
-  // maps a json object with a list of UpdatePartnerDto-objects as value to a dart map
-  static Map<String, List<UpdatePartnerDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<UpdatePartnerDto>>{};
+  // maps a json object with a list of PartnerCreateDto-objects as value to a dart map
+  static Map<String, List<PartnerCreateDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<PartnerCreateDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = UpdatePartnerDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = PartnerCreateDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -93,7 +93,7 @@ class UpdatePartnerDto {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'inTimeline',
+    'sharedWithId',
   };
 }
 
