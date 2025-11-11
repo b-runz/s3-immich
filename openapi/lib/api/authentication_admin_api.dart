@@ -11,12 +11,14 @@
 part of openapi.api;
 
 
-class AuthAdminApi {
-  AuthAdminApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class AuthenticationAdminApi {
+  AuthenticationAdminApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// This endpoint is an admin-only route, and requires the `adminAuth.unlinkAll` permission.
+  /// Unlink all OAuth accounts
+  ///
+  /// Unlinks all OAuth accounts associated with user accounts in the system.
   ///
   /// Note: This method returns the HTTP [Response].
   Future<Response> unlinkAllOAuthAccountsAdminWithHttpInfo() async {
@@ -44,7 +46,9 @@ class AuthAdminApi {
     );
   }
 
-  /// This endpoint is an admin-only route, and requires the `adminAuth.unlinkAll` permission.
+  /// Unlink all OAuth accounts
+  ///
+  /// Unlinks all OAuth accounts associated with user accounts in the system.
   Future<void> unlinkAllOAuthAccountsAdmin() async {
     final response = await unlinkAllOAuthAccountsAdminWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {

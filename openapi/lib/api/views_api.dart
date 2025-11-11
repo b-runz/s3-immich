@@ -11,12 +11,17 @@
 part of openapi.api;
 
 
-class ViewApi {
-  ViewApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
+class ViewsApi {
+  ViewsApi([ApiClient? apiClient]) : apiClient = apiClient ?? defaultApiClient;
 
   final ApiClient apiClient;
 
-  /// Performs an HTTP 'GET /view/folder' operation and returns the [Response].
+  /// Retrieve assets by original path
+  ///
+  /// Retrieve assets that are children of a specific folder.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
   /// Parameters:
   ///
   /// * [String] path (required):
@@ -47,6 +52,10 @@ class ViewApi {
     );
   }
 
+  /// Retrieve assets by original path
+  ///
+  /// Retrieve assets that are children of a specific folder.
+  ///
   /// Parameters:
   ///
   /// * [String] path (required):
@@ -68,7 +77,11 @@ class ViewApi {
     return null;
   }
 
-  /// Performs an HTTP 'GET /view/folder/unique-paths' operation and returns the [Response].
+  /// Retrieve unique paths
+  ///
+  /// Retrieve a list of unique folder paths from asset original paths.
+  ///
+  /// Note: This method returns the HTTP [Response].
   Future<Response> getUniqueOriginalPathsWithHttpInfo() async {
     // ignore: prefer_const_declarations
     final apiPath = r'/view/folder/unique-paths';
@@ -94,6 +107,9 @@ class ViewApi {
     );
   }
 
+  /// Retrieve unique paths
+  ///
+  /// Retrieve a list of unique folder paths from asset original paths.
   Future<List<String>?> getUniqueOriginalPaths() async {
     final response = await getUniqueOriginalPathsWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {
