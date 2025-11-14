@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class AllJobStatusResponseDto {
-  /// Returns a new [AllJobStatusResponseDto] instance.
-  AllJobStatusResponseDto({
+class QueuesResponseDto {
+  /// Returns a new [QueuesResponseDto] instance.
+  QueuesResponseDto({
     required this.backgroundTask,
     required this.backupDatabase,
     required this.duplicateDetection,
@@ -31,40 +31,40 @@ class AllJobStatusResponseDto {
     required this.videoConversion,
   });
 
-  JobStatusDto backgroundTask;
+  QueueResponseDto backgroundTask;
 
-  JobStatusDto backupDatabase;
+  QueueResponseDto backupDatabase;
 
-  JobStatusDto duplicateDetection;
+  QueueResponseDto duplicateDetection;
 
-  JobStatusDto faceDetection;
+  QueueResponseDto faceDetection;
 
-  JobStatusDto facialRecognition;
+  QueueResponseDto facialRecognition;
 
-  JobStatusDto library_;
+  QueueResponseDto library_;
 
-  JobStatusDto metadataExtraction;
+  QueueResponseDto metadataExtraction;
 
-  JobStatusDto migration;
+  QueueResponseDto migration;
 
-  JobStatusDto notifications;
+  QueueResponseDto notifications;
 
-  JobStatusDto ocr;
+  QueueResponseDto ocr;
 
-  JobStatusDto search;
+  QueueResponseDto search;
 
-  JobStatusDto sidecar;
+  QueueResponseDto sidecar;
 
-  JobStatusDto smartSearch;
+  QueueResponseDto smartSearch;
 
-  JobStatusDto storageTemplateMigration;
+  QueueResponseDto storageTemplateMigration;
 
-  JobStatusDto thumbnailGeneration;
+  QueueResponseDto thumbnailGeneration;
 
-  JobStatusDto videoConversion;
+  QueueResponseDto videoConversion;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AllJobStatusResponseDto &&
+  bool operator ==(Object other) => identical(this, other) || other is QueuesResponseDto &&
     other.backgroundTask == backgroundTask &&
     other.backupDatabase == backupDatabase &&
     other.duplicateDetection == duplicateDetection &&
@@ -103,7 +103,7 @@ class AllJobStatusResponseDto {
     (videoConversion.hashCode);
 
   @override
-  String toString() => 'AllJobStatusResponseDto[backgroundTask=$backgroundTask, backupDatabase=$backupDatabase, duplicateDetection=$duplicateDetection, faceDetection=$faceDetection, facialRecognition=$facialRecognition, library_=$library_, metadataExtraction=$metadataExtraction, migration=$migration, notifications=$notifications, ocr=$ocr, search=$search, sidecar=$sidecar, smartSearch=$smartSearch, storageTemplateMigration=$storageTemplateMigration, thumbnailGeneration=$thumbnailGeneration, videoConversion=$videoConversion]';
+  String toString() => 'QueuesResponseDto[backgroundTask=$backgroundTask, backupDatabase=$backupDatabase, duplicateDetection=$duplicateDetection, faceDetection=$faceDetection, facialRecognition=$facialRecognition, library_=$library_, metadataExtraction=$metadataExtraction, migration=$migration, notifications=$notifications, ocr=$ocr, search=$search, sidecar=$sidecar, smartSearch=$smartSearch, storageTemplateMigration=$storageTemplateMigration, thumbnailGeneration=$thumbnailGeneration, videoConversion=$videoConversion]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -126,41 +126,41 @@ class AllJobStatusResponseDto {
     return json;
   }
 
-  /// Returns a new [AllJobStatusResponseDto] instance and imports its values from
+  /// Returns a new [QueuesResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static AllJobStatusResponseDto? fromJson(dynamic value) {
-    upgradeDto(value, "AllJobStatusResponseDto");
+  static QueuesResponseDto? fromJson(dynamic value) {
+    upgradeDto(value, "QueuesResponseDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return AllJobStatusResponseDto(
-        backgroundTask: JobStatusDto.fromJson(json[r'backgroundTask'])!,
-        backupDatabase: JobStatusDto.fromJson(json[r'backupDatabase'])!,
-        duplicateDetection: JobStatusDto.fromJson(json[r'duplicateDetection'])!,
-        faceDetection: JobStatusDto.fromJson(json[r'faceDetection'])!,
-        facialRecognition: JobStatusDto.fromJson(json[r'facialRecognition'])!,
-        library_: JobStatusDto.fromJson(json[r'library'])!,
-        metadataExtraction: JobStatusDto.fromJson(json[r'metadataExtraction'])!,
-        migration: JobStatusDto.fromJson(json[r'migration'])!,
-        notifications: JobStatusDto.fromJson(json[r'notifications'])!,
-        ocr: JobStatusDto.fromJson(json[r'ocr'])!,
-        search: JobStatusDto.fromJson(json[r'search'])!,
-        sidecar: JobStatusDto.fromJson(json[r'sidecar'])!,
-        smartSearch: JobStatusDto.fromJson(json[r'smartSearch'])!,
-        storageTemplateMigration: JobStatusDto.fromJson(json[r'storageTemplateMigration'])!,
-        thumbnailGeneration: JobStatusDto.fromJson(json[r'thumbnailGeneration'])!,
-        videoConversion: JobStatusDto.fromJson(json[r'videoConversion'])!,
+      return QueuesResponseDto(
+        backgroundTask: QueueResponseDto.fromJson(json[r'backgroundTask'])!,
+        backupDatabase: QueueResponseDto.fromJson(json[r'backupDatabase'])!,
+        duplicateDetection: QueueResponseDto.fromJson(json[r'duplicateDetection'])!,
+        faceDetection: QueueResponseDto.fromJson(json[r'faceDetection'])!,
+        facialRecognition: QueueResponseDto.fromJson(json[r'facialRecognition'])!,
+        library_: QueueResponseDto.fromJson(json[r'library'])!,
+        metadataExtraction: QueueResponseDto.fromJson(json[r'metadataExtraction'])!,
+        migration: QueueResponseDto.fromJson(json[r'migration'])!,
+        notifications: QueueResponseDto.fromJson(json[r'notifications'])!,
+        ocr: QueueResponseDto.fromJson(json[r'ocr'])!,
+        search: QueueResponseDto.fromJson(json[r'search'])!,
+        sidecar: QueueResponseDto.fromJson(json[r'sidecar'])!,
+        smartSearch: QueueResponseDto.fromJson(json[r'smartSearch'])!,
+        storageTemplateMigration: QueueResponseDto.fromJson(json[r'storageTemplateMigration'])!,
+        thumbnailGeneration: QueueResponseDto.fromJson(json[r'thumbnailGeneration'])!,
+        videoConversion: QueueResponseDto.fromJson(json[r'videoConversion'])!,
       );
     }
     return null;
   }
 
-  static List<AllJobStatusResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <AllJobStatusResponseDto>[];
+  static List<QueuesResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <QueuesResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = AllJobStatusResponseDto.fromJson(row);
+        final value = QueuesResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -169,12 +169,12 @@ class AllJobStatusResponseDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, AllJobStatusResponseDto> mapFromJson(dynamic json) {
-    final map = <String, AllJobStatusResponseDto>{};
+  static Map<String, QueuesResponseDto> mapFromJson(dynamic json) {
+    final map = <String, QueuesResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = AllJobStatusResponseDto.fromJson(entry.value);
+        final value = QueuesResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -183,14 +183,14 @@ class AllJobStatusResponseDto {
     return map;
   }
 
-  // maps a json object with a list of AllJobStatusResponseDto-objects as value to a dart map
-  static Map<String, List<AllJobStatusResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<AllJobStatusResponseDto>>{};
+  // maps a json object with a list of QueuesResponseDto-objects as value to a dart map
+  static Map<String, List<QueuesResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<QueuesResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = AllJobStatusResponseDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = QueuesResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;

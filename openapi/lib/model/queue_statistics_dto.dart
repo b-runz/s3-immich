@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class JobCountsDto {
-  /// Returns a new [JobCountsDto] instance.
-  JobCountsDto({
+class QueueStatisticsDto {
+  /// Returns a new [QueueStatisticsDto] instance.
+  QueueStatisticsDto({
     required this.active,
     required this.completed,
     required this.delayed,
@@ -34,7 +34,7 @@ class JobCountsDto {
   int waiting;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is JobCountsDto &&
+  bool operator ==(Object other) => identical(this, other) || other is QueueStatisticsDto &&
     other.active == active &&
     other.completed == completed &&
     other.delayed == delayed &&
@@ -53,7 +53,7 @@ class JobCountsDto {
     (waiting.hashCode);
 
   @override
-  String toString() => 'JobCountsDto[active=$active, completed=$completed, delayed=$delayed, failed=$failed, paused=$paused, waiting=$waiting]';
+  String toString() => 'QueueStatisticsDto[active=$active, completed=$completed, delayed=$delayed, failed=$failed, paused=$paused, waiting=$waiting]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -66,15 +66,15 @@ class JobCountsDto {
     return json;
   }
 
-  /// Returns a new [JobCountsDto] instance and imports its values from
+  /// Returns a new [QueueStatisticsDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static JobCountsDto? fromJson(dynamic value) {
-    upgradeDto(value, "JobCountsDto");
+  static QueueStatisticsDto? fromJson(dynamic value) {
+    upgradeDto(value, "QueueStatisticsDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return JobCountsDto(
+      return QueueStatisticsDto(
         active: mapValueOfType<int>(json, r'active')!,
         completed: mapValueOfType<int>(json, r'completed')!,
         delayed: mapValueOfType<int>(json, r'delayed')!,
@@ -86,11 +86,11 @@ class JobCountsDto {
     return null;
   }
 
-  static List<JobCountsDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <JobCountsDto>[];
+  static List<QueueStatisticsDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <QueueStatisticsDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = JobCountsDto.fromJson(row);
+        final value = QueueStatisticsDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -99,12 +99,12 @@ class JobCountsDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, JobCountsDto> mapFromJson(dynamic json) {
-    final map = <String, JobCountsDto>{};
+  static Map<String, QueueStatisticsDto> mapFromJson(dynamic json) {
+    final map = <String, QueueStatisticsDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = JobCountsDto.fromJson(entry.value);
+        final value = QueueStatisticsDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -113,14 +113,14 @@ class JobCountsDto {
     return map;
   }
 
-  // maps a json object with a list of JobCountsDto-objects as value to a dart map
-  static Map<String, List<JobCountsDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<JobCountsDto>>{};
+  // maps a json object with a list of QueueStatisticsDto-objects as value to a dart map
+  static Map<String, List<QueueStatisticsDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<QueueStatisticsDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = JobCountsDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = QueueStatisticsDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;

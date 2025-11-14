@@ -10,19 +10,19 @@
 
 part of openapi.api;
 
-class JobStatusDto {
-  /// Returns a new [JobStatusDto] instance.
-  JobStatusDto({
+class QueueResponseDto {
+  /// Returns a new [QueueResponseDto] instance.
+  QueueResponseDto({
     required this.jobCounts,
     required this.queueStatus,
   });
 
-  JobCountsDto jobCounts;
+  QueueStatisticsDto jobCounts;
 
   QueueStatusDto queueStatus;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is JobStatusDto &&
+  bool operator ==(Object other) => identical(this, other) || other is QueueResponseDto &&
     other.jobCounts == jobCounts &&
     other.queueStatus == queueStatus;
 
@@ -33,7 +33,7 @@ class JobStatusDto {
     (queueStatus.hashCode);
 
   @override
-  String toString() => 'JobStatusDto[jobCounts=$jobCounts, queueStatus=$queueStatus]';
+  String toString() => 'QueueResponseDto[jobCounts=$jobCounts, queueStatus=$queueStatus]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -42,27 +42,27 @@ class JobStatusDto {
     return json;
   }
 
-  /// Returns a new [JobStatusDto] instance and imports its values from
+  /// Returns a new [QueueResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static JobStatusDto? fromJson(dynamic value) {
-    upgradeDto(value, "JobStatusDto");
+  static QueueResponseDto? fromJson(dynamic value) {
+    upgradeDto(value, "QueueResponseDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return JobStatusDto(
-        jobCounts: JobCountsDto.fromJson(json[r'jobCounts'])!,
+      return QueueResponseDto(
+        jobCounts: QueueStatisticsDto.fromJson(json[r'jobCounts'])!,
         queueStatus: QueueStatusDto.fromJson(json[r'queueStatus'])!,
       );
     }
     return null;
   }
 
-  static List<JobStatusDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <JobStatusDto>[];
+  static List<QueueResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <QueueResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = JobStatusDto.fromJson(row);
+        final value = QueueResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -71,12 +71,12 @@ class JobStatusDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, JobStatusDto> mapFromJson(dynamic json) {
-    final map = <String, JobStatusDto>{};
+  static Map<String, QueueResponseDto> mapFromJson(dynamic json) {
+    final map = <String, QueueResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = JobStatusDto.fromJson(entry.value);
+        final value = QueueResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -85,14 +85,14 @@ class JobStatusDto {
     return map;
   }
 
-  // maps a json object with a list of JobStatusDto-objects as value to a dart map
-  static Map<String, List<JobStatusDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<JobStatusDto>>{};
+  // maps a json object with a list of QueueResponseDto-objects as value to a dart map
+  static Map<String, List<QueueResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<QueueResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = JobStatusDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = QueueResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
