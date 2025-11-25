@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class QueuesResponseDto {
-  /// Returns a new [QueuesResponseDto] instance.
-  QueuesResponseDto({
+class QueuesResponseLegacyDto {
+  /// Returns a new [QueuesResponseLegacyDto] instance.
+  QueuesResponseLegacyDto({
     required this.backgroundTask,
     required this.backupDatabase,
     required this.duplicateDetection,
@@ -32,42 +32,42 @@ class QueuesResponseDto {
     required this.workflow,
   });
 
-  QueueResponseDto backgroundTask;
+  QueueResponseLegacyDto backgroundTask;
 
-  QueueResponseDto backupDatabase;
+  QueueResponseLegacyDto backupDatabase;
 
-  QueueResponseDto duplicateDetection;
+  QueueResponseLegacyDto duplicateDetection;
 
-  QueueResponseDto faceDetection;
+  QueueResponseLegacyDto faceDetection;
 
-  QueueResponseDto facialRecognition;
+  QueueResponseLegacyDto facialRecognition;
 
-  QueueResponseDto library_;
+  QueueResponseLegacyDto library_;
 
-  QueueResponseDto metadataExtraction;
+  QueueResponseLegacyDto metadataExtraction;
 
-  QueueResponseDto migration;
+  QueueResponseLegacyDto migration;
 
-  QueueResponseDto notifications;
+  QueueResponseLegacyDto notifications;
 
-  QueueResponseDto ocr;
+  QueueResponseLegacyDto ocr;
 
-  QueueResponseDto search;
+  QueueResponseLegacyDto search;
 
-  QueueResponseDto sidecar;
+  QueueResponseLegacyDto sidecar;
 
-  QueueResponseDto smartSearch;
+  QueueResponseLegacyDto smartSearch;
 
-  QueueResponseDto storageTemplateMigration;
+  QueueResponseLegacyDto storageTemplateMigration;
 
-  QueueResponseDto thumbnailGeneration;
+  QueueResponseLegacyDto thumbnailGeneration;
 
-  QueueResponseDto videoConversion;
+  QueueResponseLegacyDto videoConversion;
 
-  QueueResponseDto workflow;
+  QueueResponseLegacyDto workflow;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is QueuesResponseDto &&
+  bool operator ==(Object other) => identical(this, other) || other is QueuesResponseLegacyDto &&
     other.backgroundTask == backgroundTask &&
     other.backupDatabase == backupDatabase &&
     other.duplicateDetection == duplicateDetection &&
@@ -108,7 +108,7 @@ class QueuesResponseDto {
     (workflow.hashCode);
 
   @override
-  String toString() => 'QueuesResponseDto[backgroundTask=$backgroundTask, backupDatabase=$backupDatabase, duplicateDetection=$duplicateDetection, faceDetection=$faceDetection, facialRecognition=$facialRecognition, library_=$library_, metadataExtraction=$metadataExtraction, migration=$migration, notifications=$notifications, ocr=$ocr, search=$search, sidecar=$sidecar, smartSearch=$smartSearch, storageTemplateMigration=$storageTemplateMigration, thumbnailGeneration=$thumbnailGeneration, videoConversion=$videoConversion, workflow=$workflow]';
+  String toString() => 'QueuesResponseLegacyDto[backgroundTask=$backgroundTask, backupDatabase=$backupDatabase, duplicateDetection=$duplicateDetection, faceDetection=$faceDetection, facialRecognition=$facialRecognition, library_=$library_, metadataExtraction=$metadataExtraction, migration=$migration, notifications=$notifications, ocr=$ocr, search=$search, sidecar=$sidecar, smartSearch=$smartSearch, storageTemplateMigration=$storageTemplateMigration, thumbnailGeneration=$thumbnailGeneration, videoConversion=$videoConversion, workflow=$workflow]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -132,42 +132,42 @@ class QueuesResponseDto {
     return json;
   }
 
-  /// Returns a new [QueuesResponseDto] instance and imports its values from
+  /// Returns a new [QueuesResponseLegacyDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static QueuesResponseDto? fromJson(dynamic value) {
-    upgradeDto(value, "QueuesResponseDto");
+  static QueuesResponseLegacyDto? fromJson(dynamic value) {
+    upgradeDto(value, "QueuesResponseLegacyDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return QueuesResponseDto(
-        backgroundTask: QueueResponseDto.fromJson(json[r'backgroundTask'])!,
-        backupDatabase: QueueResponseDto.fromJson(json[r'backupDatabase'])!,
-        duplicateDetection: QueueResponseDto.fromJson(json[r'duplicateDetection'])!,
-        faceDetection: QueueResponseDto.fromJson(json[r'faceDetection'])!,
-        facialRecognition: QueueResponseDto.fromJson(json[r'facialRecognition'])!,
-        library_: QueueResponseDto.fromJson(json[r'library'])!,
-        metadataExtraction: QueueResponseDto.fromJson(json[r'metadataExtraction'])!,
-        migration: QueueResponseDto.fromJson(json[r'migration'])!,
-        notifications: QueueResponseDto.fromJson(json[r'notifications'])!,
-        ocr: QueueResponseDto.fromJson(json[r'ocr'])!,
-        search: QueueResponseDto.fromJson(json[r'search'])!,
-        sidecar: QueueResponseDto.fromJson(json[r'sidecar'])!,
-        smartSearch: QueueResponseDto.fromJson(json[r'smartSearch'])!,
-        storageTemplateMigration: QueueResponseDto.fromJson(json[r'storageTemplateMigration'])!,
-        thumbnailGeneration: QueueResponseDto.fromJson(json[r'thumbnailGeneration'])!,
-        videoConversion: QueueResponseDto.fromJson(json[r'videoConversion'])!,
-        workflow: QueueResponseDto.fromJson(json[r'workflow'])!,
+      return QueuesResponseLegacyDto(
+        backgroundTask: QueueResponseLegacyDto.fromJson(json[r'backgroundTask'])!,
+        backupDatabase: QueueResponseLegacyDto.fromJson(json[r'backupDatabase'])!,
+        duplicateDetection: QueueResponseLegacyDto.fromJson(json[r'duplicateDetection'])!,
+        faceDetection: QueueResponseLegacyDto.fromJson(json[r'faceDetection'])!,
+        facialRecognition: QueueResponseLegacyDto.fromJson(json[r'facialRecognition'])!,
+        library_: QueueResponseLegacyDto.fromJson(json[r'library'])!,
+        metadataExtraction: QueueResponseLegacyDto.fromJson(json[r'metadataExtraction'])!,
+        migration: QueueResponseLegacyDto.fromJson(json[r'migration'])!,
+        notifications: QueueResponseLegacyDto.fromJson(json[r'notifications'])!,
+        ocr: QueueResponseLegacyDto.fromJson(json[r'ocr'])!,
+        search: QueueResponseLegacyDto.fromJson(json[r'search'])!,
+        sidecar: QueueResponseLegacyDto.fromJson(json[r'sidecar'])!,
+        smartSearch: QueueResponseLegacyDto.fromJson(json[r'smartSearch'])!,
+        storageTemplateMigration: QueueResponseLegacyDto.fromJson(json[r'storageTemplateMigration'])!,
+        thumbnailGeneration: QueueResponseLegacyDto.fromJson(json[r'thumbnailGeneration'])!,
+        videoConversion: QueueResponseLegacyDto.fromJson(json[r'videoConversion'])!,
+        workflow: QueueResponseLegacyDto.fromJson(json[r'workflow'])!,
       );
     }
     return null;
   }
 
-  static List<QueuesResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <QueuesResponseDto>[];
+  static List<QueuesResponseLegacyDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <QueuesResponseLegacyDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = QueuesResponseDto.fromJson(row);
+        final value = QueuesResponseLegacyDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -176,12 +176,12 @@ class QueuesResponseDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, QueuesResponseDto> mapFromJson(dynamic json) {
-    final map = <String, QueuesResponseDto>{};
+  static Map<String, QueuesResponseLegacyDto> mapFromJson(dynamic json) {
+    final map = <String, QueuesResponseLegacyDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = QueuesResponseDto.fromJson(entry.value);
+        final value = QueuesResponseLegacyDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -190,14 +190,14 @@ class QueuesResponseDto {
     return map;
   }
 
-  // maps a json object with a list of QueuesResponseDto-objects as value to a dart map
-  static Map<String, List<QueuesResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<QueuesResponseDto>>{};
+  // maps a json object with a list of QueuesResponseLegacyDto-objects as value to a dart map
+  static Map<String, List<QueuesResponseLegacyDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<QueuesResponseLegacyDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = QueuesResponseDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = QueuesResponseLegacyDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;

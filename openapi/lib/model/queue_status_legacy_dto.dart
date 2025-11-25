@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class QueueStatusDto {
-  /// Returns a new [QueueStatusDto] instance.
-  QueueStatusDto({
+class QueueStatusLegacyDto {
+  /// Returns a new [QueueStatusLegacyDto] instance.
+  QueueStatusLegacyDto({
     required this.isActive,
     required this.isPaused,
   });
@@ -22,7 +22,7 @@ class QueueStatusDto {
   bool isPaused;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is QueueStatusDto &&
+  bool operator ==(Object other) => identical(this, other) || other is QueueStatusLegacyDto &&
     other.isActive == isActive &&
     other.isPaused == isPaused;
 
@@ -33,7 +33,7 @@ class QueueStatusDto {
     (isPaused.hashCode);
 
   @override
-  String toString() => 'QueueStatusDto[isActive=$isActive, isPaused=$isPaused]';
+  String toString() => 'QueueStatusLegacyDto[isActive=$isActive, isPaused=$isPaused]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -42,15 +42,15 @@ class QueueStatusDto {
     return json;
   }
 
-  /// Returns a new [QueueStatusDto] instance and imports its values from
+  /// Returns a new [QueueStatusLegacyDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static QueueStatusDto? fromJson(dynamic value) {
-    upgradeDto(value, "QueueStatusDto");
+  static QueueStatusLegacyDto? fromJson(dynamic value) {
+    upgradeDto(value, "QueueStatusLegacyDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return QueueStatusDto(
+      return QueueStatusLegacyDto(
         isActive: mapValueOfType<bool>(json, r'isActive')!,
         isPaused: mapValueOfType<bool>(json, r'isPaused')!,
       );
@@ -58,11 +58,11 @@ class QueueStatusDto {
     return null;
   }
 
-  static List<QueueStatusDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <QueueStatusDto>[];
+  static List<QueueStatusLegacyDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <QueueStatusLegacyDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = QueueStatusDto.fromJson(row);
+        final value = QueueStatusLegacyDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -71,12 +71,12 @@ class QueueStatusDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, QueueStatusDto> mapFromJson(dynamic json) {
-    final map = <String, QueueStatusDto>{};
+  static Map<String, QueueStatusLegacyDto> mapFromJson(dynamic json) {
+    final map = <String, QueueStatusLegacyDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = QueueStatusDto.fromJson(entry.value);
+        final value = QueueStatusLegacyDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -85,14 +85,14 @@ class QueueStatusDto {
     return map;
   }
 
-  // maps a json object with a list of QueueStatusDto-objects as value to a dart map
-  static Map<String, List<QueueStatusDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<QueueStatusDto>>{};
+  // maps a json object with a list of QueueStatusLegacyDto-objects as value to a dart map
+  static Map<String, List<QueueStatusLegacyDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<QueueStatusLegacyDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = QueueStatusDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = QueueStatusLegacyDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
