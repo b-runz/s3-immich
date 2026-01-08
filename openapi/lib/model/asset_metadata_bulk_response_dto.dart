@@ -10,11 +10,12 @@
 
 part of openapi.api;
 
-class SyncAssetMetadataV1 {
-  /// Returns a new [SyncAssetMetadataV1] instance.
-  SyncAssetMetadataV1({
+class AssetMetadataBulkResponseDto {
+  /// Returns a new [AssetMetadataBulkResponseDto] instance.
+  AssetMetadataBulkResponseDto({
     required this.assetId,
     required this.key,
+    required this.updatedAt,
     required this.value,
   });
 
@@ -22,12 +23,15 @@ class SyncAssetMetadataV1 {
 
   String key;
 
+  DateTime updatedAt;
+
   Object value;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SyncAssetMetadataV1 &&
+  bool operator ==(Object other) => identical(this, other) || other is AssetMetadataBulkResponseDto &&
     other.assetId == assetId &&
     other.key == key &&
+    other.updatedAt == updatedAt &&
     other.value == value;
 
   @override
@@ -35,41 +39,44 @@ class SyncAssetMetadataV1 {
     // ignore: unnecessary_parenthesis
     (assetId.hashCode) +
     (key.hashCode) +
+    (updatedAt.hashCode) +
     (value.hashCode);
 
   @override
-  String toString() => 'SyncAssetMetadataV1[assetId=$assetId, key=$key, value=$value]';
+  String toString() => 'AssetMetadataBulkResponseDto[assetId=$assetId, key=$key, updatedAt=$updatedAt, value=$value]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'assetId'] = this.assetId;
       json[r'key'] = this.key;
+      json[r'updatedAt'] = this.updatedAt.toUtc().toIso8601String();
       json[r'value'] = this.value;
     return json;
   }
 
-  /// Returns a new [SyncAssetMetadataV1] instance and imports its values from
+  /// Returns a new [AssetMetadataBulkResponseDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static SyncAssetMetadataV1? fromJson(dynamic value) {
-    upgradeDto(value, "SyncAssetMetadataV1");
+  static AssetMetadataBulkResponseDto? fromJson(dynamic value) {
+    upgradeDto(value, "AssetMetadataBulkResponseDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return SyncAssetMetadataV1(
+      return AssetMetadataBulkResponseDto(
         assetId: mapValueOfType<String>(json, r'assetId')!,
         key: mapValueOfType<String>(json, r'key')!,
+        updatedAt: mapDateTime(json, r'updatedAt', r'')!,
         value: mapValueOfType<Object>(json, r'value')!,
       );
     }
     return null;
   }
 
-  static List<SyncAssetMetadataV1> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <SyncAssetMetadataV1>[];
+  static List<AssetMetadataBulkResponseDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <AssetMetadataBulkResponseDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = SyncAssetMetadataV1.fromJson(row);
+        final value = AssetMetadataBulkResponseDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -78,12 +85,12 @@ class SyncAssetMetadataV1 {
     return result.toList(growable: growable);
   }
 
-  static Map<String, SyncAssetMetadataV1> mapFromJson(dynamic json) {
-    final map = <String, SyncAssetMetadataV1>{};
+  static Map<String, AssetMetadataBulkResponseDto> mapFromJson(dynamic json) {
+    final map = <String, AssetMetadataBulkResponseDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = SyncAssetMetadataV1.fromJson(entry.value);
+        final value = AssetMetadataBulkResponseDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -92,14 +99,14 @@ class SyncAssetMetadataV1 {
     return map;
   }
 
-  // maps a json object with a list of SyncAssetMetadataV1-objects as value to a dart map
-  static Map<String, List<SyncAssetMetadataV1>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<SyncAssetMetadataV1>>{};
+  // maps a json object with a list of AssetMetadataBulkResponseDto-objects as value to a dart map
+  static Map<String, List<AssetMetadataBulkResponseDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<AssetMetadataBulkResponseDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = SyncAssetMetadataV1.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = AssetMetadataBulkResponseDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -109,6 +116,7 @@ class SyncAssetMetadataV1 {
   static const requiredKeys = <String>{
     'assetId',
     'key',
+    'updatedAt',
     'value',
   };
 }

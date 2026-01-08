@@ -10,47 +10,54 @@
 
 part of openapi.api;
 
-class AssetMetadataUpsertItemDto {
-  /// Returns a new [AssetMetadataUpsertItemDto] instance.
-  AssetMetadataUpsertItemDto({
+class AssetMetadataBulkUpsertItemDto {
+  /// Returns a new [AssetMetadataBulkUpsertItemDto] instance.
+  AssetMetadataBulkUpsertItemDto({
+    required this.assetId,
     required this.key,
     required this.value,
   });
+
+  String assetId;
 
   String key;
 
   Object value;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AssetMetadataUpsertItemDto &&
+  bool operator ==(Object other) => identical(this, other) || other is AssetMetadataBulkUpsertItemDto &&
+    other.assetId == assetId &&
     other.key == key &&
     other.value == value;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
+    (assetId.hashCode) +
     (key.hashCode) +
     (value.hashCode);
 
   @override
-  String toString() => 'AssetMetadataUpsertItemDto[key=$key, value=$value]';
+  String toString() => 'AssetMetadataBulkUpsertItemDto[assetId=$assetId, key=$key, value=$value]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+      json[r'assetId'] = this.assetId;
       json[r'key'] = this.key;
       json[r'value'] = this.value;
     return json;
   }
 
-  /// Returns a new [AssetMetadataUpsertItemDto] instance and imports its values from
+  /// Returns a new [AssetMetadataBulkUpsertItemDto] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static AssetMetadataUpsertItemDto? fromJson(dynamic value) {
-    upgradeDto(value, "AssetMetadataUpsertItemDto");
+  static AssetMetadataBulkUpsertItemDto? fromJson(dynamic value) {
+    upgradeDto(value, "AssetMetadataBulkUpsertItemDto");
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
-      return AssetMetadataUpsertItemDto(
+      return AssetMetadataBulkUpsertItemDto(
+        assetId: mapValueOfType<String>(json, r'assetId')!,
         key: mapValueOfType<String>(json, r'key')!,
         value: mapValueOfType<Object>(json, r'value')!,
       );
@@ -58,11 +65,11 @@ class AssetMetadataUpsertItemDto {
     return null;
   }
 
-  static List<AssetMetadataUpsertItemDto> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <AssetMetadataUpsertItemDto>[];
+  static List<AssetMetadataBulkUpsertItemDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <AssetMetadataBulkUpsertItemDto>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = AssetMetadataUpsertItemDto.fromJson(row);
+        final value = AssetMetadataBulkUpsertItemDto.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -71,12 +78,12 @@ class AssetMetadataUpsertItemDto {
     return result.toList(growable: growable);
   }
 
-  static Map<String, AssetMetadataUpsertItemDto> mapFromJson(dynamic json) {
-    final map = <String, AssetMetadataUpsertItemDto>{};
+  static Map<String, AssetMetadataBulkUpsertItemDto> mapFromJson(dynamic json) {
+    final map = <String, AssetMetadataBulkUpsertItemDto>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = AssetMetadataUpsertItemDto.fromJson(entry.value);
+        final value = AssetMetadataBulkUpsertItemDto.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -85,14 +92,14 @@ class AssetMetadataUpsertItemDto {
     return map;
   }
 
-  // maps a json object with a list of AssetMetadataUpsertItemDto-objects as value to a dart map
-  static Map<String, List<AssetMetadataUpsertItemDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<AssetMetadataUpsertItemDto>>{};
+  // maps a json object with a list of AssetMetadataBulkUpsertItemDto-objects as value to a dart map
+  static Map<String, List<AssetMetadataBulkUpsertItemDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<AssetMetadataBulkUpsertItemDto>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = AssetMetadataUpsertItemDto.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = AssetMetadataBulkUpsertItemDto.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -100,6 +107,7 @@ class AssetMetadataUpsertItemDto {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
+    'assetId',
     'key',
     'value',
   };
