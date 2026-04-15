@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/domain/models/album/local_album.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
+import 'package:immich_mobile/domain/models/asset_edit.model.dart';
 import 'package:immich_mobile/domain/models/log.model.dart';
 import 'package:immich_mobile/domain/models/memory.model.dart';
 import 'package:immich_mobile/domain/models/person.model.dart';
@@ -105,11 +106,9 @@ import 'package:immich_mobile/presentation/pages/drift_remote_album.page.dart';
 import 'package:immich_mobile/presentation/pages/drift_trash.page.dart';
 import 'package:immich_mobile/presentation/pages/drift_user_selection.page.dart';
 import 'package:immich_mobile/presentation/pages/drift_video.page.dart';
-import 'package:immich_mobile/presentation/pages/editing/drift_crop.page.dart';
-import 'package:immich_mobile/presentation/pages/profile/profile_picture_crop.page.dart';
-import 'package:immich_mobile/presentation/pages/editing/drift_edit.page.dart';
-import 'package:immich_mobile/presentation/pages/editing/drift_filter.page.dart';
+import 'package:immich_mobile/presentation/pages/edit/drift_edit.page.dart';
 import 'package:immich_mobile/presentation/pages/local_timeline.page.dart';
+import 'package:immich_mobile/presentation/pages/profile/profile_picture_crop.page.dart';
 import 'package:immich_mobile/presentation/pages/search/drift_search.page.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_viewer.page.dart';
 import 'package:immich_mobile/providers/api.provider.dart';
@@ -333,8 +332,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: DriftAlbumOptionsRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: DriftMapRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: DriftEditImageRoute.page),
-    AutoRoute(page: DriftCropImageRoute.page),
-    AutoRoute(page: DriftFilterImageRoute.page),
     AutoRoute(page: DriftActivitiesRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: DriftBackupAssetDetailRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: AssetTroubleshootRoute.page, guards: [_authGuard, _duplicateGuard]),

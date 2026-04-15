@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:immich_mobile/constants/enums.dart';
+import 'package:immich_mobile/domain/models/asset_edit.model.dart' hide AssetEditAction;
 import 'package:immich_mobile/domain/models/stack.model.dart';
 import 'package:immich_mobile/entities/asset.entity.dart';
 import 'package:immich_mobile/providers/api.provider.dart';
@@ -105,10 +106,37 @@ class AssetApiRepository extends ApiRepository {
   Future<void> updateRating(String assetId, int rating) {
     return _api.updateAsset(assetId, UpdateAssetDto(rating: rating));
   }
+
+  Future<AssetEditsResponseDto?> editAsset(String assetId, List<AssetEdit> edits) {
+    return _api.editAsset(assetId, AssetEditsCreateDto(edits: edits.map((e) => e.toApi()).toList()));
+  }
+
+  Future<void> removeEdits(String assetId) async {
+    return _api.removeAssetEdits(assetId);
+  }
 }
 
 extension on StackResponseDto {
   StackResponse toStack() {
     return StackResponse(id: id, primaryAssetId: primaryAssetId, assetIds: assets.map((asset) => asset.id).toList());
+  }
+}
+
+extension on AssetEdit {
+  AssetEditActionItemDto toApi() {
+    return switch (this) {
+      CropEdit(:final parameters) => AssetEditActionItemDto(
+        action: AssetEditAction.crop,
+        parameters: parameters.toJson(),
+      ),
+      RotateEdit(:final parameters) => AssetEditActionItemDto(
+        action: AssetEditAction.rotate,
+        parameters: parameters.toJson(),
+      ),
+      MirrorEdit(:final parameters) => AssetEditActionItemDto(
+        action: AssetEditAction.mirror,
+        parameters: parameters.toJson(),
+      ),
+    };
   }
 }
