@@ -16,6 +16,7 @@ class UserEntity extends Table with TableInfo<UserEntity, UserEntityData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
@@ -23,6 +24,7 @@ class UserEntity extends Table with TableInfo<UserEntity, UserEntityData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
     'email',
@@ -30,33 +32,34 @@ class UserEntity extends Table with TableInfo<UserEntity, UserEntityData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> hasProfileImage = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> hasProfileImage = GeneratedColumn<int>(
     'has_profile_image',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("has_profile_image" IN (0, 1))',
-    ),
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (has_profile_image IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<DateTime> profileChangedAt =
-      GeneratedColumn<DateTime>(
-        'profile_changed_at',
-        aliasedName,
-        false,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-        defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
-      );
+  late final GeneratedColumn<String> profileChangedAt = GeneratedColumn<String>(
+    'profile_changed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+    defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
+  );
   late final GeneratedColumn<int> avatarColor = GeneratedColumn<int>(
     'avatar_color',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
   @override
@@ -92,11 +95,11 @@ class UserEntity extends Table with TableInfo<UserEntity, UserEntityData> {
         data['${effectivePrefix}email'],
       )!,
       hasProfileImage: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}has_profile_image'],
       )!,
       profileChangedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}profile_changed_at'],
       )!,
       avatarColor: attachedDatabase.typeMapping.read(
@@ -115,14 +118,18 @@ class UserEntity extends Table with TableInfo<UserEntity, UserEntityData> {
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class UserEntityData extends DataClass implements Insertable<UserEntityData> {
   final String id;
   final String name;
   final String email;
-  final bool hasProfileImage;
-  final DateTime profileChangedAt;
+  final int hasProfileImage;
+  final String profileChangedAt;
   final int avatarColor;
   const UserEntityData({
     required this.id,
@@ -138,8 +145,8 @@ class UserEntityData extends DataClass implements Insertable<UserEntityData> {
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['email'] = Variable<String>(email);
-    map['has_profile_image'] = Variable<bool>(hasProfileImage);
-    map['profile_changed_at'] = Variable<DateTime>(profileChangedAt);
+    map['has_profile_image'] = Variable<int>(hasProfileImage);
+    map['profile_changed_at'] = Variable<String>(profileChangedAt);
     map['avatar_color'] = Variable<int>(avatarColor);
     return map;
   }
@@ -153,8 +160,8 @@ class UserEntityData extends DataClass implements Insertable<UserEntityData> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       email: serializer.fromJson<String>(json['email']),
-      hasProfileImage: serializer.fromJson<bool>(json['hasProfileImage']),
-      profileChangedAt: serializer.fromJson<DateTime>(json['profileChangedAt']),
+      hasProfileImage: serializer.fromJson<int>(json['hasProfileImage']),
+      profileChangedAt: serializer.fromJson<String>(json['profileChangedAt']),
       avatarColor: serializer.fromJson<int>(json['avatarColor']),
     );
   }
@@ -165,8 +172,8 @@ class UserEntityData extends DataClass implements Insertable<UserEntityData> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'email': serializer.toJson<String>(email),
-      'hasProfileImage': serializer.toJson<bool>(hasProfileImage),
-      'profileChangedAt': serializer.toJson<DateTime>(profileChangedAt),
+      'hasProfileImage': serializer.toJson<int>(hasProfileImage),
+      'profileChangedAt': serializer.toJson<String>(profileChangedAt),
       'avatarColor': serializer.toJson<int>(avatarColor),
     };
   }
@@ -175,8 +182,8 @@ class UserEntityData extends DataClass implements Insertable<UserEntityData> {
     String? id,
     String? name,
     String? email,
-    bool? hasProfileImage,
-    DateTime? profileChangedAt,
+    int? hasProfileImage,
+    String? profileChangedAt,
     int? avatarColor,
   }) => UserEntityData(
     id: id ?? this.id,
@@ -241,8 +248,8 @@ class UserEntityCompanion extends UpdateCompanion<UserEntityData> {
   final Value<String> id;
   final Value<String> name;
   final Value<String> email;
-  final Value<bool> hasProfileImage;
-  final Value<DateTime> profileChangedAt;
+  final Value<int> hasProfileImage;
+  final Value<String> profileChangedAt;
   final Value<int> avatarColor;
   const UserEntityCompanion({
     this.id = const Value.absent(),
@@ -266,8 +273,8 @@ class UserEntityCompanion extends UpdateCompanion<UserEntityData> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? email,
-    Expression<bool>? hasProfileImage,
-    Expression<DateTime>? profileChangedAt,
+    Expression<int>? hasProfileImage,
+    Expression<String>? profileChangedAt,
     Expression<int>? avatarColor,
   }) {
     return RawValuesInsertable({
@@ -284,8 +291,8 @@ class UserEntityCompanion extends UpdateCompanion<UserEntityData> {
     Value<String>? id,
     Value<String>? name,
     Value<String>? email,
-    Value<bool>? hasProfileImage,
-    Value<DateTime>? profileChangedAt,
+    Value<int>? hasProfileImage,
+    Value<String>? profileChangedAt,
     Value<int>? avatarColor,
   }) {
     return UserEntityCompanion(
@@ -311,10 +318,10 @@ class UserEntityCompanion extends UpdateCompanion<UserEntityData> {
       map['email'] = Variable<String>(email.value);
     }
     if (hasProfileImage.present) {
-      map['has_profile_image'] = Variable<bool>(hasProfileImage.value);
+      map['has_profile_image'] = Variable<int>(hasProfileImage.value);
     }
     if (profileChangedAt.present) {
-      map['profile_changed_at'] = Variable<DateTime>(profileChangedAt.value);
+      map['profile_changed_at'] = Variable<String>(profileChangedAt.value);
     }
     if (avatarColor.present) {
       map['avatar_color'] = Variable<int>(avatarColor.value);
@@ -348,6 +355,7 @@ class RemoteAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
     'type',
@@ -355,21 +363,24 @@ class RemoteAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<int> width = GeneratedColumn<int>(
@@ -378,6 +389,7 @@ class RemoteAssetEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
     'height',
@@ -385,13 +397,15 @@ class RemoteAssetEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<int> durationInSeconds = GeneratedColumn<int>(
-    'duration_in_seconds',
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -399,6 +413,7 @@ class RemoteAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> checksum = GeneratedColumn<String>(
     'checksum',
@@ -406,16 +421,15 @@ class RemoteAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
     'is_favorite',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_favorite" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_favorite IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
@@ -424,31 +438,31 @@ class RemoteAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
-  late final GeneratedColumn<DateTime> localDateTime =
-      GeneratedColumn<DateTime>(
-        'local_date_time',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
+  late final GeneratedColumn<String> localDateTime = GeneratedColumn<String>(
+    'local_date_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   late final GeneratedColumn<String> thumbHash = GeneratedColumn<String>(
     'thumb_hash',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> livePhotoVideoId = GeneratedColumn<String>(
     'live_photo_video_id',
@@ -456,6 +470,7 @@ class RemoteAssetEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> visibility = GeneratedColumn<int>(
     'visibility',
@@ -463,6 +478,7 @@ class RemoteAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> stackId = GeneratedColumn<String>(
     'stack_id',
@@ -470,6 +486,7 @@ class RemoteAssetEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> libraryId = GeneratedColumn<String>(
     'library_id',
@@ -477,6 +494,16 @@ class RemoteAssetEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> isEdited = GeneratedColumn<int>(
+    'is_edited',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_edited IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -486,7 +513,7 @@ class RemoteAssetEntity extends Table
     updatedAt,
     width,
     height,
-    durationInSeconds,
+    durationMs,
     id,
     checksum,
     isFavorite,
@@ -498,6 +525,7 @@ class RemoteAssetEntity extends Table
     visibility,
     stackId,
     libraryId,
+    isEdited,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -519,11 +547,11 @@ class RemoteAssetEntity extends Table
         data['${effectivePrefix}type'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       width: attachedDatabase.typeMapping.read(
@@ -534,9 +562,9 @@ class RemoteAssetEntity extends Table
         DriftSqlType.int,
         data['${effectivePrefix}height'],
       ),
-      durationInSeconds: attachedDatabase.typeMapping.read(
+      durationMs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}duration_in_seconds'],
+        data['${effectivePrefix}duration_ms'],
       ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -547,7 +575,7 @@ class RemoteAssetEntity extends Table
         data['${effectivePrefix}checksum'],
       )!,
       isFavorite: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_favorite'],
       )!,
       ownerId: attachedDatabase.typeMapping.read(
@@ -555,7 +583,7 @@ class RemoteAssetEntity extends Table
         data['${effectivePrefix}owner_id'],
       )!,
       localDateTime: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}local_date_time'],
       ),
       thumbHash: attachedDatabase.typeMapping.read(
@@ -563,7 +591,7 @@ class RemoteAssetEntity extends Table
         data['${effectivePrefix}thumb_hash'],
       ),
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}deleted_at'],
       ),
       livePhotoVideoId: attachedDatabase.typeMapping.read(
@@ -582,6 +610,10 @@ class RemoteAssetEntity extends Table
         DriftSqlType.string,
         data['${effectivePrefix}library_id'],
       ),
+      isEdited: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_edited'],
+      )!,
     );
   }
 
@@ -594,28 +626,33 @@ class RemoteAssetEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class RemoteAssetEntityData extends DataClass
     implements Insertable<RemoteAssetEntityData> {
   final String name;
   final int type;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final int? width;
   final int? height;
-  final int? durationInSeconds;
+  final int? durationMs;
   final String id;
   final String checksum;
-  final bool isFavorite;
+  final int isFavorite;
   final String ownerId;
-  final DateTime? localDateTime;
+  final String? localDateTime;
   final String? thumbHash;
-  final DateTime? deletedAt;
+  final String? deletedAt;
   final String? livePhotoVideoId;
   final int visibility;
   final String? stackId;
   final String? libraryId;
+  final int isEdited;
   const RemoteAssetEntityData({
     required this.name,
     required this.type,
@@ -623,7 +660,7 @@ class RemoteAssetEntityData extends DataClass
     required this.updatedAt,
     this.width,
     this.height,
-    this.durationInSeconds,
+    this.durationMs,
     required this.id,
     required this.checksum,
     required this.isFavorite,
@@ -635,35 +672,36 @@ class RemoteAssetEntityData extends DataClass
     required this.visibility,
     this.stackId,
     this.libraryId,
+    required this.isEdited,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['name'] = Variable<String>(name);
     map['type'] = Variable<int>(type);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     if (!nullToAbsent || width != null) {
       map['width'] = Variable<int>(width);
     }
     if (!nullToAbsent || height != null) {
       map['height'] = Variable<int>(height);
     }
-    if (!nullToAbsent || durationInSeconds != null) {
-      map['duration_in_seconds'] = Variable<int>(durationInSeconds);
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
     }
     map['id'] = Variable<String>(id);
     map['checksum'] = Variable<String>(checksum);
-    map['is_favorite'] = Variable<bool>(isFavorite);
+    map['is_favorite'] = Variable<int>(isFavorite);
     map['owner_id'] = Variable<String>(ownerId);
     if (!nullToAbsent || localDateTime != null) {
-      map['local_date_time'] = Variable<DateTime>(localDateTime);
+      map['local_date_time'] = Variable<String>(localDateTime);
     }
     if (!nullToAbsent || thumbHash != null) {
       map['thumb_hash'] = Variable<String>(thumbHash);
     }
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt);
+      map['deleted_at'] = Variable<String>(deletedAt);
     }
     if (!nullToAbsent || livePhotoVideoId != null) {
       map['live_photo_video_id'] = Variable<String>(livePhotoVideoId);
@@ -675,6 +713,7 @@ class RemoteAssetEntityData extends DataClass
     if (!nullToAbsent || libraryId != null) {
       map['library_id'] = Variable<String>(libraryId);
     }
+    map['is_edited'] = Variable<int>(isEdited);
     return map;
   }
 
@@ -686,22 +725,23 @@ class RemoteAssetEntityData extends DataClass
     return RemoteAssetEntityData(
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<int>(json['type']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       width: serializer.fromJson<int?>(json['width']),
       height: serializer.fromJson<int?>(json['height']),
-      durationInSeconds: serializer.fromJson<int?>(json['durationInSeconds']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
       id: serializer.fromJson<String>(json['id']),
       checksum: serializer.fromJson<String>(json['checksum']),
-      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      isFavorite: serializer.fromJson<int>(json['isFavorite']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      localDateTime: serializer.fromJson<DateTime?>(json['localDateTime']),
+      localDateTime: serializer.fromJson<String?>(json['localDateTime']),
       thumbHash: serializer.fromJson<String?>(json['thumbHash']),
-      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
       livePhotoVideoId: serializer.fromJson<String?>(json['livePhotoVideoId']),
       visibility: serializer.fromJson<int>(json['visibility']),
       stackId: serializer.fromJson<String?>(json['stackId']),
       libraryId: serializer.fromJson<String?>(json['libraryId']),
+      isEdited: serializer.fromJson<int>(json['isEdited']),
     );
   }
   @override
@@ -710,44 +750,46 @@ class RemoteAssetEntityData extends DataClass
     return <String, dynamic>{
       'name': serializer.toJson<String>(name),
       'type': serializer.toJson<int>(type),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'width': serializer.toJson<int?>(width),
       'height': serializer.toJson<int?>(height),
-      'durationInSeconds': serializer.toJson<int?>(durationInSeconds),
+      'durationMs': serializer.toJson<int?>(durationMs),
       'id': serializer.toJson<String>(id),
       'checksum': serializer.toJson<String>(checksum),
-      'isFavorite': serializer.toJson<bool>(isFavorite),
+      'isFavorite': serializer.toJson<int>(isFavorite),
       'ownerId': serializer.toJson<String>(ownerId),
-      'localDateTime': serializer.toJson<DateTime?>(localDateTime),
+      'localDateTime': serializer.toJson<String?>(localDateTime),
       'thumbHash': serializer.toJson<String?>(thumbHash),
-      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
       'livePhotoVideoId': serializer.toJson<String?>(livePhotoVideoId),
       'visibility': serializer.toJson<int>(visibility),
       'stackId': serializer.toJson<String?>(stackId),
       'libraryId': serializer.toJson<String?>(libraryId),
+      'isEdited': serializer.toJson<int>(isEdited),
     };
   }
 
   RemoteAssetEntityData copyWith({
     String? name,
     int? type,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     Value<int?> width = const Value.absent(),
     Value<int?> height = const Value.absent(),
-    Value<int?> durationInSeconds = const Value.absent(),
+    Value<int?> durationMs = const Value.absent(),
     String? id,
     String? checksum,
-    bool? isFavorite,
+    int? isFavorite,
     String? ownerId,
-    Value<DateTime?> localDateTime = const Value.absent(),
+    Value<String?> localDateTime = const Value.absent(),
     Value<String?> thumbHash = const Value.absent(),
-    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> deletedAt = const Value.absent(),
     Value<String?> livePhotoVideoId = const Value.absent(),
     int? visibility,
     Value<String?> stackId = const Value.absent(),
     Value<String?> libraryId = const Value.absent(),
+    int? isEdited,
   }) => RemoteAssetEntityData(
     name: name ?? this.name,
     type: type ?? this.type,
@@ -755,9 +797,7 @@ class RemoteAssetEntityData extends DataClass
     updatedAt: updatedAt ?? this.updatedAt,
     width: width.present ? width.value : this.width,
     height: height.present ? height.value : this.height,
-    durationInSeconds: durationInSeconds.present
-        ? durationInSeconds.value
-        : this.durationInSeconds,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
     id: id ?? this.id,
     checksum: checksum ?? this.checksum,
     isFavorite: isFavorite ?? this.isFavorite,
@@ -773,6 +813,7 @@ class RemoteAssetEntityData extends DataClass
     visibility: visibility ?? this.visibility,
     stackId: stackId.present ? stackId.value : this.stackId,
     libraryId: libraryId.present ? libraryId.value : this.libraryId,
+    isEdited: isEdited ?? this.isEdited,
   );
   RemoteAssetEntityData copyWithCompanion(RemoteAssetEntityCompanion data) {
     return RemoteAssetEntityData(
@@ -782,9 +823,9 @@ class RemoteAssetEntityData extends DataClass
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       width: data.width.present ? data.width.value : this.width,
       height: data.height.present ? data.height.value : this.height,
-      durationInSeconds: data.durationInSeconds.present
-          ? data.durationInSeconds.value
-          : this.durationInSeconds,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
       id: data.id.present ? data.id.value : this.id,
       checksum: data.checksum.present ? data.checksum.value : this.checksum,
       isFavorite: data.isFavorite.present
@@ -804,6 +845,7 @@ class RemoteAssetEntityData extends DataClass
           : this.visibility,
       stackId: data.stackId.present ? data.stackId.value : this.stackId,
       libraryId: data.libraryId.present ? data.libraryId.value : this.libraryId,
+      isEdited: data.isEdited.present ? data.isEdited.value : this.isEdited,
     );
   }
 
@@ -816,7 +858,7 @@ class RemoteAssetEntityData extends DataClass
           ..write('updatedAt: $updatedAt, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
-          ..write('durationInSeconds: $durationInSeconds, ')
+          ..write('durationMs: $durationMs, ')
           ..write('id: $id, ')
           ..write('checksum: $checksum, ')
           ..write('isFavorite: $isFavorite, ')
@@ -827,7 +869,8 @@ class RemoteAssetEntityData extends DataClass
           ..write('livePhotoVideoId: $livePhotoVideoId, ')
           ..write('visibility: $visibility, ')
           ..write('stackId: $stackId, ')
-          ..write('libraryId: $libraryId')
+          ..write('libraryId: $libraryId, ')
+          ..write('isEdited: $isEdited')
           ..write(')'))
         .toString();
   }
@@ -840,7 +883,7 @@ class RemoteAssetEntityData extends DataClass
     updatedAt,
     width,
     height,
-    durationInSeconds,
+    durationMs,
     id,
     checksum,
     isFavorite,
@@ -852,6 +895,7 @@ class RemoteAssetEntityData extends DataClass
     visibility,
     stackId,
     libraryId,
+    isEdited,
   );
   @override
   bool operator ==(Object other) =>
@@ -863,7 +907,7 @@ class RemoteAssetEntityData extends DataClass
           other.updatedAt == this.updatedAt &&
           other.width == this.width &&
           other.height == this.height &&
-          other.durationInSeconds == this.durationInSeconds &&
+          other.durationMs == this.durationMs &&
           other.id == this.id &&
           other.checksum == this.checksum &&
           other.isFavorite == this.isFavorite &&
@@ -874,29 +918,31 @@ class RemoteAssetEntityData extends DataClass
           other.livePhotoVideoId == this.livePhotoVideoId &&
           other.visibility == this.visibility &&
           other.stackId == this.stackId &&
-          other.libraryId == this.libraryId);
+          other.libraryId == this.libraryId &&
+          other.isEdited == this.isEdited);
 }
 
 class RemoteAssetEntityCompanion
     extends UpdateCompanion<RemoteAssetEntityData> {
   final Value<String> name;
   final Value<int> type;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
   final Value<int?> width;
   final Value<int?> height;
-  final Value<int?> durationInSeconds;
+  final Value<int?> durationMs;
   final Value<String> id;
   final Value<String> checksum;
-  final Value<bool> isFavorite;
+  final Value<int> isFavorite;
   final Value<String> ownerId;
-  final Value<DateTime?> localDateTime;
+  final Value<String?> localDateTime;
   final Value<String?> thumbHash;
-  final Value<DateTime?> deletedAt;
+  final Value<String?> deletedAt;
   final Value<String?> livePhotoVideoId;
   final Value<int> visibility;
   final Value<String?> stackId;
   final Value<String?> libraryId;
+  final Value<int> isEdited;
   const RemoteAssetEntityCompanion({
     this.name = const Value.absent(),
     this.type = const Value.absent(),
@@ -904,7 +950,7 @@ class RemoteAssetEntityCompanion
     this.updatedAt = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
-    this.durationInSeconds = const Value.absent(),
+    this.durationMs = const Value.absent(),
     this.id = const Value.absent(),
     this.checksum = const Value.absent(),
     this.isFavorite = const Value.absent(),
@@ -916,6 +962,7 @@ class RemoteAssetEntityCompanion
     this.visibility = const Value.absent(),
     this.stackId = const Value.absent(),
     this.libraryId = const Value.absent(),
+    this.isEdited = const Value.absent(),
   });
   RemoteAssetEntityCompanion.insert({
     required String name,
@@ -924,7 +971,7 @@ class RemoteAssetEntityCompanion
     this.updatedAt = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
-    this.durationInSeconds = const Value.absent(),
+    this.durationMs = const Value.absent(),
     required String id,
     required String checksum,
     this.isFavorite = const Value.absent(),
@@ -936,6 +983,7 @@ class RemoteAssetEntityCompanion
     required int visibility,
     this.stackId = const Value.absent(),
     this.libraryId = const Value.absent(),
+    this.isEdited = const Value.absent(),
   }) : name = Value(name),
        type = Value(type),
        id = Value(id),
@@ -945,22 +993,23 @@ class RemoteAssetEntityCompanion
   static Insertable<RemoteAssetEntityData> custom({
     Expression<String>? name,
     Expression<int>? type,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
     Expression<int>? width,
     Expression<int>? height,
-    Expression<int>? durationInSeconds,
+    Expression<int>? durationMs,
     Expression<String>? id,
     Expression<String>? checksum,
-    Expression<bool>? isFavorite,
+    Expression<int>? isFavorite,
     Expression<String>? ownerId,
-    Expression<DateTime>? localDateTime,
+    Expression<String>? localDateTime,
     Expression<String>? thumbHash,
-    Expression<DateTime>? deletedAt,
+    Expression<String>? deletedAt,
     Expression<String>? livePhotoVideoId,
     Expression<int>? visibility,
     Expression<String>? stackId,
     Expression<String>? libraryId,
+    Expression<int>? isEdited,
   }) {
     return RawValuesInsertable({
       if (name != null) 'name': name,
@@ -969,7 +1018,7 @@ class RemoteAssetEntityCompanion
       if (updatedAt != null) 'updated_at': updatedAt,
       if (width != null) 'width': width,
       if (height != null) 'height': height,
-      if (durationInSeconds != null) 'duration_in_seconds': durationInSeconds,
+      if (durationMs != null) 'duration_ms': durationMs,
       if (id != null) 'id': id,
       if (checksum != null) 'checksum': checksum,
       if (isFavorite != null) 'is_favorite': isFavorite,
@@ -981,28 +1030,30 @@ class RemoteAssetEntityCompanion
       if (visibility != null) 'visibility': visibility,
       if (stackId != null) 'stack_id': stackId,
       if (libraryId != null) 'library_id': libraryId,
+      if (isEdited != null) 'is_edited': isEdited,
     });
   }
 
   RemoteAssetEntityCompanion copyWith({
     Value<String>? name,
     Value<int>? type,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
     Value<int?>? width,
     Value<int?>? height,
-    Value<int?>? durationInSeconds,
+    Value<int?>? durationMs,
     Value<String>? id,
     Value<String>? checksum,
-    Value<bool>? isFavorite,
+    Value<int>? isFavorite,
     Value<String>? ownerId,
-    Value<DateTime?>? localDateTime,
+    Value<String?>? localDateTime,
     Value<String?>? thumbHash,
-    Value<DateTime?>? deletedAt,
+    Value<String?>? deletedAt,
     Value<String?>? livePhotoVideoId,
     Value<int>? visibility,
     Value<String?>? stackId,
     Value<String?>? libraryId,
+    Value<int>? isEdited,
   }) {
     return RemoteAssetEntityCompanion(
       name: name ?? this.name,
@@ -1011,7 +1062,7 @@ class RemoteAssetEntityCompanion
       updatedAt: updatedAt ?? this.updatedAt,
       width: width ?? this.width,
       height: height ?? this.height,
-      durationInSeconds: durationInSeconds ?? this.durationInSeconds,
+      durationMs: durationMs ?? this.durationMs,
       id: id ?? this.id,
       checksum: checksum ?? this.checksum,
       isFavorite: isFavorite ?? this.isFavorite,
@@ -1023,6 +1074,7 @@ class RemoteAssetEntityCompanion
       visibility: visibility ?? this.visibility,
       stackId: stackId ?? this.stackId,
       libraryId: libraryId ?? this.libraryId,
+      isEdited: isEdited ?? this.isEdited,
     );
   }
 
@@ -1036,10 +1088,10 @@ class RemoteAssetEntityCompanion
       map['type'] = Variable<int>(type.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (width.present) {
       map['width'] = Variable<int>(width.value);
@@ -1047,8 +1099,8 @@ class RemoteAssetEntityCompanion
     if (height.present) {
       map['height'] = Variable<int>(height.value);
     }
-    if (durationInSeconds.present) {
-      map['duration_in_seconds'] = Variable<int>(durationInSeconds.value);
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -1057,19 +1109,19 @@ class RemoteAssetEntityCompanion
       map['checksum'] = Variable<String>(checksum.value);
     }
     if (isFavorite.present) {
-      map['is_favorite'] = Variable<bool>(isFavorite.value);
+      map['is_favorite'] = Variable<int>(isFavorite.value);
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
     }
     if (localDateTime.present) {
-      map['local_date_time'] = Variable<DateTime>(localDateTime.value);
+      map['local_date_time'] = Variable<String>(localDateTime.value);
     }
     if (thumbHash.present) {
       map['thumb_hash'] = Variable<String>(thumbHash.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+      map['deleted_at'] = Variable<String>(deletedAt.value);
     }
     if (livePhotoVideoId.present) {
       map['live_photo_video_id'] = Variable<String>(livePhotoVideoId.value);
@@ -1083,6 +1135,9 @@ class RemoteAssetEntityCompanion
     if (libraryId.present) {
       map['library_id'] = Variable<String>(libraryId.value);
     }
+    if (isEdited.present) {
+      map['is_edited'] = Variable<int>(isEdited.value);
+    }
     return map;
   }
 
@@ -1095,7 +1150,7 @@ class RemoteAssetEntityCompanion
           ..write('updatedAt: $updatedAt, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
-          ..write('durationInSeconds: $durationInSeconds, ')
+          ..write('durationMs: $durationMs, ')
           ..write('id: $id, ')
           ..write('checksum: $checksum, ')
           ..write('isFavorite: $isFavorite, ')
@@ -1106,7 +1161,8 @@ class RemoteAssetEntityCompanion
           ..write('livePhotoVideoId: $livePhotoVideoId, ')
           ..write('visibility: $visibility, ')
           ..write('stackId: $stackId, ')
-          ..write('libraryId: $libraryId')
+          ..write('libraryId: $libraryId, ')
+          ..write('isEdited: $isEdited')
           ..write(')'))
         .toString();
   }
@@ -1123,21 +1179,24 @@ class StackEntity extends Table with TableInfo<StackEntity, StackEntityData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
@@ -1146,9 +1205,7 @@ class StackEntity extends Table with TableInfo<StackEntity, StackEntityData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> primaryAssetId = GeneratedColumn<String>(
     'primary_asset_id',
@@ -1156,6 +1213,7 @@ class StackEntity extends Table with TableInfo<StackEntity, StackEntityData> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1181,11 +1239,11 @@ class StackEntity extends Table with TableInfo<StackEntity, StackEntityData> {
         data['${effectivePrefix}id'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       ownerId: attachedDatabase.typeMapping.read(
@@ -1208,12 +1266,16 @@ class StackEntity extends Table with TableInfo<StackEntity, StackEntityData> {
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class StackEntityData extends DataClass implements Insertable<StackEntityData> {
   final String id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final String ownerId;
   final String primaryAssetId;
   const StackEntityData({
@@ -1227,8 +1289,8 @@ class StackEntityData extends DataClass implements Insertable<StackEntityData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     map['owner_id'] = Variable<String>(ownerId);
     map['primary_asset_id'] = Variable<String>(primaryAssetId);
     return map;
@@ -1241,8 +1303,8 @@ class StackEntityData extends DataClass implements Insertable<StackEntityData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return StackEntityData(
       id: serializer.fromJson<String>(json['id']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       primaryAssetId: serializer.fromJson<String>(json['primaryAssetId']),
     );
@@ -1252,8 +1314,8 @@ class StackEntityData extends DataClass implements Insertable<StackEntityData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'ownerId': serializer.toJson<String>(ownerId),
       'primaryAssetId': serializer.toJson<String>(primaryAssetId),
     };
@@ -1261,8 +1323,8 @@ class StackEntityData extends DataClass implements Insertable<StackEntityData> {
 
   StackEntityData copyWith({
     String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     String? ownerId,
     String? primaryAssetId,
   }) => StackEntityData(
@@ -1312,8 +1374,8 @@ class StackEntityData extends DataClass implements Insertable<StackEntityData> {
 
 class StackEntityCompanion extends UpdateCompanion<StackEntityData> {
   final Value<String> id;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
   final Value<String> ownerId;
   final Value<String> primaryAssetId;
   const StackEntityCompanion({
@@ -1334,8 +1396,8 @@ class StackEntityCompanion extends UpdateCompanion<StackEntityData> {
        primaryAssetId = Value(primaryAssetId);
   static Insertable<StackEntityData> custom({
     Expression<String>? id,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
     Expression<String>? ownerId,
     Expression<String>? primaryAssetId,
   }) {
@@ -1350,8 +1412,8 @@ class StackEntityCompanion extends UpdateCompanion<StackEntityData> {
 
   StackEntityCompanion copyWith({
     Value<String>? id,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
     Value<String>? ownerId,
     Value<String>? primaryAssetId,
   }) {
@@ -1371,10 +1433,10 @@ class StackEntityCompanion extends UpdateCompanion<StackEntityData> {
       map['id'] = Variable<String>(id.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
@@ -1410,6 +1472,7 @@ class LocalAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
     'type',
@@ -1417,21 +1480,24 @@ class LocalAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<int> width = GeneratedColumn<int>(
@@ -1440,6 +1506,7 @@ class LocalAssetEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
     'height',
@@ -1447,13 +1514,15 @@ class LocalAssetEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<int> durationInSeconds = GeneratedColumn<int>(
-    'duration_in_seconds',
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -1461,6 +1530,7 @@ class LocalAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> checksum = GeneratedColumn<String>(
     'checksum',
@@ -1468,16 +1538,15 @@ class LocalAssetEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
     'is_favorite',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_favorite" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_favorite IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<int> orientation = GeneratedColumn<int>(
@@ -1486,22 +1555,32 @@ class LocalAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<DateTime> adjustmentTime =
-      GeneratedColumn<DateTime>(
-        'adjustment_time',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
+  late final GeneratedColumn<String> iCloudId = GeneratedColumn<String>(
+    'i_cloud_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> adjustmentTime = GeneratedColumn<String>(
+    'adjustment_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
     'latitude',
     aliasedName,
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
     'longitude',
@@ -1509,6 +1588,16 @@ class LocalAssetEntity extends Table
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> playbackStyle = GeneratedColumn<int>(
+    'playback_style',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1518,14 +1607,16 @@ class LocalAssetEntity extends Table
     updatedAt,
     width,
     height,
-    durationInSeconds,
+    durationMs,
     id,
     checksum,
     isFavorite,
     orientation,
+    iCloudId,
     adjustmentTime,
     latitude,
     longitude,
+    playbackStyle,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1547,11 +1638,11 @@ class LocalAssetEntity extends Table
         data['${effectivePrefix}type'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       width: attachedDatabase.typeMapping.read(
@@ -1562,9 +1653,9 @@ class LocalAssetEntity extends Table
         DriftSqlType.int,
         data['${effectivePrefix}height'],
       ),
-      durationInSeconds: attachedDatabase.typeMapping.read(
+      durationMs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}duration_in_seconds'],
+        data['${effectivePrefix}duration_ms'],
       ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1575,15 +1666,19 @@ class LocalAssetEntity extends Table
         data['${effectivePrefix}checksum'],
       ),
       isFavorite: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_favorite'],
       )!,
       orientation: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}orientation'],
       )!,
+      iCloudId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}i_cloud_id'],
+      ),
       adjustmentTime: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}adjustment_time'],
       ),
       latitude: attachedDatabase.typeMapping.read(
@@ -1594,6 +1689,10 @@ class LocalAssetEntity extends Table
         DriftSqlType.double,
         data['${effectivePrefix}longitude'],
       ),
+      playbackStyle: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}playback_style'],
+      )!,
     );
   }
 
@@ -1606,24 +1705,30 @@ class LocalAssetEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class LocalAssetEntityData extends DataClass
     implements Insertable<LocalAssetEntityData> {
   final String name;
   final int type;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final int? width;
   final int? height;
-  final int? durationInSeconds;
+  final int? durationMs;
   final String id;
   final String? checksum;
-  final bool isFavorite;
+  final int isFavorite;
   final int orientation;
-  final DateTime? adjustmentTime;
+  final String? iCloudId;
+  final String? adjustmentTime;
   final double? latitude;
   final double? longitude;
+  final int playbackStyle;
   const LocalAssetEntityData({
     required this.name,
     required this.type,
@@ -1631,39 +1736,44 @@ class LocalAssetEntityData extends DataClass
     required this.updatedAt,
     this.width,
     this.height,
-    this.durationInSeconds,
+    this.durationMs,
     required this.id,
     this.checksum,
     required this.isFavorite,
     required this.orientation,
+    this.iCloudId,
     this.adjustmentTime,
     this.latitude,
     this.longitude,
+    required this.playbackStyle,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['name'] = Variable<String>(name);
     map['type'] = Variable<int>(type);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     if (!nullToAbsent || width != null) {
       map['width'] = Variable<int>(width);
     }
     if (!nullToAbsent || height != null) {
       map['height'] = Variable<int>(height);
     }
-    if (!nullToAbsent || durationInSeconds != null) {
-      map['duration_in_seconds'] = Variable<int>(durationInSeconds);
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
     }
     map['id'] = Variable<String>(id);
     if (!nullToAbsent || checksum != null) {
       map['checksum'] = Variable<String>(checksum);
     }
-    map['is_favorite'] = Variable<bool>(isFavorite);
+    map['is_favorite'] = Variable<int>(isFavorite);
     map['orientation'] = Variable<int>(orientation);
+    if (!nullToAbsent || iCloudId != null) {
+      map['i_cloud_id'] = Variable<String>(iCloudId);
+    }
     if (!nullToAbsent || adjustmentTime != null) {
-      map['adjustment_time'] = Variable<DateTime>(adjustmentTime);
+      map['adjustment_time'] = Variable<String>(adjustmentTime);
     }
     if (!nullToAbsent || latitude != null) {
       map['latitude'] = Variable<double>(latitude);
@@ -1671,6 +1781,7 @@ class LocalAssetEntityData extends DataClass
     if (!nullToAbsent || longitude != null) {
       map['longitude'] = Variable<double>(longitude);
     }
+    map['playback_style'] = Variable<int>(playbackStyle);
     return map;
   }
 
@@ -1682,18 +1793,20 @@ class LocalAssetEntityData extends DataClass
     return LocalAssetEntityData(
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<int>(json['type']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       width: serializer.fromJson<int?>(json['width']),
       height: serializer.fromJson<int?>(json['height']),
-      durationInSeconds: serializer.fromJson<int?>(json['durationInSeconds']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
       id: serializer.fromJson<String>(json['id']),
       checksum: serializer.fromJson<String?>(json['checksum']),
-      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      isFavorite: serializer.fromJson<int>(json['isFavorite']),
       orientation: serializer.fromJson<int>(json['orientation']),
-      adjustmentTime: serializer.fromJson<DateTime?>(json['adjustmentTime']),
+      iCloudId: serializer.fromJson<String?>(json['iCloudId']),
+      adjustmentTime: serializer.fromJson<String?>(json['adjustmentTime']),
       latitude: serializer.fromJson<double?>(json['latitude']),
       longitude: serializer.fromJson<double?>(json['longitude']),
+      playbackStyle: serializer.fromJson<int>(json['playbackStyle']),
     );
   }
   @override
@@ -1702,36 +1815,40 @@ class LocalAssetEntityData extends DataClass
     return <String, dynamic>{
       'name': serializer.toJson<String>(name),
       'type': serializer.toJson<int>(type),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'width': serializer.toJson<int?>(width),
       'height': serializer.toJson<int?>(height),
-      'durationInSeconds': serializer.toJson<int?>(durationInSeconds),
+      'durationMs': serializer.toJson<int?>(durationMs),
       'id': serializer.toJson<String>(id),
       'checksum': serializer.toJson<String?>(checksum),
-      'isFavorite': serializer.toJson<bool>(isFavorite),
+      'isFavorite': serializer.toJson<int>(isFavorite),
       'orientation': serializer.toJson<int>(orientation),
-      'adjustmentTime': serializer.toJson<DateTime?>(adjustmentTime),
+      'iCloudId': serializer.toJson<String?>(iCloudId),
+      'adjustmentTime': serializer.toJson<String?>(adjustmentTime),
       'latitude': serializer.toJson<double?>(latitude),
       'longitude': serializer.toJson<double?>(longitude),
+      'playbackStyle': serializer.toJson<int>(playbackStyle),
     };
   }
 
   LocalAssetEntityData copyWith({
     String? name,
     int? type,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     Value<int?> width = const Value.absent(),
     Value<int?> height = const Value.absent(),
-    Value<int?> durationInSeconds = const Value.absent(),
+    Value<int?> durationMs = const Value.absent(),
     String? id,
     Value<String?> checksum = const Value.absent(),
-    bool? isFavorite,
+    int? isFavorite,
     int? orientation,
-    Value<DateTime?> adjustmentTime = const Value.absent(),
+    Value<String?> iCloudId = const Value.absent(),
+    Value<String?> adjustmentTime = const Value.absent(),
     Value<double?> latitude = const Value.absent(),
     Value<double?> longitude = const Value.absent(),
+    int? playbackStyle,
   }) => LocalAssetEntityData(
     name: name ?? this.name,
     type: type ?? this.type,
@@ -1739,18 +1856,18 @@ class LocalAssetEntityData extends DataClass
     updatedAt: updatedAt ?? this.updatedAt,
     width: width.present ? width.value : this.width,
     height: height.present ? height.value : this.height,
-    durationInSeconds: durationInSeconds.present
-        ? durationInSeconds.value
-        : this.durationInSeconds,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
     id: id ?? this.id,
     checksum: checksum.present ? checksum.value : this.checksum,
     isFavorite: isFavorite ?? this.isFavorite,
     orientation: orientation ?? this.orientation,
+    iCloudId: iCloudId.present ? iCloudId.value : this.iCloudId,
     adjustmentTime: adjustmentTime.present
         ? adjustmentTime.value
         : this.adjustmentTime,
     latitude: latitude.present ? latitude.value : this.latitude,
     longitude: longitude.present ? longitude.value : this.longitude,
+    playbackStyle: playbackStyle ?? this.playbackStyle,
   );
   LocalAssetEntityData copyWithCompanion(LocalAssetEntityCompanion data) {
     return LocalAssetEntityData(
@@ -1760,9 +1877,9 @@ class LocalAssetEntityData extends DataClass
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       width: data.width.present ? data.width.value : this.width,
       height: data.height.present ? data.height.value : this.height,
-      durationInSeconds: data.durationInSeconds.present
-          ? data.durationInSeconds.value
-          : this.durationInSeconds,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
       id: data.id.present ? data.id.value : this.id,
       checksum: data.checksum.present ? data.checksum.value : this.checksum,
       isFavorite: data.isFavorite.present
@@ -1771,11 +1888,15 @@ class LocalAssetEntityData extends DataClass
       orientation: data.orientation.present
           ? data.orientation.value
           : this.orientation,
+      iCloudId: data.iCloudId.present ? data.iCloudId.value : this.iCloudId,
       adjustmentTime: data.adjustmentTime.present
           ? data.adjustmentTime.value
           : this.adjustmentTime,
       latitude: data.latitude.present ? data.latitude.value : this.latitude,
       longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      playbackStyle: data.playbackStyle.present
+          ? data.playbackStyle.value
+          : this.playbackStyle,
     );
   }
 
@@ -1788,14 +1909,16 @@ class LocalAssetEntityData extends DataClass
           ..write('updatedAt: $updatedAt, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
-          ..write('durationInSeconds: $durationInSeconds, ')
+          ..write('durationMs: $durationMs, ')
           ..write('id: $id, ')
           ..write('checksum: $checksum, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('orientation: $orientation, ')
+          ..write('iCloudId: $iCloudId, ')
           ..write('adjustmentTime: $adjustmentTime, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('playbackStyle: $playbackStyle')
           ..write(')'))
         .toString();
   }
@@ -1808,14 +1931,16 @@ class LocalAssetEntityData extends DataClass
     updatedAt,
     width,
     height,
-    durationInSeconds,
+    durationMs,
     id,
     checksum,
     isFavorite,
     orientation,
+    iCloudId,
     adjustmentTime,
     latitude,
     longitude,
+    playbackStyle,
   );
   @override
   bool operator ==(Object other) =>
@@ -1827,31 +1952,35 @@ class LocalAssetEntityData extends DataClass
           other.updatedAt == this.updatedAt &&
           other.width == this.width &&
           other.height == this.height &&
-          other.durationInSeconds == this.durationInSeconds &&
+          other.durationMs == this.durationMs &&
           other.id == this.id &&
           other.checksum == this.checksum &&
           other.isFavorite == this.isFavorite &&
           other.orientation == this.orientation &&
+          other.iCloudId == this.iCloudId &&
           other.adjustmentTime == this.adjustmentTime &&
           other.latitude == this.latitude &&
-          other.longitude == this.longitude);
+          other.longitude == this.longitude &&
+          other.playbackStyle == this.playbackStyle);
 }
 
 class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
   final Value<String> name;
   final Value<int> type;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
   final Value<int?> width;
   final Value<int?> height;
-  final Value<int?> durationInSeconds;
+  final Value<int?> durationMs;
   final Value<String> id;
   final Value<String?> checksum;
-  final Value<bool> isFavorite;
+  final Value<int> isFavorite;
   final Value<int> orientation;
-  final Value<DateTime?> adjustmentTime;
+  final Value<String?> iCloudId;
+  final Value<String?> adjustmentTime;
   final Value<double?> latitude;
   final Value<double?> longitude;
+  final Value<int> playbackStyle;
   const LocalAssetEntityCompanion({
     this.name = const Value.absent(),
     this.type = const Value.absent(),
@@ -1859,14 +1988,16 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
     this.updatedAt = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
-    this.durationInSeconds = const Value.absent(),
+    this.durationMs = const Value.absent(),
     this.id = const Value.absent(),
     this.checksum = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.orientation = const Value.absent(),
+    this.iCloudId = const Value.absent(),
     this.adjustmentTime = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.playbackStyle = const Value.absent(),
   });
   LocalAssetEntityCompanion.insert({
     required String name,
@@ -1875,32 +2006,36 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
     this.updatedAt = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
-    this.durationInSeconds = const Value.absent(),
+    this.durationMs = const Value.absent(),
     required String id,
     this.checksum = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.orientation = const Value.absent(),
+    this.iCloudId = const Value.absent(),
     this.adjustmentTime = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.playbackStyle = const Value.absent(),
   }) : name = Value(name),
        type = Value(type),
        id = Value(id);
   static Insertable<LocalAssetEntityData> custom({
     Expression<String>? name,
     Expression<int>? type,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
     Expression<int>? width,
     Expression<int>? height,
-    Expression<int>? durationInSeconds,
+    Expression<int>? durationMs,
     Expression<String>? id,
     Expression<String>? checksum,
-    Expression<bool>? isFavorite,
+    Expression<int>? isFavorite,
     Expression<int>? orientation,
-    Expression<DateTime>? adjustmentTime,
+    Expression<String>? iCloudId,
+    Expression<String>? adjustmentTime,
     Expression<double>? latitude,
     Expression<double>? longitude,
+    Expression<int>? playbackStyle,
   }) {
     return RawValuesInsertable({
       if (name != null) 'name': name,
@@ -1909,32 +2044,36 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (width != null) 'width': width,
       if (height != null) 'height': height,
-      if (durationInSeconds != null) 'duration_in_seconds': durationInSeconds,
+      if (durationMs != null) 'duration_ms': durationMs,
       if (id != null) 'id': id,
       if (checksum != null) 'checksum': checksum,
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (orientation != null) 'orientation': orientation,
+      if (iCloudId != null) 'i_cloud_id': iCloudId,
       if (adjustmentTime != null) 'adjustment_time': adjustmentTime,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
+      if (playbackStyle != null) 'playback_style': playbackStyle,
     });
   }
 
   LocalAssetEntityCompanion copyWith({
     Value<String>? name,
     Value<int>? type,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
     Value<int?>? width,
     Value<int?>? height,
-    Value<int?>? durationInSeconds,
+    Value<int?>? durationMs,
     Value<String>? id,
     Value<String?>? checksum,
-    Value<bool>? isFavorite,
+    Value<int>? isFavorite,
     Value<int>? orientation,
-    Value<DateTime?>? adjustmentTime,
+    Value<String?>? iCloudId,
+    Value<String?>? adjustmentTime,
     Value<double?>? latitude,
     Value<double?>? longitude,
+    Value<int>? playbackStyle,
   }) {
     return LocalAssetEntityCompanion(
       name: name ?? this.name,
@@ -1943,14 +2082,16 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
       updatedAt: updatedAt ?? this.updatedAt,
       width: width ?? this.width,
       height: height ?? this.height,
-      durationInSeconds: durationInSeconds ?? this.durationInSeconds,
+      durationMs: durationMs ?? this.durationMs,
       id: id ?? this.id,
       checksum: checksum ?? this.checksum,
       isFavorite: isFavorite ?? this.isFavorite,
       orientation: orientation ?? this.orientation,
+      iCloudId: iCloudId ?? this.iCloudId,
       adjustmentTime: adjustmentTime ?? this.adjustmentTime,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      playbackStyle: playbackStyle ?? this.playbackStyle,
     );
   }
 
@@ -1964,10 +2105,10 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
       map['type'] = Variable<int>(type.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (width.present) {
       map['width'] = Variable<int>(width.value);
@@ -1975,8 +2116,8 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
     if (height.present) {
       map['height'] = Variable<int>(height.value);
     }
-    if (durationInSeconds.present) {
-      map['duration_in_seconds'] = Variable<int>(durationInSeconds.value);
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -1985,19 +2126,25 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
       map['checksum'] = Variable<String>(checksum.value);
     }
     if (isFavorite.present) {
-      map['is_favorite'] = Variable<bool>(isFavorite.value);
+      map['is_favorite'] = Variable<int>(isFavorite.value);
     }
     if (orientation.present) {
       map['orientation'] = Variable<int>(orientation.value);
     }
+    if (iCloudId.present) {
+      map['i_cloud_id'] = Variable<String>(iCloudId.value);
+    }
     if (adjustmentTime.present) {
-      map['adjustment_time'] = Variable<DateTime>(adjustmentTime.value);
+      map['adjustment_time'] = Variable<String>(adjustmentTime.value);
     }
     if (latitude.present) {
       map['latitude'] = Variable<double>(latitude.value);
     }
     if (longitude.present) {
       map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (playbackStyle.present) {
+      map['playback_style'] = Variable<int>(playbackStyle.value);
     }
     return map;
   }
@@ -2011,14 +2158,16 @@ class LocalAssetEntityCompanion extends UpdateCompanion<LocalAssetEntityData> {
           ..write('updatedAt: $updatedAt, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
-          ..write('durationInSeconds: $durationInSeconds, ')
+          ..write('durationMs: $durationMs, ')
           ..write('id: $id, ')
           ..write('checksum: $checksum, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('orientation: $orientation, ')
+          ..write('iCloudId: $iCloudId, ')
           ..write('adjustmentTime: $adjustmentTime, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('playbackStyle: $playbackStyle')
           ..write(')'))
         .toString();
   }
@@ -2036,6 +2185,7 @@ class RemoteAlbumEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
@@ -2043,6 +2193,7 @@ class RemoteAlbumEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
@@ -2050,22 +2201,25 @@ class RemoteAlbumEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'\'',
     defaultValue: const CustomExpression('\'\''),
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
@@ -2074,9 +2228,7 @@ class RemoteAlbumEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> thumbnailAssetId = GeneratedColumn<String>(
     'thumbnail_asset_id',
@@ -2084,19 +2236,17 @@ class RemoteAlbumEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_asset_entity (id) ON DELETE SET NULL',
-    ),
+    $customConstraints:
+        'NULL REFERENCES remote_asset_entity(id)ON DELETE SET NULL',
   );
-  late final GeneratedColumn<bool> isActivityEnabled = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isActivityEnabled = GeneratedColumn<int>(
     'is_activity_enabled',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_activity_enabled" IN (0, 1))',
-    ),
+    $customConstraints:
+        'NOT NULL DEFAULT 1 CHECK (is_activity_enabled IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
   late final GeneratedColumn<int> order = GeneratedColumn<int>(
@@ -2105,6 +2255,7 @@ class RemoteAlbumEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -2142,11 +2293,11 @@ class RemoteAlbumEntity extends Table
         data['${effectivePrefix}description'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       ownerId: attachedDatabase.typeMapping.read(
@@ -2158,7 +2309,7 @@ class RemoteAlbumEntity extends Table
         data['${effectivePrefix}thumbnail_asset_id'],
       ),
       isActivityEnabled: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_activity_enabled'],
       )!,
       order: attachedDatabase.typeMapping.read(
@@ -2177,6 +2328,10 @@ class RemoteAlbumEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class RemoteAlbumEntityData extends DataClass
@@ -2184,11 +2339,11 @@ class RemoteAlbumEntityData extends DataClass
   final String id;
   final String name;
   final String description;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final String ownerId;
   final String? thumbnailAssetId;
-  final bool isActivityEnabled;
+  final int isActivityEnabled;
   final int order;
   const RemoteAlbumEntityData({
     required this.id,
@@ -2207,13 +2362,13 @@ class RemoteAlbumEntityData extends DataClass
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     map['owner_id'] = Variable<String>(ownerId);
     if (!nullToAbsent || thumbnailAssetId != null) {
       map['thumbnail_asset_id'] = Variable<String>(thumbnailAssetId);
     }
-    map['is_activity_enabled'] = Variable<bool>(isActivityEnabled);
+    map['is_activity_enabled'] = Variable<int>(isActivityEnabled);
     map['order'] = Variable<int>(order);
     return map;
   }
@@ -2227,11 +2382,11 @@ class RemoteAlbumEntityData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       thumbnailAssetId: serializer.fromJson<String?>(json['thumbnailAssetId']),
-      isActivityEnabled: serializer.fromJson<bool>(json['isActivityEnabled']),
+      isActivityEnabled: serializer.fromJson<int>(json['isActivityEnabled']),
       order: serializer.fromJson<int>(json['order']),
     );
   }
@@ -2242,11 +2397,11 @@ class RemoteAlbumEntityData extends DataClass
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'ownerId': serializer.toJson<String>(ownerId),
       'thumbnailAssetId': serializer.toJson<String?>(thumbnailAssetId),
-      'isActivityEnabled': serializer.toJson<bool>(isActivityEnabled),
+      'isActivityEnabled': serializer.toJson<int>(isActivityEnabled),
       'order': serializer.toJson<int>(order),
     };
   }
@@ -2255,11 +2410,11 @@ class RemoteAlbumEntityData extends DataClass
     String? id,
     String? name,
     String? description,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     String? ownerId,
     Value<String?> thumbnailAssetId = const Value.absent(),
-    bool? isActivityEnabled,
+    int? isActivityEnabled,
     int? order,
   }) => RemoteAlbumEntityData(
     id: id ?? this.id,
@@ -2342,11 +2497,11 @@ class RemoteAlbumEntityCompanion
   final Value<String> id;
   final Value<String> name;
   final Value<String> description;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
   final Value<String> ownerId;
   final Value<String?> thumbnailAssetId;
-  final Value<bool> isActivityEnabled;
+  final Value<int> isActivityEnabled;
   final Value<int> order;
   const RemoteAlbumEntityCompanion({
     this.id = const Value.absent(),
@@ -2377,11 +2532,11 @@ class RemoteAlbumEntityCompanion
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? description,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
     Expression<String>? ownerId,
     Expression<String>? thumbnailAssetId,
-    Expression<bool>? isActivityEnabled,
+    Expression<int>? isActivityEnabled,
     Expression<int>? order,
   }) {
     return RawValuesInsertable({
@@ -2401,11 +2556,11 @@ class RemoteAlbumEntityCompanion
     Value<String>? id,
     Value<String>? name,
     Value<String>? description,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
     Value<String>? ownerId,
     Value<String?>? thumbnailAssetId,
-    Value<bool>? isActivityEnabled,
+    Value<int>? isActivityEnabled,
     Value<int>? order,
   }) {
     return RemoteAlbumEntityCompanion(
@@ -2434,10 +2589,10 @@ class RemoteAlbumEntityCompanion
       map['description'] = Variable<String>(description.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
@@ -2446,7 +2601,7 @@ class RemoteAlbumEntityCompanion
       map['thumbnail_asset_id'] = Variable<String>(thumbnailAssetId.value);
     }
     if (isActivityEnabled.present) {
-      map['is_activity_enabled'] = Variable<bool>(isActivityEnabled.value);
+      map['is_activity_enabled'] = Variable<int>(isActivityEnabled.value);
     }
     if (order.present) {
       map['order'] = Variable<int>(order.value);
@@ -2483,6 +2638,7 @@ class LocalAlbumEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
@@ -2490,13 +2646,15 @@ class LocalAlbumEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<int> backupSelection = GeneratedColumn<int>(
@@ -2505,16 +2663,16 @@ class LocalAlbumEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isIosSharedAlbum = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isIosSharedAlbum = GeneratedColumn<int>(
     'is_ios_shared_album',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_ios_shared_album" IN (0, 1))',
-    ),
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (is_ios_shared_album IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<String> linkedRemoteAlbumId =
@@ -2524,19 +2682,16 @@ class LocalAlbumEntity extends Table
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES remote_album_entity (id) ON DELETE SET NULL',
-        ),
+        $customConstraints:
+            'NULL REFERENCES remote_album_entity(id)ON DELETE SET NULL',
       );
-  late final GeneratedColumn<bool> marker_ = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> marker = GeneratedColumn<int>(
     'marker',
     aliasedName,
     true,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("marker" IN (0, 1))',
-    ),
+    $customConstraints: 'NULL CHECK (marker IN (0, 1))',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -2546,7 +2701,7 @@ class LocalAlbumEntity extends Table
     backupSelection,
     isIosSharedAlbum,
     linkedRemoteAlbumId,
-    marker_,
+    marker,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2568,7 +2723,7 @@ class LocalAlbumEntity extends Table
         data['${effectivePrefix}name'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       backupSelection: attachedDatabase.typeMapping.read(
@@ -2576,15 +2731,15 @@ class LocalAlbumEntity extends Table
         data['${effectivePrefix}backup_selection'],
       )!,
       isIosSharedAlbum: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_ios_shared_album'],
       )!,
       linkedRemoteAlbumId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}linked_remote_album_id'],
       ),
-      marker_: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+      marker: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
         data['${effectivePrefix}marker'],
       ),
     );
@@ -2599,17 +2754,21 @@ class LocalAlbumEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class LocalAlbumEntityData extends DataClass
     implements Insertable<LocalAlbumEntityData> {
   final String id;
   final String name;
-  final DateTime updatedAt;
+  final String updatedAt;
   final int backupSelection;
-  final bool isIosSharedAlbum;
+  final int isIosSharedAlbum;
   final String? linkedRemoteAlbumId;
-  final bool? marker_;
+  final int? marker;
   const LocalAlbumEntityData({
     required this.id,
     required this.name,
@@ -2617,21 +2776,21 @@ class LocalAlbumEntityData extends DataClass
     required this.backupSelection,
     required this.isIosSharedAlbum,
     this.linkedRemoteAlbumId,
-    this.marker_,
+    this.marker,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     map['backup_selection'] = Variable<int>(backupSelection);
-    map['is_ios_shared_album'] = Variable<bool>(isIosSharedAlbum);
+    map['is_ios_shared_album'] = Variable<int>(isIosSharedAlbum);
     if (!nullToAbsent || linkedRemoteAlbumId != null) {
       map['linked_remote_album_id'] = Variable<String>(linkedRemoteAlbumId);
     }
-    if (!nullToAbsent || marker_ != null) {
-      map['marker'] = Variable<bool>(marker_);
+    if (!nullToAbsent || marker != null) {
+      map['marker'] = Variable<int>(marker);
     }
     return map;
   }
@@ -2644,13 +2803,13 @@ class LocalAlbumEntityData extends DataClass
     return LocalAlbumEntityData(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       backupSelection: serializer.fromJson<int>(json['backupSelection']),
-      isIosSharedAlbum: serializer.fromJson<bool>(json['isIosSharedAlbum']),
+      isIosSharedAlbum: serializer.fromJson<int>(json['isIosSharedAlbum']),
       linkedRemoteAlbumId: serializer.fromJson<String?>(
         json['linkedRemoteAlbumId'],
       ),
-      marker_: serializer.fromJson<bool?>(json['marker_']),
+      marker: serializer.fromJson<int?>(json['marker']),
     );
   }
   @override
@@ -2659,22 +2818,22 @@ class LocalAlbumEntityData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'backupSelection': serializer.toJson<int>(backupSelection),
-      'isIosSharedAlbum': serializer.toJson<bool>(isIosSharedAlbum),
+      'isIosSharedAlbum': serializer.toJson<int>(isIosSharedAlbum),
       'linkedRemoteAlbumId': serializer.toJson<String?>(linkedRemoteAlbumId),
-      'marker_': serializer.toJson<bool?>(marker_),
+      'marker': serializer.toJson<int?>(marker),
     };
   }
 
   LocalAlbumEntityData copyWith({
     String? id,
     String? name,
-    DateTime? updatedAt,
+    String? updatedAt,
     int? backupSelection,
-    bool? isIosSharedAlbum,
+    int? isIosSharedAlbum,
     Value<String?> linkedRemoteAlbumId = const Value.absent(),
-    Value<bool?> marker_ = const Value.absent(),
+    Value<int?> marker = const Value.absent(),
   }) => LocalAlbumEntityData(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -2684,7 +2843,7 @@ class LocalAlbumEntityData extends DataClass
     linkedRemoteAlbumId: linkedRemoteAlbumId.present
         ? linkedRemoteAlbumId.value
         : this.linkedRemoteAlbumId,
-    marker_: marker_.present ? marker_.value : this.marker_,
+    marker: marker.present ? marker.value : this.marker,
   );
   LocalAlbumEntityData copyWithCompanion(LocalAlbumEntityCompanion data) {
     return LocalAlbumEntityData(
@@ -2700,7 +2859,7 @@ class LocalAlbumEntityData extends DataClass
       linkedRemoteAlbumId: data.linkedRemoteAlbumId.present
           ? data.linkedRemoteAlbumId.value
           : this.linkedRemoteAlbumId,
-      marker_: data.marker_.present ? data.marker_.value : this.marker_,
+      marker: data.marker.present ? data.marker.value : this.marker,
     );
   }
 
@@ -2713,7 +2872,7 @@ class LocalAlbumEntityData extends DataClass
           ..write('backupSelection: $backupSelection, ')
           ..write('isIosSharedAlbum: $isIosSharedAlbum, ')
           ..write('linkedRemoteAlbumId: $linkedRemoteAlbumId, ')
-          ..write('marker_: $marker_')
+          ..write('marker: $marker')
           ..write(')'))
         .toString();
   }
@@ -2726,7 +2885,7 @@ class LocalAlbumEntityData extends DataClass
     backupSelection,
     isIosSharedAlbum,
     linkedRemoteAlbumId,
-    marker_,
+    marker,
   );
   @override
   bool operator ==(Object other) =>
@@ -2738,17 +2897,17 @@ class LocalAlbumEntityData extends DataClass
           other.backupSelection == this.backupSelection &&
           other.isIosSharedAlbum == this.isIosSharedAlbum &&
           other.linkedRemoteAlbumId == this.linkedRemoteAlbumId &&
-          other.marker_ == this.marker_);
+          other.marker == this.marker);
 }
 
 class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
   final Value<String> id;
   final Value<String> name;
-  final Value<DateTime> updatedAt;
+  final Value<String> updatedAt;
   final Value<int> backupSelection;
-  final Value<bool> isIosSharedAlbum;
+  final Value<int> isIosSharedAlbum;
   final Value<String?> linkedRemoteAlbumId;
-  final Value<bool?> marker_;
+  final Value<int?> marker;
   const LocalAlbumEntityCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -2756,7 +2915,7 @@ class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
     this.backupSelection = const Value.absent(),
     this.isIosSharedAlbum = const Value.absent(),
     this.linkedRemoteAlbumId = const Value.absent(),
-    this.marker_ = const Value.absent(),
+    this.marker = const Value.absent(),
   });
   LocalAlbumEntityCompanion.insert({
     required String id,
@@ -2765,18 +2924,18 @@ class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
     required int backupSelection,
     this.isIosSharedAlbum = const Value.absent(),
     this.linkedRemoteAlbumId = const Value.absent(),
-    this.marker_ = const Value.absent(),
+    this.marker = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
        backupSelection = Value(backupSelection);
   static Insertable<LocalAlbumEntityData> custom({
     Expression<String>? id,
     Expression<String>? name,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? updatedAt,
     Expression<int>? backupSelection,
-    Expression<bool>? isIosSharedAlbum,
+    Expression<int>? isIosSharedAlbum,
     Expression<String>? linkedRemoteAlbumId,
-    Expression<bool>? marker_,
+    Expression<int>? marker,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2786,18 +2945,18 @@ class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
       if (isIosSharedAlbum != null) 'is_ios_shared_album': isIosSharedAlbum,
       if (linkedRemoteAlbumId != null)
         'linked_remote_album_id': linkedRemoteAlbumId,
-      if (marker_ != null) 'marker': marker_,
+      if (marker != null) 'marker': marker,
     });
   }
 
   LocalAlbumEntityCompanion copyWith({
     Value<String>? id,
     Value<String>? name,
-    Value<DateTime>? updatedAt,
+    Value<String>? updatedAt,
     Value<int>? backupSelection,
-    Value<bool>? isIosSharedAlbum,
+    Value<int>? isIosSharedAlbum,
     Value<String?>? linkedRemoteAlbumId,
-    Value<bool?>? marker_,
+    Value<int?>? marker,
   }) {
     return LocalAlbumEntityCompanion(
       id: id ?? this.id,
@@ -2806,7 +2965,7 @@ class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
       backupSelection: backupSelection ?? this.backupSelection,
       isIosSharedAlbum: isIosSharedAlbum ?? this.isIosSharedAlbum,
       linkedRemoteAlbumId: linkedRemoteAlbumId ?? this.linkedRemoteAlbumId,
-      marker_: marker_ ?? this.marker_,
+      marker: marker ?? this.marker,
     );
   }
 
@@ -2820,21 +2979,21 @@ class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
       map['name'] = Variable<String>(name.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (backupSelection.present) {
       map['backup_selection'] = Variable<int>(backupSelection.value);
     }
     if (isIosSharedAlbum.present) {
-      map['is_ios_shared_album'] = Variable<bool>(isIosSharedAlbum.value);
+      map['is_ios_shared_album'] = Variable<int>(isIosSharedAlbum.value);
     }
     if (linkedRemoteAlbumId.present) {
       map['linked_remote_album_id'] = Variable<String>(
         linkedRemoteAlbumId.value,
       );
     }
-    if (marker_.present) {
-      map['marker'] = Variable<bool>(marker_.value);
+    if (marker.present) {
+      map['marker'] = Variable<int>(marker.value);
     }
     return map;
   }
@@ -2848,7 +3007,7 @@ class LocalAlbumEntityCompanion extends UpdateCompanion<LocalAlbumEntityData> {
           ..write('backupSelection: $backupSelection, ')
           ..write('isIosSharedAlbum: $isIosSharedAlbum, ')
           ..write('linkedRemoteAlbumId: $linkedRemoteAlbumId, ')
-          ..write('marker_: $marker_')
+          ..write('marker: $marker')
           ..write(')'))
         .toString();
   }
@@ -2866,9 +3025,8 @@ class LocalAlbumAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_asset_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES local_asset_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> albumId = GeneratedColumn<String>(
     'album_id',
@@ -2876,22 +3034,19 @@ class LocalAlbumAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_album_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES local_album_entity(id)ON DELETE CASCADE',
   );
-  late final GeneratedColumn<bool> marker_ = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> marker = GeneratedColumn<int>(
     'marker',
     aliasedName,
     true,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("marker" IN (0, 1))',
-    ),
+    $customConstraints: 'NULL CHECK (marker IN (0, 1))',
   );
   @override
-  List<GeneratedColumn> get $columns => [assetId, albumId, marker_];
+  List<GeneratedColumn> get $columns => [assetId, albumId, marker];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2914,8 +3069,8 @@ class LocalAlbumAssetEntity extends Table
         DriftSqlType.string,
         data['${effectivePrefix}album_id'],
       )!,
-      marker_: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+      marker: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
         data['${effectivePrefix}marker'],
       ),
     );
@@ -2930,25 +3085,31 @@ class LocalAlbumAssetEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(asset_id, album_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class LocalAlbumAssetEntityData extends DataClass
     implements Insertable<LocalAlbumAssetEntityData> {
   final String assetId;
   final String albumId;
-  final bool? marker_;
+  final int? marker;
   const LocalAlbumAssetEntityData({
     required this.assetId,
     required this.albumId,
-    this.marker_,
+    this.marker,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['asset_id'] = Variable<String>(assetId);
     map['album_id'] = Variable<String>(albumId);
-    if (!nullToAbsent || marker_ != null) {
-      map['marker'] = Variable<bool>(marker_);
+    if (!nullToAbsent || marker != null) {
+      map['marker'] = Variable<int>(marker);
     }
     return map;
   }
@@ -2961,7 +3122,7 @@ class LocalAlbumAssetEntityData extends DataClass
     return LocalAlbumAssetEntityData(
       assetId: serializer.fromJson<String>(json['assetId']),
       albumId: serializer.fromJson<String>(json['albumId']),
-      marker_: serializer.fromJson<bool?>(json['marker_']),
+      marker: serializer.fromJson<int?>(json['marker']),
     );
   }
   @override
@@ -2970,18 +3131,18 @@ class LocalAlbumAssetEntityData extends DataClass
     return <String, dynamic>{
       'assetId': serializer.toJson<String>(assetId),
       'albumId': serializer.toJson<String>(albumId),
-      'marker_': serializer.toJson<bool?>(marker_),
+      'marker': serializer.toJson<int?>(marker),
     };
   }
 
   LocalAlbumAssetEntityData copyWith({
     String? assetId,
     String? albumId,
-    Value<bool?> marker_ = const Value.absent(),
+    Value<int?> marker = const Value.absent(),
   }) => LocalAlbumAssetEntityData(
     assetId: assetId ?? this.assetId,
     albumId: albumId ?? this.albumId,
-    marker_: marker_.present ? marker_.value : this.marker_,
+    marker: marker.present ? marker.value : this.marker,
   );
   LocalAlbumAssetEntityData copyWithCompanion(
     LocalAlbumAssetEntityCompanion data,
@@ -2989,7 +3150,7 @@ class LocalAlbumAssetEntityData extends DataClass
     return LocalAlbumAssetEntityData(
       assetId: data.assetId.present ? data.assetId.value : this.assetId,
       albumId: data.albumId.present ? data.albumId.value : this.albumId,
-      marker_: data.marker_.present ? data.marker_.value : this.marker_,
+      marker: data.marker.present ? data.marker.value : this.marker,
     );
   }
 
@@ -2998,59 +3159,59 @@ class LocalAlbumAssetEntityData extends DataClass
     return (StringBuffer('LocalAlbumAssetEntityData(')
           ..write('assetId: $assetId, ')
           ..write('albumId: $albumId, ')
-          ..write('marker_: $marker_')
+          ..write('marker: $marker')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(assetId, albumId, marker_);
+  int get hashCode => Object.hash(assetId, albumId, marker);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LocalAlbumAssetEntityData &&
           other.assetId == this.assetId &&
           other.albumId == this.albumId &&
-          other.marker_ == this.marker_);
+          other.marker == this.marker);
 }
 
 class LocalAlbumAssetEntityCompanion
     extends UpdateCompanion<LocalAlbumAssetEntityData> {
   final Value<String> assetId;
   final Value<String> albumId;
-  final Value<bool?> marker_;
+  final Value<int?> marker;
   const LocalAlbumAssetEntityCompanion({
     this.assetId = const Value.absent(),
     this.albumId = const Value.absent(),
-    this.marker_ = const Value.absent(),
+    this.marker = const Value.absent(),
   });
   LocalAlbumAssetEntityCompanion.insert({
     required String assetId,
     required String albumId,
-    this.marker_ = const Value.absent(),
+    this.marker = const Value.absent(),
   }) : assetId = Value(assetId),
        albumId = Value(albumId);
   static Insertable<LocalAlbumAssetEntityData> custom({
     Expression<String>? assetId,
     Expression<String>? albumId,
-    Expression<bool>? marker_,
+    Expression<int>? marker,
   }) {
     return RawValuesInsertable({
       if (assetId != null) 'asset_id': assetId,
       if (albumId != null) 'album_id': albumId,
-      if (marker_ != null) 'marker': marker_,
+      if (marker != null) 'marker': marker,
     });
   }
 
   LocalAlbumAssetEntityCompanion copyWith({
     Value<String>? assetId,
     Value<String>? albumId,
-    Value<bool?>? marker_,
+    Value<int?>? marker,
   }) {
     return LocalAlbumAssetEntityCompanion(
       assetId: assetId ?? this.assetId,
       albumId: albumId ?? this.albumId,
-      marker_: marker_ ?? this.marker_,
+      marker: marker ?? this.marker,
     );
   }
 
@@ -3063,8 +3224,8 @@ class LocalAlbumAssetEntityCompanion
     if (albumId.present) {
       map['album_id'] = Variable<String>(albumId.value);
     }
-    if (marker_.present) {
-      map['marker'] = Variable<bool>(marker_.value);
+    if (marker.present) {
+      map['marker'] = Variable<int>(marker.value);
     }
     return map;
   }
@@ -3074,7 +3235,7 @@ class LocalAlbumAssetEntityCompanion
     return (StringBuffer('LocalAlbumAssetEntityCompanion(')
           ..write('assetId: $assetId, ')
           ..write('albumId: $albumId, ')
-          ..write('marker_: $marker_')
+          ..write('marker: $marker')
           ..write(')'))
         .toString();
   }
@@ -3092,6 +3253,7 @@ class AuthUserEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
@@ -3099,6 +3261,7 @@ class AuthUserEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
     'email',
@@ -3106,44 +3269,43 @@ class AuthUserEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isAdmin = GeneratedColumn<int>(
     'is_admin',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_admin" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_admin IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<bool> hasProfileImage = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> hasProfileImage = GeneratedColumn<int>(
     'has_profile_image',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("has_profile_image" IN (0, 1))',
-    ),
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (has_profile_image IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<DateTime> profileChangedAt =
-      GeneratedColumn<DateTime>(
-        'profile_changed_at',
-        aliasedName,
-        false,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-        defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
-      );
+  late final GeneratedColumn<String> profileChangedAt = GeneratedColumn<String>(
+    'profile_changed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+    defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
+  );
   late final GeneratedColumn<int> avatarColor = GeneratedColumn<int>(
     'avatar_color',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> quotaSizeInBytes = GeneratedColumn<int>(
     'quota_size_in_bytes',
@@ -3151,6 +3313,7 @@ class AuthUserEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<int> quotaUsageInBytes = GeneratedColumn<int>(
@@ -3159,6 +3322,7 @@ class AuthUserEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<String> pinCode = GeneratedColumn<String>(
@@ -3167,6 +3331,7 @@ class AuthUserEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -3205,15 +3370,15 @@ class AuthUserEntity extends Table
         data['${effectivePrefix}email'],
       )!,
       isAdmin: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_admin'],
       )!,
       hasProfileImage: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}has_profile_image'],
       )!,
       profileChangedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}profile_changed_at'],
       )!,
       avatarColor: attachedDatabase.typeMapping.read(
@@ -3244,6 +3409,10 @@ class AuthUserEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class AuthUserEntityData extends DataClass
@@ -3251,9 +3420,9 @@ class AuthUserEntityData extends DataClass
   final String id;
   final String name;
   final String email;
-  final bool isAdmin;
-  final bool hasProfileImage;
-  final DateTime profileChangedAt;
+  final int isAdmin;
+  final int hasProfileImage;
+  final String profileChangedAt;
   final int avatarColor;
   final int quotaSizeInBytes;
   final int quotaUsageInBytes;
@@ -3276,9 +3445,9 @@ class AuthUserEntityData extends DataClass
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['email'] = Variable<String>(email);
-    map['is_admin'] = Variable<bool>(isAdmin);
-    map['has_profile_image'] = Variable<bool>(hasProfileImage);
-    map['profile_changed_at'] = Variable<DateTime>(profileChangedAt);
+    map['is_admin'] = Variable<int>(isAdmin);
+    map['has_profile_image'] = Variable<int>(hasProfileImage);
+    map['profile_changed_at'] = Variable<String>(profileChangedAt);
     map['avatar_color'] = Variable<int>(avatarColor);
     map['quota_size_in_bytes'] = Variable<int>(quotaSizeInBytes);
     map['quota_usage_in_bytes'] = Variable<int>(quotaUsageInBytes);
@@ -3297,9 +3466,9 @@ class AuthUserEntityData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       email: serializer.fromJson<String>(json['email']),
-      isAdmin: serializer.fromJson<bool>(json['isAdmin']),
-      hasProfileImage: serializer.fromJson<bool>(json['hasProfileImage']),
-      profileChangedAt: serializer.fromJson<DateTime>(json['profileChangedAt']),
+      isAdmin: serializer.fromJson<int>(json['isAdmin']),
+      hasProfileImage: serializer.fromJson<int>(json['hasProfileImage']),
+      profileChangedAt: serializer.fromJson<String>(json['profileChangedAt']),
       avatarColor: serializer.fromJson<int>(json['avatarColor']),
       quotaSizeInBytes: serializer.fromJson<int>(json['quotaSizeInBytes']),
       quotaUsageInBytes: serializer.fromJson<int>(json['quotaUsageInBytes']),
@@ -3313,9 +3482,9 @@ class AuthUserEntityData extends DataClass
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'email': serializer.toJson<String>(email),
-      'isAdmin': serializer.toJson<bool>(isAdmin),
-      'hasProfileImage': serializer.toJson<bool>(hasProfileImage),
-      'profileChangedAt': serializer.toJson<DateTime>(profileChangedAt),
+      'isAdmin': serializer.toJson<int>(isAdmin),
+      'hasProfileImage': serializer.toJson<int>(hasProfileImage),
+      'profileChangedAt': serializer.toJson<String>(profileChangedAt),
       'avatarColor': serializer.toJson<int>(avatarColor),
       'quotaSizeInBytes': serializer.toJson<int>(quotaSizeInBytes),
       'quotaUsageInBytes': serializer.toJson<int>(quotaUsageInBytes),
@@ -3327,9 +3496,9 @@ class AuthUserEntityData extends DataClass
     String? id,
     String? name,
     String? email,
-    bool? isAdmin,
-    bool? hasProfileImage,
-    DateTime? profileChangedAt,
+    int? isAdmin,
+    int? hasProfileImage,
+    String? profileChangedAt,
     int? avatarColor,
     int? quotaSizeInBytes,
     int? quotaUsageInBytes,
@@ -3421,9 +3590,9 @@ class AuthUserEntityCompanion extends UpdateCompanion<AuthUserEntityData> {
   final Value<String> id;
   final Value<String> name;
   final Value<String> email;
-  final Value<bool> isAdmin;
-  final Value<bool> hasProfileImage;
-  final Value<DateTime> profileChangedAt;
+  final Value<int> isAdmin;
+  final Value<int> hasProfileImage;
+  final Value<String> profileChangedAt;
   final Value<int> avatarColor;
   final Value<int> quotaSizeInBytes;
   final Value<int> quotaUsageInBytes;
@@ -3459,9 +3628,9 @@ class AuthUserEntityCompanion extends UpdateCompanion<AuthUserEntityData> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? email,
-    Expression<bool>? isAdmin,
-    Expression<bool>? hasProfileImage,
-    Expression<DateTime>? profileChangedAt,
+    Expression<int>? isAdmin,
+    Expression<int>? hasProfileImage,
+    Expression<String>? profileChangedAt,
     Expression<int>? avatarColor,
     Expression<int>? quotaSizeInBytes,
     Expression<int>? quotaUsageInBytes,
@@ -3485,9 +3654,9 @@ class AuthUserEntityCompanion extends UpdateCompanion<AuthUserEntityData> {
     Value<String>? id,
     Value<String>? name,
     Value<String>? email,
-    Value<bool>? isAdmin,
-    Value<bool>? hasProfileImage,
-    Value<DateTime>? profileChangedAt,
+    Value<int>? isAdmin,
+    Value<int>? hasProfileImage,
+    Value<String>? profileChangedAt,
     Value<int>? avatarColor,
     Value<int>? quotaSizeInBytes,
     Value<int>? quotaUsageInBytes,
@@ -3520,13 +3689,13 @@ class AuthUserEntityCompanion extends UpdateCompanion<AuthUserEntityData> {
       map['email'] = Variable<String>(email.value);
     }
     if (isAdmin.present) {
-      map['is_admin'] = Variable<bool>(isAdmin.value);
+      map['is_admin'] = Variable<int>(isAdmin.value);
     }
     if (hasProfileImage.present) {
-      map['has_profile_image'] = Variable<bool>(hasProfileImage.value);
+      map['has_profile_image'] = Variable<int>(hasProfileImage.value);
     }
     if (profileChangedAt.present) {
-      map['profile_changed_at'] = Variable<DateTime>(profileChangedAt.value);
+      map['profile_changed_at'] = Variable<String>(profileChangedAt.value);
     }
     if (avatarColor.present) {
       map['avatar_color'] = Variable<int>(avatarColor.value);
@@ -3573,9 +3742,7 @@ class UserMetadataEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<int> key = GeneratedColumn<int>(
     'key',
@@ -3583,6 +3750,7 @@ class UserMetadataEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<i2.Uint8List> value =
       GeneratedColumn<i2.Uint8List>(
@@ -3591,6 +3759,7 @@ class UserMetadataEntity extends Table
         false,
         type: DriftSqlType.blob,
         requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
       );
   @override
   List<GeneratedColumn> get $columns => [userId, key, value];
@@ -3629,6 +3798,10 @@ class UserMetadataEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(user_id, "key")'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class UserMetadataEntityData extends DataClass
@@ -3788,9 +3961,7 @@ class PartnerEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> sharedWithId = GeneratedColumn<String>(
     'shared_with_id',
@@ -3798,19 +3969,15 @@ class PartnerEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
-  late final GeneratedColumn<bool> inTimeline = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> inTimeline = GeneratedColumn<int>(
     'in_timeline',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("in_timeline" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (in_timeline IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   @override
@@ -3835,7 +4002,7 @@ class PartnerEntity extends Table
         data['${effectivePrefix}shared_with_id'],
       )!,
       inTimeline: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}in_timeline'],
       )!,
     );
@@ -3850,13 +4017,19 @@ class PartnerEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(shared_by_id, shared_with_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class PartnerEntityData extends DataClass
     implements Insertable<PartnerEntityData> {
   final String sharedById;
   final String sharedWithId;
-  final bool inTimeline;
+  final int inTimeline;
   const PartnerEntityData({
     required this.sharedById,
     required this.sharedWithId,
@@ -3867,7 +4040,7 @@ class PartnerEntityData extends DataClass
     final map = <String, Expression>{};
     map['shared_by_id'] = Variable<String>(sharedById);
     map['shared_with_id'] = Variable<String>(sharedWithId);
-    map['in_timeline'] = Variable<bool>(inTimeline);
+    map['in_timeline'] = Variable<int>(inTimeline);
     return map;
   }
 
@@ -3879,7 +4052,7 @@ class PartnerEntityData extends DataClass
     return PartnerEntityData(
       sharedById: serializer.fromJson<String>(json['sharedById']),
       sharedWithId: serializer.fromJson<String>(json['sharedWithId']),
-      inTimeline: serializer.fromJson<bool>(json['inTimeline']),
+      inTimeline: serializer.fromJson<int>(json['inTimeline']),
     );
   }
   @override
@@ -3888,14 +4061,14 @@ class PartnerEntityData extends DataClass
     return <String, dynamic>{
       'sharedById': serializer.toJson<String>(sharedById),
       'sharedWithId': serializer.toJson<String>(sharedWithId),
-      'inTimeline': serializer.toJson<bool>(inTimeline),
+      'inTimeline': serializer.toJson<int>(inTimeline),
     };
   }
 
   PartnerEntityData copyWith({
     String? sharedById,
     String? sharedWithId,
-    bool? inTimeline,
+    int? inTimeline,
   }) => PartnerEntityData(
     sharedById: sharedById ?? this.sharedById,
     sharedWithId: sharedWithId ?? this.sharedWithId,
@@ -3939,7 +4112,7 @@ class PartnerEntityData extends DataClass
 class PartnerEntityCompanion extends UpdateCompanion<PartnerEntityData> {
   final Value<String> sharedById;
   final Value<String> sharedWithId;
-  final Value<bool> inTimeline;
+  final Value<int> inTimeline;
   const PartnerEntityCompanion({
     this.sharedById = const Value.absent(),
     this.sharedWithId = const Value.absent(),
@@ -3954,7 +4127,7 @@ class PartnerEntityCompanion extends UpdateCompanion<PartnerEntityData> {
   static Insertable<PartnerEntityData> custom({
     Expression<String>? sharedById,
     Expression<String>? sharedWithId,
-    Expression<bool>? inTimeline,
+    Expression<int>? inTimeline,
   }) {
     return RawValuesInsertable({
       if (sharedById != null) 'shared_by_id': sharedById,
@@ -3966,7 +4139,7 @@ class PartnerEntityCompanion extends UpdateCompanion<PartnerEntityData> {
   PartnerEntityCompanion copyWith({
     Value<String>? sharedById,
     Value<String>? sharedWithId,
-    Value<bool>? inTimeline,
+    Value<int>? inTimeline,
   }) {
     return PartnerEntityCompanion(
       sharedById: sharedById ?? this.sharedById,
@@ -3985,7 +4158,7 @@ class PartnerEntityCompanion extends UpdateCompanion<PartnerEntityData> {
       map['shared_with_id'] = Variable<String>(sharedWithId.value);
     }
     if (inTimeline.present) {
-      map['in_timeline'] = Variable<bool>(inTimeline.value);
+      map['in_timeline'] = Variable<int>(inTimeline.value);
     }
     return map;
   }
@@ -4013,9 +4186,8 @@ class RemoteExifEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_asset_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES remote_asset_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> city = GeneratedColumn<String>(
     'city',
@@ -4023,6 +4195,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> state = GeneratedColumn<String>(
     'state',
@@ -4030,6 +4203,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> country = GeneratedColumn<String>(
     'country',
@@ -4037,21 +4211,23 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> dateTimeOriginal =
-      GeneratedColumn<DateTime>(
-        'date_time_original',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
+  late final GeneratedColumn<String> dateTimeOriginal = GeneratedColumn<String>(
+    'date_time_original',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
     'height',
@@ -4059,6 +4235,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> width = GeneratedColumn<int>(
     'width',
@@ -4066,6 +4243,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> exposureTime = GeneratedColumn<String>(
     'exposure_time',
@@ -4073,6 +4251,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> fNumber = GeneratedColumn<double>(
     'f_number',
@@ -4080,6 +4259,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> fileSize = GeneratedColumn<int>(
     'file_size',
@@ -4087,6 +4267,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> focalLength = GeneratedColumn<double>(
     'focal_length',
@@ -4094,6 +4275,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
     'latitude',
@@ -4101,6 +4283,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
     'longitude',
@@ -4108,6 +4291,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> iso = GeneratedColumn<int>(
     'iso',
@@ -4115,6 +4299,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> make = GeneratedColumn<String>(
     'make',
@@ -4122,6 +4307,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> model = GeneratedColumn<String>(
     'model',
@@ -4129,6 +4315,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> lens = GeneratedColumn<String>(
     'lens',
@@ -4136,6 +4323,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> orientation = GeneratedColumn<String>(
     'orientation',
@@ -4143,6 +4331,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> timeZone = GeneratedColumn<String>(
     'time_zone',
@@ -4150,6 +4339,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> rating = GeneratedColumn<int>(
     'rating',
@@ -4157,6 +4347,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> projectionType = GeneratedColumn<String>(
     'projection_type',
@@ -4164,6 +4355,7 @@ class RemoteExifEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -4218,7 +4410,7 @@ class RemoteExifEntity extends Table
         data['${effectivePrefix}country'],
       ),
       dateTimeOriginal: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}date_time_original'],
       ),
       description: attachedDatabase.typeMapping.read(
@@ -4301,6 +4493,10 @@ class RemoteExifEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(asset_id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class RemoteExifEntityData extends DataClass
@@ -4309,7 +4505,7 @@ class RemoteExifEntityData extends DataClass
   final String? city;
   final String? state;
   final String? country;
-  final DateTime? dateTimeOriginal;
+  final String? dateTimeOriginal;
   final String? description;
   final int? height;
   final int? width;
@@ -4365,7 +4561,7 @@ class RemoteExifEntityData extends DataClass
       map['country'] = Variable<String>(country);
     }
     if (!nullToAbsent || dateTimeOriginal != null) {
-      map['date_time_original'] = Variable<DateTime>(dateTimeOriginal);
+      map['date_time_original'] = Variable<String>(dateTimeOriginal);
     }
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -4431,9 +4627,7 @@ class RemoteExifEntityData extends DataClass
       city: serializer.fromJson<String?>(json['city']),
       state: serializer.fromJson<String?>(json['state']),
       country: serializer.fromJson<String?>(json['country']),
-      dateTimeOriginal: serializer.fromJson<DateTime?>(
-        json['dateTimeOriginal'],
-      ),
+      dateTimeOriginal: serializer.fromJson<String?>(json['dateTimeOriginal']),
       description: serializer.fromJson<String?>(json['description']),
       height: serializer.fromJson<int?>(json['height']),
       width: serializer.fromJson<int?>(json['width']),
@@ -4461,7 +4655,7 @@ class RemoteExifEntityData extends DataClass
       'city': serializer.toJson<String?>(city),
       'state': serializer.toJson<String?>(state),
       'country': serializer.toJson<String?>(country),
-      'dateTimeOriginal': serializer.toJson<DateTime?>(dateTimeOriginal),
+      'dateTimeOriginal': serializer.toJson<String?>(dateTimeOriginal),
       'description': serializer.toJson<String?>(description),
       'height': serializer.toJson<int?>(height),
       'width': serializer.toJson<int?>(width),
@@ -4487,7 +4681,7 @@ class RemoteExifEntityData extends DataClass
     Value<String?> city = const Value.absent(),
     Value<String?> state = const Value.absent(),
     Value<String?> country = const Value.absent(),
-    Value<DateTime?> dateTimeOriginal = const Value.absent(),
+    Value<String?> dateTimeOriginal = const Value.absent(),
     Value<String?> description = const Value.absent(),
     Value<int?> height = const Value.absent(),
     Value<int?> width = const Value.absent(),
@@ -4659,7 +4853,7 @@ class RemoteExifEntityCompanion extends UpdateCompanion<RemoteExifEntityData> {
   final Value<String?> city;
   final Value<String?> state;
   final Value<String?> country;
-  final Value<DateTime?> dateTimeOriginal;
+  final Value<String?> dateTimeOriginal;
   final Value<String?> description;
   final Value<int?> height;
   final Value<int?> width;
@@ -4730,7 +4924,7 @@ class RemoteExifEntityCompanion extends UpdateCompanion<RemoteExifEntityData> {
     Expression<String>? city,
     Expression<String>? state,
     Expression<String>? country,
-    Expression<DateTime>? dateTimeOriginal,
+    Expression<String>? dateTimeOriginal,
     Expression<String>? description,
     Expression<int>? height,
     Expression<int>? width,
@@ -4780,7 +4974,7 @@ class RemoteExifEntityCompanion extends UpdateCompanion<RemoteExifEntityData> {
     Value<String?>? city,
     Value<String?>? state,
     Value<String?>? country,
-    Value<DateTime?>? dateTimeOriginal,
+    Value<String?>? dateTimeOriginal,
     Value<String?>? description,
     Value<int?>? height,
     Value<int?>? width,
@@ -4841,7 +5035,7 @@ class RemoteExifEntityCompanion extends UpdateCompanion<RemoteExifEntityData> {
       map['country'] = Variable<String>(country.value);
     }
     if (dateTimeOriginal.present) {
-      map['date_time_original'] = Variable<DateTime>(dateTimeOriginal.value);
+      map['date_time_original'] = Variable<String>(dateTimeOriginal.value);
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
@@ -4939,9 +5133,8 @@ class RemoteAlbumAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_asset_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES remote_asset_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> albumId = GeneratedColumn<String>(
     'album_id',
@@ -4949,9 +5142,8 @@ class RemoteAlbumAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_album_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES remote_album_entity(id)ON DELETE CASCADE',
   );
   @override
   List<GeneratedColumn> get $columns => [assetId, albumId];
@@ -4989,6 +5181,12 @@ class RemoteAlbumAssetEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(asset_id, album_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class RemoteAlbumAssetEntityData extends DataClass
@@ -5126,9 +5324,8 @@ class RemoteAlbumUserEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_album_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES remote_album_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
     'user_id',
@@ -5136,9 +5333,7 @@ class RemoteAlbumUserEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<int> role = GeneratedColumn<int>(
     'role',
@@ -5146,6 +5341,7 @@ class RemoteAlbumUserEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [albumId, userId, role];
@@ -5187,6 +5383,12 @@ class RemoteAlbumUserEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(album_id, user_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class RemoteAlbumUserEntityData extends DataClass
@@ -5336,6 +5538,355 @@ class RemoteAlbumUserEntityCompanion
   }
 }
 
+class RemoteAssetCloudIdEntity extends Table
+    with TableInfo<RemoteAssetCloudIdEntity, RemoteAssetCloudIdEntityData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RemoteAssetCloudIdEntity(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> assetId = GeneratedColumn<String>(
+    'asset_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES remote_asset_entity(id)ON DELETE CASCADE',
+  );
+  late final GeneratedColumn<String> cloudId = GeneratedColumn<String>(
+    'cloud_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> adjustmentTime = GeneratedColumn<String>(
+    'adjustment_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    assetId,
+    cloudId,
+    createdAt,
+    adjustmentTime,
+    latitude,
+    longitude,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'remote_asset_cloud_id_entity';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {assetId};
+  @override
+  RemoteAssetCloudIdEntityData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RemoteAssetCloudIdEntityData(
+      assetId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}asset_id'],
+      )!,
+      cloudId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cloud_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      ),
+      adjustmentTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}adjustment_time'],
+      ),
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+    );
+  }
+
+  @override
+  RemoteAssetCloudIdEntity createAlias(String alias) {
+    return RemoteAssetCloudIdEntity(attachedDatabase, alias);
+  }
+
+  @override
+  bool get withoutRowId => true;
+  @override
+  bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(asset_id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class RemoteAssetCloudIdEntityData extends DataClass
+    implements Insertable<RemoteAssetCloudIdEntityData> {
+  final String assetId;
+  final String? cloudId;
+  final String? createdAt;
+  final String? adjustmentTime;
+  final double? latitude;
+  final double? longitude;
+  const RemoteAssetCloudIdEntityData({
+    required this.assetId,
+    this.cloudId,
+    this.createdAt,
+    this.adjustmentTime,
+    this.latitude,
+    this.longitude,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['asset_id'] = Variable<String>(assetId);
+    if (!nullToAbsent || cloudId != null) {
+      map['cloud_id'] = Variable<String>(cloudId);
+    }
+    if (!nullToAbsent || createdAt != null) {
+      map['created_at'] = Variable<String>(createdAt);
+    }
+    if (!nullToAbsent || adjustmentTime != null) {
+      map['adjustment_time'] = Variable<String>(adjustmentTime);
+    }
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    return map;
+  }
+
+  factory RemoteAssetCloudIdEntityData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RemoteAssetCloudIdEntityData(
+      assetId: serializer.fromJson<String>(json['assetId']),
+      cloudId: serializer.fromJson<String?>(json['cloudId']),
+      createdAt: serializer.fromJson<String?>(json['createdAt']),
+      adjustmentTime: serializer.fromJson<String?>(json['adjustmentTime']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'assetId': serializer.toJson<String>(assetId),
+      'cloudId': serializer.toJson<String?>(cloudId),
+      'createdAt': serializer.toJson<String?>(createdAt),
+      'adjustmentTime': serializer.toJson<String?>(adjustmentTime),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+    };
+  }
+
+  RemoteAssetCloudIdEntityData copyWith({
+    String? assetId,
+    Value<String?> cloudId = const Value.absent(),
+    Value<String?> createdAt = const Value.absent(),
+    Value<String?> adjustmentTime = const Value.absent(),
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+  }) => RemoteAssetCloudIdEntityData(
+    assetId: assetId ?? this.assetId,
+    cloudId: cloudId.present ? cloudId.value : this.cloudId,
+    createdAt: createdAt.present ? createdAt.value : this.createdAt,
+    adjustmentTime: adjustmentTime.present
+        ? adjustmentTime.value
+        : this.adjustmentTime,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+  );
+  RemoteAssetCloudIdEntityData copyWithCompanion(
+    RemoteAssetCloudIdEntityCompanion data,
+  ) {
+    return RemoteAssetCloudIdEntityData(
+      assetId: data.assetId.present ? data.assetId.value : this.assetId,
+      cloudId: data.cloudId.present ? data.cloudId.value : this.cloudId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      adjustmentTime: data.adjustmentTime.present
+          ? data.adjustmentTime.value
+          : this.adjustmentTime,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemoteAssetCloudIdEntityData(')
+          ..write('assetId: $assetId, ')
+          ..write('cloudId: $cloudId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('adjustmentTime: $adjustmentTime, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    assetId,
+    cloudId,
+    createdAt,
+    adjustmentTime,
+    latitude,
+    longitude,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RemoteAssetCloudIdEntityData &&
+          other.assetId == this.assetId &&
+          other.cloudId == this.cloudId &&
+          other.createdAt == this.createdAt &&
+          other.adjustmentTime == this.adjustmentTime &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude);
+}
+
+class RemoteAssetCloudIdEntityCompanion
+    extends UpdateCompanion<RemoteAssetCloudIdEntityData> {
+  final Value<String> assetId;
+  final Value<String?> cloudId;
+  final Value<String?> createdAt;
+  final Value<String?> adjustmentTime;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  const RemoteAssetCloudIdEntityCompanion({
+    this.assetId = const Value.absent(),
+    this.cloudId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.adjustmentTime = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+  });
+  RemoteAssetCloudIdEntityCompanion.insert({
+    required String assetId,
+    this.cloudId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.adjustmentTime = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+  }) : assetId = Value(assetId);
+  static Insertable<RemoteAssetCloudIdEntityData> custom({
+    Expression<String>? assetId,
+    Expression<String>? cloudId,
+    Expression<String>? createdAt,
+    Expression<String>? adjustmentTime,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+  }) {
+    return RawValuesInsertable({
+      if (assetId != null) 'asset_id': assetId,
+      if (cloudId != null) 'cloud_id': cloudId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (adjustmentTime != null) 'adjustment_time': adjustmentTime,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+    });
+  }
+
+  RemoteAssetCloudIdEntityCompanion copyWith({
+    Value<String>? assetId,
+    Value<String?>? cloudId,
+    Value<String?>? createdAt,
+    Value<String?>? adjustmentTime,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+  }) {
+    return RemoteAssetCloudIdEntityCompanion(
+      assetId: assetId ?? this.assetId,
+      cloudId: cloudId ?? this.cloudId,
+      createdAt: createdAt ?? this.createdAt,
+      adjustmentTime: adjustmentTime ?? this.adjustmentTime,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (assetId.present) {
+      map['asset_id'] = Variable<String>(assetId.value);
+    }
+    if (cloudId.present) {
+      map['cloud_id'] = Variable<String>(cloudId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (adjustmentTime.present) {
+      map['adjustment_time'] = Variable<String>(adjustmentTime.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemoteAssetCloudIdEntityCompanion(')
+          ..write('assetId: $assetId, ')
+          ..write('cloudId: $cloudId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('adjustmentTime: $adjustmentTime, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class MemoryEntity extends Table
     with TableInfo<MemoryEntity, MemoryEntityData> {
   @override
@@ -5348,29 +5899,33 @@ class MemoryEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
     'owner_id',
@@ -5378,9 +5933,7 @@ class MemoryEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
     'type',
@@ -5388,6 +5941,7 @@ class MemoryEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> data = GeneratedColumn<String>(
     'data',
@@ -5395,45 +5949,48 @@ class MemoryEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<bool> isSaved = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isSaved = GeneratedColumn<int>(
     'is_saved',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_saved" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_saved IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<DateTime> memoryAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> memoryAt = GeneratedColumn<String>(
     'memory_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> seenAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> seenAt = GeneratedColumn<String>(
     'seen_at',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> showAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> showAt = GeneratedColumn<String>(
     'show_at',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> hideAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> hideAt = GeneratedColumn<String>(
     'hide_at',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -5466,15 +6023,15 @@ class MemoryEntity extends Table
         data['${effectivePrefix}id'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}deleted_at'],
       ),
       ownerId: attachedDatabase.typeMapping.read(
@@ -5490,23 +6047,23 @@ class MemoryEntity extends Table
         data['${effectivePrefix}data'],
       )!,
       isSaved: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_saved'],
       )!,
       memoryAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}memory_at'],
       )!,
       seenAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}seen_at'],
       ),
       showAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}show_at'],
       ),
       hideAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}hide_at'],
       ),
     );
@@ -5521,22 +6078,26 @@ class MemoryEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class MemoryEntityData extends DataClass
     implements Insertable<MemoryEntityData> {
   final String id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final DateTime? deletedAt;
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
   final String ownerId;
   final int type;
   final String data;
-  final bool isSaved;
-  final DateTime memoryAt;
-  final DateTime? seenAt;
-  final DateTime? showAt;
-  final DateTime? hideAt;
+  final int isSaved;
+  final String memoryAt;
+  final String? seenAt;
+  final String? showAt;
+  final String? hideAt;
   const MemoryEntityData({
     required this.id,
     required this.createdAt,
@@ -5555,24 +6116,24 @@ class MemoryEntityData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt);
+      map['deleted_at'] = Variable<String>(deletedAt);
     }
     map['owner_id'] = Variable<String>(ownerId);
     map['type'] = Variable<int>(type);
     map['data'] = Variable<String>(data);
-    map['is_saved'] = Variable<bool>(isSaved);
-    map['memory_at'] = Variable<DateTime>(memoryAt);
+    map['is_saved'] = Variable<int>(isSaved);
+    map['memory_at'] = Variable<String>(memoryAt);
     if (!nullToAbsent || seenAt != null) {
-      map['seen_at'] = Variable<DateTime>(seenAt);
+      map['seen_at'] = Variable<String>(seenAt);
     }
     if (!nullToAbsent || showAt != null) {
-      map['show_at'] = Variable<DateTime>(showAt);
+      map['show_at'] = Variable<String>(showAt);
     }
     if (!nullToAbsent || hideAt != null) {
-      map['hide_at'] = Variable<DateTime>(hideAt);
+      map['hide_at'] = Variable<String>(hideAt);
     }
     return map;
   }
@@ -5584,17 +6145,17 @@ class MemoryEntityData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MemoryEntityData(
       id: serializer.fromJson<String>(json['id']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       type: serializer.fromJson<int>(json['type']),
       data: serializer.fromJson<String>(json['data']),
-      isSaved: serializer.fromJson<bool>(json['isSaved']),
-      memoryAt: serializer.fromJson<DateTime>(json['memoryAt']),
-      seenAt: serializer.fromJson<DateTime?>(json['seenAt']),
-      showAt: serializer.fromJson<DateTime?>(json['showAt']),
-      hideAt: serializer.fromJson<DateTime?>(json['hideAt']),
+      isSaved: serializer.fromJson<int>(json['isSaved']),
+      memoryAt: serializer.fromJson<String>(json['memoryAt']),
+      seenAt: serializer.fromJson<String?>(json['seenAt']),
+      showAt: serializer.fromJson<String?>(json['showAt']),
+      hideAt: serializer.fromJson<String?>(json['hideAt']),
     );
   }
   @override
@@ -5602,33 +6163,33 @@ class MemoryEntityData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
       'ownerId': serializer.toJson<String>(ownerId),
       'type': serializer.toJson<int>(type),
       'data': serializer.toJson<String>(data),
-      'isSaved': serializer.toJson<bool>(isSaved),
-      'memoryAt': serializer.toJson<DateTime>(memoryAt),
-      'seenAt': serializer.toJson<DateTime?>(seenAt),
-      'showAt': serializer.toJson<DateTime?>(showAt),
-      'hideAt': serializer.toJson<DateTime?>(hideAt),
+      'isSaved': serializer.toJson<int>(isSaved),
+      'memoryAt': serializer.toJson<String>(memoryAt),
+      'seenAt': serializer.toJson<String?>(seenAt),
+      'showAt': serializer.toJson<String?>(showAt),
+      'hideAt': serializer.toJson<String?>(hideAt),
     };
   }
 
   MemoryEntityData copyWith({
     String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    Value<DateTime?> deletedAt = const Value.absent(),
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
     String? ownerId,
     int? type,
     String? data,
-    bool? isSaved,
-    DateTime? memoryAt,
-    Value<DateTime?> seenAt = const Value.absent(),
-    Value<DateTime?> showAt = const Value.absent(),
-    Value<DateTime?> hideAt = const Value.absent(),
+    int? isSaved,
+    String? memoryAt,
+    Value<String?> seenAt = const Value.absent(),
+    Value<String?> showAt = const Value.absent(),
+    Value<String?> hideAt = const Value.absent(),
   }) => MemoryEntityData(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -5714,17 +6275,17 @@ class MemoryEntityData extends DataClass
 
 class MemoryEntityCompanion extends UpdateCompanion<MemoryEntityData> {
   final Value<String> id;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  final Value<DateTime?> deletedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
   final Value<String> ownerId;
   final Value<int> type;
   final Value<String> data;
-  final Value<bool> isSaved;
-  final Value<DateTime> memoryAt;
-  final Value<DateTime?> seenAt;
-  final Value<DateTime?> showAt;
-  final Value<DateTime?> hideAt;
+  final Value<int> isSaved;
+  final Value<String> memoryAt;
+  final Value<String?> seenAt;
+  final Value<String?> showAt;
+  final Value<String?> hideAt;
   const MemoryEntityCompanion({
     this.id = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -5748,7 +6309,7 @@ class MemoryEntityCompanion extends UpdateCompanion<MemoryEntityData> {
     required int type,
     required String data,
     this.isSaved = const Value.absent(),
-    required DateTime memoryAt,
+    required String memoryAt,
     this.seenAt = const Value.absent(),
     this.showAt = const Value.absent(),
     this.hideAt = const Value.absent(),
@@ -5759,17 +6320,17 @@ class MemoryEntityCompanion extends UpdateCompanion<MemoryEntityData> {
        memoryAt = Value(memoryAt);
   static Insertable<MemoryEntityData> custom({
     Expression<String>? id,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-    Expression<DateTime>? deletedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
     Expression<String>? ownerId,
     Expression<int>? type,
     Expression<String>? data,
-    Expression<bool>? isSaved,
-    Expression<DateTime>? memoryAt,
-    Expression<DateTime>? seenAt,
-    Expression<DateTime>? showAt,
-    Expression<DateTime>? hideAt,
+    Expression<int>? isSaved,
+    Expression<String>? memoryAt,
+    Expression<String>? seenAt,
+    Expression<String>? showAt,
+    Expression<String>? hideAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5789,17 +6350,17 @@ class MemoryEntityCompanion extends UpdateCompanion<MemoryEntityData> {
 
   MemoryEntityCompanion copyWith({
     Value<String>? id,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
-    Value<DateTime?>? deletedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
     Value<String>? ownerId,
     Value<int>? type,
     Value<String>? data,
-    Value<bool>? isSaved,
-    Value<DateTime>? memoryAt,
-    Value<DateTime?>? seenAt,
-    Value<DateTime?>? showAt,
-    Value<DateTime?>? hideAt,
+    Value<int>? isSaved,
+    Value<String>? memoryAt,
+    Value<String?>? seenAt,
+    Value<String?>? showAt,
+    Value<String?>? hideAt,
   }) {
     return MemoryEntityCompanion(
       id: id ?? this.id,
@@ -5824,13 +6385,13 @@ class MemoryEntityCompanion extends UpdateCompanion<MemoryEntityData> {
       map['id'] = Variable<String>(id.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+      map['deleted_at'] = Variable<String>(deletedAt.value);
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
@@ -5842,19 +6403,19 @@ class MemoryEntityCompanion extends UpdateCompanion<MemoryEntityData> {
       map['data'] = Variable<String>(data.value);
     }
     if (isSaved.present) {
-      map['is_saved'] = Variable<bool>(isSaved.value);
+      map['is_saved'] = Variable<int>(isSaved.value);
     }
     if (memoryAt.present) {
-      map['memory_at'] = Variable<DateTime>(memoryAt.value);
+      map['memory_at'] = Variable<String>(memoryAt.value);
     }
     if (seenAt.present) {
-      map['seen_at'] = Variable<DateTime>(seenAt.value);
+      map['seen_at'] = Variable<String>(seenAt.value);
     }
     if (showAt.present) {
-      map['show_at'] = Variable<DateTime>(showAt.value);
+      map['show_at'] = Variable<String>(showAt.value);
     }
     if (hideAt.present) {
-      map['hide_at'] = Variable<DateTime>(hideAt.value);
+      map['hide_at'] = Variable<String>(hideAt.value);
     }
     return map;
   }
@@ -5891,9 +6452,8 @@ class MemoryAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_asset_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES remote_asset_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> memoryId = GeneratedColumn<String>(
     'memory_id',
@@ -5901,9 +6461,8 @@ class MemoryAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES memory_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES memory_entity(id)ON DELETE CASCADE',
   );
   @override
   List<GeneratedColumn> get $columns => [assetId, memoryId];
@@ -5938,6 +6497,12 @@ class MemoryAssetEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(asset_id, memory_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class MemoryAssetEntityData extends DataClass
@@ -6070,21 +6635,24 @@ class PersonEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
@@ -6093,9 +6661,7 @@ class PersonEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES user_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints: 'NOT NULL REFERENCES user_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
@@ -6103,6 +6669,7 @@ class PersonEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> faceAssetId = GeneratedColumn<String>(
     'face_asset_id',
@@ -6110,26 +6677,23 @@ class PersonEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
     'is_favorite',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_favorite" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_favorite IN (0, 1))',
   );
-  late final GeneratedColumn<bool> isHidden = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isHidden = GeneratedColumn<int>(
     'is_hidden',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_hidden" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL CHECK (is_hidden IN (0, 1))',
   );
   late final GeneratedColumn<String> color = GeneratedColumn<String>(
     'color',
@@ -6137,13 +6701,15 @@ class PersonEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<DateTime> birthDate = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> birthDate = GeneratedColumn<String>(
     'birth_date',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -6174,11 +6740,11 @@ class PersonEntity extends Table
         data['${effectivePrefix}id'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       ownerId: attachedDatabase.typeMapping.read(
@@ -6194,11 +6760,11 @@ class PersonEntity extends Table
         data['${effectivePrefix}face_asset_id'],
       ),
       isFavorite: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_favorite'],
       )!,
       isHidden: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_hidden'],
       )!,
       color: attachedDatabase.typeMapping.read(
@@ -6206,7 +6772,7 @@ class PersonEntity extends Table
         data['${effectivePrefix}color'],
       ),
       birthDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}birth_date'],
       ),
     );
@@ -6221,20 +6787,24 @@ class PersonEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class PersonEntityData extends DataClass
     implements Insertable<PersonEntityData> {
   final String id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final String ownerId;
   final String name;
   final String? faceAssetId;
-  final bool isFavorite;
-  final bool isHidden;
+  final int isFavorite;
+  final int isHidden;
   final String? color;
-  final DateTime? birthDate;
+  final String? birthDate;
   const PersonEntityData({
     required this.id,
     required this.createdAt,
@@ -6251,20 +6821,20 @@ class PersonEntityData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     map['owner_id'] = Variable<String>(ownerId);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || faceAssetId != null) {
       map['face_asset_id'] = Variable<String>(faceAssetId);
     }
-    map['is_favorite'] = Variable<bool>(isFavorite);
-    map['is_hidden'] = Variable<bool>(isHidden);
+    map['is_favorite'] = Variable<int>(isFavorite);
+    map['is_hidden'] = Variable<int>(isHidden);
     if (!nullToAbsent || color != null) {
       map['color'] = Variable<String>(color);
     }
     if (!nullToAbsent || birthDate != null) {
-      map['birth_date'] = Variable<DateTime>(birthDate);
+      map['birth_date'] = Variable<String>(birthDate);
     }
     return map;
   }
@@ -6276,15 +6846,15 @@ class PersonEntityData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PersonEntityData(
       id: serializer.fromJson<String>(json['id']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       name: serializer.fromJson<String>(json['name']),
       faceAssetId: serializer.fromJson<String?>(json['faceAssetId']),
-      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
-      isHidden: serializer.fromJson<bool>(json['isHidden']),
+      isFavorite: serializer.fromJson<int>(json['isFavorite']),
+      isHidden: serializer.fromJson<int>(json['isHidden']),
       color: serializer.fromJson<String?>(json['color']),
-      birthDate: serializer.fromJson<DateTime?>(json['birthDate']),
+      birthDate: serializer.fromJson<String?>(json['birthDate']),
     );
   }
   @override
@@ -6292,29 +6862,29 @@ class PersonEntityData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'ownerId': serializer.toJson<String>(ownerId),
       'name': serializer.toJson<String>(name),
       'faceAssetId': serializer.toJson<String?>(faceAssetId),
-      'isFavorite': serializer.toJson<bool>(isFavorite),
-      'isHidden': serializer.toJson<bool>(isHidden),
+      'isFavorite': serializer.toJson<int>(isFavorite),
+      'isHidden': serializer.toJson<int>(isHidden),
       'color': serializer.toJson<String?>(color),
-      'birthDate': serializer.toJson<DateTime?>(birthDate),
+      'birthDate': serializer.toJson<String?>(birthDate),
     };
   }
 
   PersonEntityData copyWith({
     String? id,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     String? ownerId,
     String? name,
     Value<String?> faceAssetId = const Value.absent(),
-    bool? isFavorite,
-    bool? isHidden,
+    int? isFavorite,
+    int? isHidden,
     Value<String?> color = const Value.absent(),
-    Value<DateTime?> birthDate = const Value.absent(),
+    Value<String?> birthDate = const Value.absent(),
   }) => PersonEntityData(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -6394,15 +6964,15 @@ class PersonEntityData extends DataClass
 
 class PersonEntityCompanion extends UpdateCompanion<PersonEntityData> {
   final Value<String> id;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
   final Value<String> ownerId;
   final Value<String> name;
   final Value<String?> faceAssetId;
-  final Value<bool> isFavorite;
-  final Value<bool> isHidden;
+  final Value<int> isFavorite;
+  final Value<int> isHidden;
   final Value<String?> color;
-  final Value<DateTime?> birthDate;
+  final Value<String?> birthDate;
   const PersonEntityCompanion({
     this.id = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -6422,8 +6992,8 @@ class PersonEntityCompanion extends UpdateCompanion<PersonEntityData> {
     required String ownerId,
     required String name,
     this.faceAssetId = const Value.absent(),
-    required bool isFavorite,
-    required bool isHidden,
+    required int isFavorite,
+    required int isHidden,
     this.color = const Value.absent(),
     this.birthDate = const Value.absent(),
   }) : id = Value(id),
@@ -6433,15 +7003,15 @@ class PersonEntityCompanion extends UpdateCompanion<PersonEntityData> {
        isHidden = Value(isHidden);
   static Insertable<PersonEntityData> custom({
     Expression<String>? id,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
     Expression<String>? ownerId,
     Expression<String>? name,
     Expression<String>? faceAssetId,
-    Expression<bool>? isFavorite,
-    Expression<bool>? isHidden,
+    Expression<int>? isFavorite,
+    Expression<int>? isHidden,
     Expression<String>? color,
-    Expression<DateTime>? birthDate,
+    Expression<String>? birthDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -6459,15 +7029,15 @@ class PersonEntityCompanion extends UpdateCompanion<PersonEntityData> {
 
   PersonEntityCompanion copyWith({
     Value<String>? id,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
     Value<String>? ownerId,
     Value<String>? name,
     Value<String?>? faceAssetId,
-    Value<bool>? isFavorite,
-    Value<bool>? isHidden,
+    Value<int>? isFavorite,
+    Value<int>? isHidden,
     Value<String?>? color,
-    Value<DateTime?>? birthDate,
+    Value<String?>? birthDate,
   }) {
     return PersonEntityCompanion(
       id: id ?? this.id,
@@ -6490,10 +7060,10 @@ class PersonEntityCompanion extends UpdateCompanion<PersonEntityData> {
       map['id'] = Variable<String>(id.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
@@ -6505,16 +7075,16 @@ class PersonEntityCompanion extends UpdateCompanion<PersonEntityData> {
       map['face_asset_id'] = Variable<String>(faceAssetId.value);
     }
     if (isFavorite.present) {
-      map['is_favorite'] = Variable<bool>(isFavorite.value);
+      map['is_favorite'] = Variable<int>(isFavorite.value);
     }
     if (isHidden.present) {
-      map['is_hidden'] = Variable<bool>(isHidden.value);
+      map['is_hidden'] = Variable<int>(isHidden.value);
     }
     if (color.present) {
       map['color'] = Variable<String>(color.value);
     }
     if (birthDate.present) {
-      map['birth_date'] = Variable<DateTime>(birthDate.value);
+      map['birth_date'] = Variable<String>(birthDate.value);
     }
     return map;
   }
@@ -6549,6 +7119,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> assetId = GeneratedColumn<String>(
     'asset_id',
@@ -6556,9 +7127,8 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES remote_asset_entity (id) ON DELETE CASCADE',
-    ),
+    $customConstraints:
+        'NOT NULL REFERENCES remote_asset_entity(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> personId = GeneratedColumn<String>(
     'person_id',
@@ -6566,9 +7136,7 @@ class AssetFaceEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES person_entity (id) ON DELETE SET NULL',
-    ),
+    $customConstraints: 'NULL REFERENCES person_entity(id)ON DELETE SET NULL',
   );
   late final GeneratedColumn<int> imageWidth = GeneratedColumn<int>(
     'image_width',
@@ -6576,6 +7144,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> imageHeight = GeneratedColumn<int>(
     'image_height',
@@ -6583,6 +7152,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> boundingBoxX1 = GeneratedColumn<int>(
     'bounding_box_x1',
@@ -6590,6 +7160,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> boundingBoxY1 = GeneratedColumn<int>(
     'bounding_box_y1',
@@ -6597,6 +7168,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> boundingBoxX2 = GeneratedColumn<int>(
     'bounding_box_x2',
@@ -6604,6 +7176,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> boundingBoxY2 = GeneratedColumn<int>(
     'bounding_box_y2',
@@ -6611,6 +7184,7 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> sourceType = GeneratedColumn<String>(
     'source_type',
@@ -6618,6 +7192,24 @@ class AssetFaceEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> isVisible = GeneratedColumn<int>(
+    'is_visible',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_visible IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -6631,6 +7223,8 @@ class AssetFaceEntity extends Table
     boundingBoxX2,
     boundingBoxY2,
     sourceType,
+    isVisible,
+    deletedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6683,6 +7277,14 @@ class AssetFaceEntity extends Table
         DriftSqlType.string,
         data['${effectivePrefix}source_type'],
       )!,
+      isVisible: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_visible'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
     );
   }
 
@@ -6695,6 +7297,10 @@ class AssetFaceEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class AssetFaceEntityData extends DataClass
@@ -6709,6 +7315,8 @@ class AssetFaceEntityData extends DataClass
   final int boundingBoxX2;
   final int boundingBoxY2;
   final String sourceType;
+  final int isVisible;
+  final String? deletedAt;
   const AssetFaceEntityData({
     required this.id,
     required this.assetId,
@@ -6720,6 +7328,8 @@ class AssetFaceEntityData extends DataClass
     required this.boundingBoxX2,
     required this.boundingBoxY2,
     required this.sourceType,
+    required this.isVisible,
+    this.deletedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6736,6 +7346,10 @@ class AssetFaceEntityData extends DataClass
     map['bounding_box_x2'] = Variable<int>(boundingBoxX2);
     map['bounding_box_y2'] = Variable<int>(boundingBoxY2);
     map['source_type'] = Variable<String>(sourceType);
+    map['is_visible'] = Variable<int>(isVisible);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
     return map;
   }
 
@@ -6755,6 +7369,8 @@ class AssetFaceEntityData extends DataClass
       boundingBoxX2: serializer.fromJson<int>(json['boundingBoxX2']),
       boundingBoxY2: serializer.fromJson<int>(json['boundingBoxY2']),
       sourceType: serializer.fromJson<String>(json['sourceType']),
+      isVisible: serializer.fromJson<int>(json['isVisible']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
     );
   }
   @override
@@ -6771,6 +7387,8 @@ class AssetFaceEntityData extends DataClass
       'boundingBoxX2': serializer.toJson<int>(boundingBoxX2),
       'boundingBoxY2': serializer.toJson<int>(boundingBoxY2),
       'sourceType': serializer.toJson<String>(sourceType),
+      'isVisible': serializer.toJson<int>(isVisible),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
     };
   }
 
@@ -6785,6 +7403,8 @@ class AssetFaceEntityData extends DataClass
     int? boundingBoxX2,
     int? boundingBoxY2,
     String? sourceType,
+    int? isVisible,
+    Value<String?> deletedAt = const Value.absent(),
   }) => AssetFaceEntityData(
     id: id ?? this.id,
     assetId: assetId ?? this.assetId,
@@ -6796,6 +7416,8 @@ class AssetFaceEntityData extends DataClass
     boundingBoxX2: boundingBoxX2 ?? this.boundingBoxX2,
     boundingBoxY2: boundingBoxY2 ?? this.boundingBoxY2,
     sourceType: sourceType ?? this.sourceType,
+    isVisible: isVisible ?? this.isVisible,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   AssetFaceEntityData copyWithCompanion(AssetFaceEntityCompanion data) {
     return AssetFaceEntityData(
@@ -6823,6 +7445,8 @@ class AssetFaceEntityData extends DataClass
       sourceType: data.sourceType.present
           ? data.sourceType.value
           : this.sourceType,
+      isVisible: data.isVisible.present ? data.isVisible.value : this.isVisible,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
@@ -6838,7 +7462,9 @@ class AssetFaceEntityData extends DataClass
           ..write('boundingBoxY1: $boundingBoxY1, ')
           ..write('boundingBoxX2: $boundingBoxX2, ')
           ..write('boundingBoxY2: $boundingBoxY2, ')
-          ..write('sourceType: $sourceType')
+          ..write('sourceType: $sourceType, ')
+          ..write('isVisible: $isVisible, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
@@ -6855,6 +7481,8 @@ class AssetFaceEntityData extends DataClass
     boundingBoxX2,
     boundingBoxY2,
     sourceType,
+    isVisible,
+    deletedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -6869,7 +7497,9 @@ class AssetFaceEntityData extends DataClass
           other.boundingBoxY1 == this.boundingBoxY1 &&
           other.boundingBoxX2 == this.boundingBoxX2 &&
           other.boundingBoxY2 == this.boundingBoxY2 &&
-          other.sourceType == this.sourceType);
+          other.sourceType == this.sourceType &&
+          other.isVisible == this.isVisible &&
+          other.deletedAt == this.deletedAt);
 }
 
 class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
@@ -6883,6 +7513,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
   final Value<int> boundingBoxX2;
   final Value<int> boundingBoxY2;
   final Value<String> sourceType;
+  final Value<int> isVisible;
+  final Value<String?> deletedAt;
   const AssetFaceEntityCompanion({
     this.id = const Value.absent(),
     this.assetId = const Value.absent(),
@@ -6894,6 +7526,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
     this.boundingBoxX2 = const Value.absent(),
     this.boundingBoxY2 = const Value.absent(),
     this.sourceType = const Value.absent(),
+    this.isVisible = const Value.absent(),
+    this.deletedAt = const Value.absent(),
   });
   AssetFaceEntityCompanion.insert({
     required String id,
@@ -6906,6 +7540,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
     required int boundingBoxX2,
     required int boundingBoxY2,
     required String sourceType,
+    this.isVisible = const Value.absent(),
+    this.deletedAt = const Value.absent(),
   }) : id = Value(id),
        assetId = Value(assetId),
        imageWidth = Value(imageWidth),
@@ -6926,6 +7562,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
     Expression<int>? boundingBoxX2,
     Expression<int>? boundingBoxY2,
     Expression<String>? sourceType,
+    Expression<int>? isVisible,
+    Expression<String>? deletedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -6938,6 +7576,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
       if (boundingBoxX2 != null) 'bounding_box_x2': boundingBoxX2,
       if (boundingBoxY2 != null) 'bounding_box_y2': boundingBoxY2,
       if (sourceType != null) 'source_type': sourceType,
+      if (isVisible != null) 'is_visible': isVisible,
+      if (deletedAt != null) 'deleted_at': deletedAt,
     });
   }
 
@@ -6952,6 +7592,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
     Value<int>? boundingBoxX2,
     Value<int>? boundingBoxY2,
     Value<String>? sourceType,
+    Value<int>? isVisible,
+    Value<String?>? deletedAt,
   }) {
     return AssetFaceEntityCompanion(
       id: id ?? this.id,
@@ -6964,6 +7606,8 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
       boundingBoxX2: boundingBoxX2 ?? this.boundingBoxX2,
       boundingBoxY2: boundingBoxY2 ?? this.boundingBoxY2,
       sourceType: sourceType ?? this.sourceType,
+      isVisible: isVisible ?? this.isVisible,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -7000,6 +7644,12 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
     if (sourceType.present) {
       map['source_type'] = Variable<String>(sourceType.value);
     }
+    if (isVisible.present) {
+      map['is_visible'] = Variable<int>(isVisible.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
     return map;
   }
 
@@ -7015,7 +7665,9 @@ class AssetFaceEntityCompanion extends UpdateCompanion<AssetFaceEntityData> {
           ..write('boundingBoxY1: $boundingBoxY1, ')
           ..write('boundingBoxX2: $boundingBoxX2, ')
           ..write('boundingBoxY2: $boundingBoxY2, ')
-          ..write('sourceType: $sourceType')
+          ..write('sourceType: $sourceType, ')
+          ..write('isVisible: $isVisible, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
@@ -7032,6 +7684,7 @@ class StoreEntity extends Table with TableInfo<StoreEntity, StoreEntityData> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> stringValue = GeneratedColumn<String>(
     'string_value',
@@ -7039,6 +7692,7 @@ class StoreEntity extends Table with TableInfo<StoreEntity, StoreEntityData> {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> intValue = GeneratedColumn<int>(
     'int_value',
@@ -7046,6 +7700,7 @@ class StoreEntity extends Table with TableInfo<StoreEntity, StoreEntityData> {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [id, stringValue, intValue];
@@ -7084,6 +7739,10 @@ class StoreEntity extends Table with TableInfo<StoreEntity, StoreEntityData> {
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class StoreEntityData extends DataClass implements Insertable<StoreEntityData> {
@@ -7241,6 +7900,7 @@ class TrashedLocalAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
     'type',
@@ -7248,21 +7908,24 @@ class TrashedLocalAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
   );
   late final GeneratedColumn<int> width = GeneratedColumn<int>(
@@ -7271,6 +7934,7 @@ class TrashedLocalAssetEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
     'height',
@@ -7278,13 +7942,15 @@ class TrashedLocalAssetEntity extends Table
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<int> durationInSeconds = GeneratedColumn<int>(
-    'duration_in_seconds',
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -7292,6 +7958,7 @@ class TrashedLocalAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> albumId = GeneratedColumn<String>(
     'album_id',
@@ -7299,6 +7966,7 @@ class TrashedLocalAssetEntity extends Table
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<String> checksum = GeneratedColumn<String>(
     'checksum',
@@ -7306,16 +7974,15 @@ class TrashedLocalAssetEntity extends Table
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
     'is_favorite',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_favorite" IN (0, 1))',
-    ),
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_favorite IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<int> orientation = GeneratedColumn<int>(
@@ -7324,6 +7991,7 @@ class TrashedLocalAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<int> source = GeneratedColumn<int>(
@@ -7332,6 +8000,16 @@ class TrashedLocalAssetEntity extends Table
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> playbackStyle = GeneratedColumn<int>(
+    'playback_style',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -7341,13 +8019,14 @@ class TrashedLocalAssetEntity extends Table
     updatedAt,
     width,
     height,
-    durationInSeconds,
+    durationMs,
     id,
     albumId,
     checksum,
     isFavorite,
     orientation,
     source,
+    playbackStyle,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7372,11 +8051,11 @@ class TrashedLocalAssetEntity extends Table
         data['${effectivePrefix}type'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
       width: attachedDatabase.typeMapping.read(
@@ -7387,9 +8066,9 @@ class TrashedLocalAssetEntity extends Table
         DriftSqlType.int,
         data['${effectivePrefix}height'],
       ),
-      durationInSeconds: attachedDatabase.typeMapping.read(
+      durationMs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}duration_in_seconds'],
+        data['${effectivePrefix}duration_ms'],
       ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -7404,7 +8083,7 @@ class TrashedLocalAssetEntity extends Table
         data['${effectivePrefix}checksum'],
       ),
       isFavorite: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
+        DriftSqlType.int,
         data['${effectivePrefix}is_favorite'],
       )!,
       orientation: attachedDatabase.typeMapping.read(
@@ -7414,6 +8093,10 @@ class TrashedLocalAssetEntity extends Table
       source: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}source'],
+      )!,
+      playbackStyle: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}playback_style'],
       )!,
     );
   }
@@ -7427,23 +8110,28 @@ class TrashedLocalAssetEntity extends Table
   bool get withoutRowId => true;
   @override
   bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id, album_id)'];
+  @override
+  bool get dontWriteConstraints => true;
 }
 
 class TrashedLocalAssetEntityData extends DataClass
     implements Insertable<TrashedLocalAssetEntityData> {
   final String name;
   final int type;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final int? width;
   final int? height;
-  final int? durationInSeconds;
+  final int? durationMs;
   final String id;
   final String albumId;
   final String? checksum;
-  final bool isFavorite;
+  final int isFavorite;
   final int orientation;
   final int source;
+  final int playbackStyle;
   const TrashedLocalAssetEntityData({
     required this.name,
     required this.type,
@@ -7451,38 +8139,40 @@ class TrashedLocalAssetEntityData extends DataClass
     required this.updatedAt,
     this.width,
     this.height,
-    this.durationInSeconds,
+    this.durationMs,
     required this.id,
     required this.albumId,
     this.checksum,
     required this.isFavorite,
     required this.orientation,
     required this.source,
+    required this.playbackStyle,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['name'] = Variable<String>(name);
     map['type'] = Variable<int>(type);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
     if (!nullToAbsent || width != null) {
       map['width'] = Variable<int>(width);
     }
     if (!nullToAbsent || height != null) {
       map['height'] = Variable<int>(height);
     }
-    if (!nullToAbsent || durationInSeconds != null) {
-      map['duration_in_seconds'] = Variable<int>(durationInSeconds);
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
     }
     map['id'] = Variable<String>(id);
     map['album_id'] = Variable<String>(albumId);
     if (!nullToAbsent || checksum != null) {
       map['checksum'] = Variable<String>(checksum);
     }
-    map['is_favorite'] = Variable<bool>(isFavorite);
+    map['is_favorite'] = Variable<int>(isFavorite);
     map['orientation'] = Variable<int>(orientation);
     map['source'] = Variable<int>(source);
+    map['playback_style'] = Variable<int>(playbackStyle);
     return map;
   }
 
@@ -7494,17 +8184,18 @@ class TrashedLocalAssetEntityData extends DataClass
     return TrashedLocalAssetEntityData(
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<int>(json['type']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
       width: serializer.fromJson<int?>(json['width']),
       height: serializer.fromJson<int?>(json['height']),
-      durationInSeconds: serializer.fromJson<int?>(json['durationInSeconds']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
       id: serializer.fromJson<String>(json['id']),
       albumId: serializer.fromJson<String>(json['albumId']),
       checksum: serializer.fromJson<String?>(json['checksum']),
-      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      isFavorite: serializer.fromJson<int>(json['isFavorite']),
       orientation: serializer.fromJson<int>(json['orientation']),
       source: serializer.fromJson<int>(json['source']),
+      playbackStyle: serializer.fromJson<int>(json['playbackStyle']),
     );
   }
   @override
@@ -7513,34 +8204,36 @@ class TrashedLocalAssetEntityData extends DataClass
     return <String, dynamic>{
       'name': serializer.toJson<String>(name),
       'type': serializer.toJson<int>(type),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
       'width': serializer.toJson<int?>(width),
       'height': serializer.toJson<int?>(height),
-      'durationInSeconds': serializer.toJson<int?>(durationInSeconds),
+      'durationMs': serializer.toJson<int?>(durationMs),
       'id': serializer.toJson<String>(id),
       'albumId': serializer.toJson<String>(albumId),
       'checksum': serializer.toJson<String?>(checksum),
-      'isFavorite': serializer.toJson<bool>(isFavorite),
+      'isFavorite': serializer.toJson<int>(isFavorite),
       'orientation': serializer.toJson<int>(orientation),
       'source': serializer.toJson<int>(source),
+      'playbackStyle': serializer.toJson<int>(playbackStyle),
     };
   }
 
   TrashedLocalAssetEntityData copyWith({
     String? name,
     int? type,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     Value<int?> width = const Value.absent(),
     Value<int?> height = const Value.absent(),
-    Value<int?> durationInSeconds = const Value.absent(),
+    Value<int?> durationMs = const Value.absent(),
     String? id,
     String? albumId,
     Value<String?> checksum = const Value.absent(),
-    bool? isFavorite,
+    int? isFavorite,
     int? orientation,
     int? source,
+    int? playbackStyle,
   }) => TrashedLocalAssetEntityData(
     name: name ?? this.name,
     type: type ?? this.type,
@@ -7548,15 +8241,14 @@ class TrashedLocalAssetEntityData extends DataClass
     updatedAt: updatedAt ?? this.updatedAt,
     width: width.present ? width.value : this.width,
     height: height.present ? height.value : this.height,
-    durationInSeconds: durationInSeconds.present
-        ? durationInSeconds.value
-        : this.durationInSeconds,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
     id: id ?? this.id,
     albumId: albumId ?? this.albumId,
     checksum: checksum.present ? checksum.value : this.checksum,
     isFavorite: isFavorite ?? this.isFavorite,
     orientation: orientation ?? this.orientation,
     source: source ?? this.source,
+    playbackStyle: playbackStyle ?? this.playbackStyle,
   );
   TrashedLocalAssetEntityData copyWithCompanion(
     TrashedLocalAssetEntityCompanion data,
@@ -7568,9 +8260,9 @@ class TrashedLocalAssetEntityData extends DataClass
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       width: data.width.present ? data.width.value : this.width,
       height: data.height.present ? data.height.value : this.height,
-      durationInSeconds: data.durationInSeconds.present
-          ? data.durationInSeconds.value
-          : this.durationInSeconds,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
       id: data.id.present ? data.id.value : this.id,
       albumId: data.albumId.present ? data.albumId.value : this.albumId,
       checksum: data.checksum.present ? data.checksum.value : this.checksum,
@@ -7581,6 +8273,9 @@ class TrashedLocalAssetEntityData extends DataClass
           ? data.orientation.value
           : this.orientation,
       source: data.source.present ? data.source.value : this.source,
+      playbackStyle: data.playbackStyle.present
+          ? data.playbackStyle.value
+          : this.playbackStyle,
     );
   }
 
@@ -7593,13 +8288,14 @@ class TrashedLocalAssetEntityData extends DataClass
           ..write('updatedAt: $updatedAt, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
-          ..write('durationInSeconds: $durationInSeconds, ')
+          ..write('durationMs: $durationMs, ')
           ..write('id: $id, ')
           ..write('albumId: $albumId, ')
           ..write('checksum: $checksum, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('orientation: $orientation, ')
-          ..write('source: $source')
+          ..write('source: $source, ')
+          ..write('playbackStyle: $playbackStyle')
           ..write(')'))
         .toString();
   }
@@ -7612,13 +8308,14 @@ class TrashedLocalAssetEntityData extends DataClass
     updatedAt,
     width,
     height,
-    durationInSeconds,
+    durationMs,
     id,
     albumId,
     checksum,
     isFavorite,
     orientation,
     source,
+    playbackStyle,
   );
   @override
   bool operator ==(Object other) =>
@@ -7630,30 +8327,32 @@ class TrashedLocalAssetEntityData extends DataClass
           other.updatedAt == this.updatedAt &&
           other.width == this.width &&
           other.height == this.height &&
-          other.durationInSeconds == this.durationInSeconds &&
+          other.durationMs == this.durationMs &&
           other.id == this.id &&
           other.albumId == this.albumId &&
           other.checksum == this.checksum &&
           other.isFavorite == this.isFavorite &&
           other.orientation == this.orientation &&
-          other.source == this.source);
+          other.source == this.source &&
+          other.playbackStyle == this.playbackStyle);
 }
 
 class TrashedLocalAssetEntityCompanion
     extends UpdateCompanion<TrashedLocalAssetEntityData> {
   final Value<String> name;
   final Value<int> type;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
   final Value<int?> width;
   final Value<int?> height;
-  final Value<int?> durationInSeconds;
+  final Value<int?> durationMs;
   final Value<String> id;
   final Value<String> albumId;
   final Value<String?> checksum;
-  final Value<bool> isFavorite;
+  final Value<int> isFavorite;
   final Value<int> orientation;
   final Value<int> source;
+  final Value<int> playbackStyle;
   const TrashedLocalAssetEntityCompanion({
     this.name = const Value.absent(),
     this.type = const Value.absent(),
@@ -7661,13 +8360,14 @@ class TrashedLocalAssetEntityCompanion
     this.updatedAt = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
-    this.durationInSeconds = const Value.absent(),
+    this.durationMs = const Value.absent(),
     this.id = const Value.absent(),
     this.albumId = const Value.absent(),
     this.checksum = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.orientation = const Value.absent(),
     this.source = const Value.absent(),
+    this.playbackStyle = const Value.absent(),
   });
   TrashedLocalAssetEntityCompanion.insert({
     required String name,
@@ -7676,13 +8376,14 @@ class TrashedLocalAssetEntityCompanion
     this.updatedAt = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
-    this.durationInSeconds = const Value.absent(),
+    this.durationMs = const Value.absent(),
     required String id,
     required String albumId,
     this.checksum = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.orientation = const Value.absent(),
     required int source,
+    this.playbackStyle = const Value.absent(),
   }) : name = Value(name),
        type = Value(type),
        id = Value(id),
@@ -7691,17 +8392,18 @@ class TrashedLocalAssetEntityCompanion
   static Insertable<TrashedLocalAssetEntityData> custom({
     Expression<String>? name,
     Expression<int>? type,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
     Expression<int>? width,
     Expression<int>? height,
-    Expression<int>? durationInSeconds,
+    Expression<int>? durationMs,
     Expression<String>? id,
     Expression<String>? albumId,
     Expression<String>? checksum,
-    Expression<bool>? isFavorite,
+    Expression<int>? isFavorite,
     Expression<int>? orientation,
     Expression<int>? source,
+    Expression<int>? playbackStyle,
   }) {
     return RawValuesInsertable({
       if (name != null) 'name': name,
@@ -7710,30 +8412,32 @@ class TrashedLocalAssetEntityCompanion
       if (updatedAt != null) 'updated_at': updatedAt,
       if (width != null) 'width': width,
       if (height != null) 'height': height,
-      if (durationInSeconds != null) 'duration_in_seconds': durationInSeconds,
+      if (durationMs != null) 'duration_ms': durationMs,
       if (id != null) 'id': id,
       if (albumId != null) 'album_id': albumId,
       if (checksum != null) 'checksum': checksum,
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (orientation != null) 'orientation': orientation,
       if (source != null) 'source': source,
+      if (playbackStyle != null) 'playback_style': playbackStyle,
     });
   }
 
   TrashedLocalAssetEntityCompanion copyWith({
     Value<String>? name,
     Value<int>? type,
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
     Value<int?>? width,
     Value<int?>? height,
-    Value<int?>? durationInSeconds,
+    Value<int?>? durationMs,
     Value<String>? id,
     Value<String>? albumId,
     Value<String?>? checksum,
-    Value<bool>? isFavorite,
+    Value<int>? isFavorite,
     Value<int>? orientation,
     Value<int>? source,
+    Value<int>? playbackStyle,
   }) {
     return TrashedLocalAssetEntityCompanion(
       name: name ?? this.name,
@@ -7742,13 +8446,14 @@ class TrashedLocalAssetEntityCompanion
       updatedAt: updatedAt ?? this.updatedAt,
       width: width ?? this.width,
       height: height ?? this.height,
-      durationInSeconds: durationInSeconds ?? this.durationInSeconds,
+      durationMs: durationMs ?? this.durationMs,
       id: id ?? this.id,
       albumId: albumId ?? this.albumId,
       checksum: checksum ?? this.checksum,
       isFavorite: isFavorite ?? this.isFavorite,
       orientation: orientation ?? this.orientation,
       source: source ?? this.source,
+      playbackStyle: playbackStyle ?? this.playbackStyle,
     );
   }
 
@@ -7762,10 +8467,10 @@ class TrashedLocalAssetEntityCompanion
       map['type'] = Variable<int>(type.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<String>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<String>(updatedAt.value);
     }
     if (width.present) {
       map['width'] = Variable<int>(width.value);
@@ -7773,8 +8478,8 @@ class TrashedLocalAssetEntityCompanion
     if (height.present) {
       map['height'] = Variable<int>(height.value);
     }
-    if (durationInSeconds.present) {
-      map['duration_in_seconds'] = Variable<int>(durationInSeconds.value);
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -7786,13 +8491,16 @@ class TrashedLocalAssetEntityCompanion
       map['checksum'] = Variable<String>(checksum.value);
     }
     if (isFavorite.present) {
-      map['is_favorite'] = Variable<bool>(isFavorite.value);
+      map['is_favorite'] = Variable<int>(isFavorite.value);
     }
     if (orientation.present) {
       map['orientation'] = Variable<int>(orientation.value);
     }
     if (source.present) {
       map['source'] = Variable<int>(source.value);
+    }
+    if (playbackStyle.present) {
+      map['playback_style'] = Variable<int>(playbackStyle.value);
     }
     return map;
   }
@@ -7806,20 +8514,322 @@ class TrashedLocalAssetEntityCompanion
           ..write('updatedAt: $updatedAt, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
-          ..write('durationInSeconds: $durationInSeconds, ')
+          ..write('durationMs: $durationMs, ')
           ..write('id: $id, ')
           ..write('albumId: $albumId, ')
           ..write('checksum: $checksum, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('orientation: $orientation, ')
-          ..write('source: $source')
+          ..write('source: $source, ')
+          ..write('playbackStyle: $playbackStyle')
           ..write(')'))
         .toString();
   }
 }
 
-class DatabaseAtV15 extends GeneratedDatabase {
-  DatabaseAtV15(QueryExecutor e) : super(e);
+class AssetEditEntity extends Table
+    with TableInfo<AssetEditEntity, AssetEditEntityData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  AssetEditEntity(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> assetId = GeneratedColumn<String>(
+    'asset_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES remote_asset_entity(id)ON DELETE CASCADE',
+  );
+  late final GeneratedColumn<int> action = GeneratedColumn<int>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<i2.Uint8List> parameters =
+      GeneratedColumn<i2.Uint8List>(
+        'parameters',
+        aliasedName,
+        false,
+        type: DriftSqlType.blob,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<int> sequence = GeneratedColumn<int>(
+    'sequence',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    assetId,
+    action,
+    parameters,
+    sequence,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'asset_edit_entity';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AssetEditEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AssetEditEntityData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      assetId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}asset_id'],
+      )!,
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}action'],
+      )!,
+      parameters: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}parameters'],
+      )!,
+      sequence: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sequence'],
+      )!,
+    );
+  }
+
+  @override
+  AssetEditEntity createAlias(String alias) {
+    return AssetEditEntity(attachedDatabase, alias);
+  }
+
+  @override
+  bool get withoutRowId => true;
+  @override
+  bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class AssetEditEntityData extends DataClass
+    implements Insertable<AssetEditEntityData> {
+  final String id;
+  final String assetId;
+  final int action;
+  final i2.Uint8List parameters;
+  final int sequence;
+  const AssetEditEntityData({
+    required this.id,
+    required this.assetId,
+    required this.action,
+    required this.parameters,
+    required this.sequence,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['asset_id'] = Variable<String>(assetId);
+    map['action'] = Variable<int>(action);
+    map['parameters'] = Variable<i2.Uint8List>(parameters);
+    map['sequence'] = Variable<int>(sequence);
+    return map;
+  }
+
+  factory AssetEditEntityData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AssetEditEntityData(
+      id: serializer.fromJson<String>(json['id']),
+      assetId: serializer.fromJson<String>(json['assetId']),
+      action: serializer.fromJson<int>(json['action']),
+      parameters: serializer.fromJson<i2.Uint8List>(json['parameters']),
+      sequence: serializer.fromJson<int>(json['sequence']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'assetId': serializer.toJson<String>(assetId),
+      'action': serializer.toJson<int>(action),
+      'parameters': serializer.toJson<i2.Uint8List>(parameters),
+      'sequence': serializer.toJson<int>(sequence),
+    };
+  }
+
+  AssetEditEntityData copyWith({
+    String? id,
+    String? assetId,
+    int? action,
+    i2.Uint8List? parameters,
+    int? sequence,
+  }) => AssetEditEntityData(
+    id: id ?? this.id,
+    assetId: assetId ?? this.assetId,
+    action: action ?? this.action,
+    parameters: parameters ?? this.parameters,
+    sequence: sequence ?? this.sequence,
+  );
+  AssetEditEntityData copyWithCompanion(AssetEditEntityCompanion data) {
+    return AssetEditEntityData(
+      id: data.id.present ? data.id.value : this.id,
+      assetId: data.assetId.present ? data.assetId.value : this.assetId,
+      action: data.action.present ? data.action.value : this.action,
+      parameters: data.parameters.present
+          ? data.parameters.value
+          : this.parameters,
+      sequence: data.sequence.present ? data.sequence.value : this.sequence,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AssetEditEntityData(')
+          ..write('id: $id, ')
+          ..write('assetId: $assetId, ')
+          ..write('action: $action, ')
+          ..write('parameters: $parameters, ')
+          ..write('sequence: $sequence')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    assetId,
+    action,
+    $driftBlobEquality.hash(parameters),
+    sequence,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AssetEditEntityData &&
+          other.id == this.id &&
+          other.assetId == this.assetId &&
+          other.action == this.action &&
+          $driftBlobEquality.equals(other.parameters, this.parameters) &&
+          other.sequence == this.sequence);
+}
+
+class AssetEditEntityCompanion extends UpdateCompanion<AssetEditEntityData> {
+  final Value<String> id;
+  final Value<String> assetId;
+  final Value<int> action;
+  final Value<i2.Uint8List> parameters;
+  final Value<int> sequence;
+  const AssetEditEntityCompanion({
+    this.id = const Value.absent(),
+    this.assetId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.parameters = const Value.absent(),
+    this.sequence = const Value.absent(),
+  });
+  AssetEditEntityCompanion.insert({
+    required String id,
+    required String assetId,
+    required int action,
+    required i2.Uint8List parameters,
+    required int sequence,
+  }) : id = Value(id),
+       assetId = Value(assetId),
+       action = Value(action),
+       parameters = Value(parameters),
+       sequence = Value(sequence);
+  static Insertable<AssetEditEntityData> custom({
+    Expression<String>? id,
+    Expression<String>? assetId,
+    Expression<int>? action,
+    Expression<i2.Uint8List>? parameters,
+    Expression<int>? sequence,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (assetId != null) 'asset_id': assetId,
+      if (action != null) 'action': action,
+      if (parameters != null) 'parameters': parameters,
+      if (sequence != null) 'sequence': sequence,
+    });
+  }
+
+  AssetEditEntityCompanion copyWith({
+    Value<String>? id,
+    Value<String>? assetId,
+    Value<int>? action,
+    Value<i2.Uint8List>? parameters,
+    Value<int>? sequence,
+  }) {
+    return AssetEditEntityCompanion(
+      id: id ?? this.id,
+      assetId: assetId ?? this.assetId,
+      action: action ?? this.action,
+      parameters: parameters ?? this.parameters,
+      sequence: sequence ?? this.sequence,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (assetId.present) {
+      map['asset_id'] = Variable<String>(assetId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<int>(action.value);
+    }
+    if (parameters.present) {
+      map['parameters'] = Variable<i2.Uint8List>(parameters.value);
+    }
+    if (sequence.present) {
+      map['sequence'] = Variable<int>(sequence.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AssetEditEntityCompanion(')
+          ..write('id: $id, ')
+          ..write('assetId: $assetId, ')
+          ..write('action: $action, ')
+          ..write('parameters: $parameters, ')
+          ..write('sequence: $sequence')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class DatabaseAtV23 extends GeneratedDatabase {
+  DatabaseAtV23(QueryExecutor e) : super(e);
   late final UserEntity userEntity = UserEntity(this);
   late final RemoteAssetEntity remoteAssetEntity = RemoteAssetEntity(this);
   late final StackEntity stackEntity = StackEntity(this);
@@ -7828,9 +8838,25 @@ class DatabaseAtV15 extends GeneratedDatabase {
   late final LocalAlbumEntity localAlbumEntity = LocalAlbumEntity(this);
   late final LocalAlbumAssetEntity localAlbumAssetEntity =
       LocalAlbumAssetEntity(this);
+  late final Index idxLocalAlbumAssetAlbumAsset = Index(
+    'idx_local_album_asset_album_asset',
+    'CREATE INDEX IF NOT EXISTS idx_local_album_asset_album_asset ON local_album_asset_entity (album_id, asset_id)',
+  );
+  late final Index idxRemoteAlbumOwnerId = Index(
+    'idx_remote_album_owner_id',
+    'CREATE INDEX IF NOT EXISTS idx_remote_album_owner_id ON remote_album_entity (owner_id)',
+  );
   late final Index idxLocalAssetChecksum = Index(
     'idx_local_asset_checksum',
     'CREATE INDEX IF NOT EXISTS idx_local_asset_checksum ON local_asset_entity (checksum)',
+  );
+  late final Index idxLocalAssetCloudId = Index(
+    'idx_local_asset_cloud_id',
+    'CREATE INDEX IF NOT EXISTS idx_local_asset_cloud_id ON local_asset_entity (i_cloud_id)',
+  );
+  late final Index idxStackPrimaryAssetId = Index(
+    'idx_stack_primary_asset_id',
+    'CREATE INDEX IF NOT EXISTS idx_stack_primary_asset_id ON stack_entity (primary_asset_id)',
   );
   late final Index idxRemoteAssetOwnerChecksum = Index(
     'idx_remote_asset_owner_checksum',
@@ -7848,6 +8874,18 @@ class DatabaseAtV15 extends GeneratedDatabase {
     'idx_remote_asset_checksum',
     'CREATE INDEX IF NOT EXISTS idx_remote_asset_checksum ON remote_asset_entity (checksum)',
   );
+  late final Index idxRemoteAssetStackId = Index(
+    'idx_remote_asset_stack_id',
+    'CREATE INDEX IF NOT EXISTS idx_remote_asset_stack_id ON remote_asset_entity (stack_id)',
+  );
+  late final Index idxRemoteAssetLocalDateTimeDay = Index(
+    'idx_remote_asset_local_date_time_day',
+    'CREATE INDEX IF NOT EXISTS idx_remote_asset_local_date_time_day ON remote_asset_entity (STRFTIME(\'%Y-%m-%d\', local_date_time))',
+  );
+  late final Index idxRemoteAssetLocalDateTimeMonth = Index(
+    'idx_remote_asset_local_date_time_month',
+    'CREATE INDEX IF NOT EXISTS idx_remote_asset_local_date_time_month ON remote_asset_entity (STRFTIME(\'%Y-%m\', local_date_time))',
+  );
   late final AuthUserEntity authUserEntity = AuthUserEntity(this);
   late final UserMetadataEntity userMetadataEntity = UserMetadataEntity(this);
   late final PartnerEntity partnerEntity = PartnerEntity(this);
@@ -7856,6 +8894,8 @@ class DatabaseAtV15 extends GeneratedDatabase {
       RemoteAlbumAssetEntity(this);
   late final RemoteAlbumUserEntity remoteAlbumUserEntity =
       RemoteAlbumUserEntity(this);
+  late final RemoteAssetCloudIdEntity remoteAssetCloudIdEntity =
+      RemoteAssetCloudIdEntity(this);
   late final MemoryEntity memoryEntity = MemoryEntity(this);
   late final MemoryAssetEntity memoryAssetEntity = MemoryAssetEntity(this);
   late final PersonEntity personEntity = PersonEntity(this);
@@ -7863,9 +8903,34 @@ class DatabaseAtV15 extends GeneratedDatabase {
   late final StoreEntity storeEntity = StoreEntity(this);
   late final TrashedLocalAssetEntity trashedLocalAssetEntity =
       TrashedLocalAssetEntity(this);
+  late final AssetEditEntity assetEditEntity = AssetEditEntity(this);
+  late final Index idxPartnerSharedWithId = Index(
+    'idx_partner_shared_with_id',
+    'CREATE INDEX IF NOT EXISTS idx_partner_shared_with_id ON partner_entity (shared_with_id)',
+  );
   late final Index idxLatLng = Index(
     'idx_lat_lng',
     'CREATE INDEX IF NOT EXISTS idx_lat_lng ON remote_exif_entity (latitude, longitude)',
+  );
+  late final Index idxRemoteAlbumAssetAlbumAsset = Index(
+    'idx_remote_album_asset_album_asset',
+    'CREATE INDEX IF NOT EXISTS idx_remote_album_asset_album_asset ON remote_album_asset_entity (album_id, asset_id)',
+  );
+  late final Index idxRemoteAssetCloudId = Index(
+    'idx_remote_asset_cloud_id',
+    'CREATE INDEX IF NOT EXISTS idx_remote_asset_cloud_id ON remote_asset_cloud_id_entity (cloud_id)',
+  );
+  late final Index idxPersonOwnerId = Index(
+    'idx_person_owner_id',
+    'CREATE INDEX IF NOT EXISTS idx_person_owner_id ON person_entity (owner_id)',
+  );
+  late final Index idxAssetFacePersonId = Index(
+    'idx_asset_face_person_id',
+    'CREATE INDEX IF NOT EXISTS idx_asset_face_person_id ON asset_face_entity (person_id)',
+  );
+  late final Index idxAssetFaceAssetId = Index(
+    'idx_asset_face_asset_id',
+    'CREATE INDEX IF NOT EXISTS idx_asset_face_asset_id ON asset_face_entity (asset_id)',
   );
   late final Index idxTrashedLocalAssetChecksum = Index(
     'idx_trashed_local_asset_checksum',
@@ -7874,6 +8939,10 @@ class DatabaseAtV15 extends GeneratedDatabase {
   late final Index idxTrashedLocalAssetAlbum = Index(
     'idx_trashed_local_asset_album',
     'CREATE INDEX IF NOT EXISTS idx_trashed_local_asset_album ON trashed_local_asset_entity (album_id)',
+  );
+  late final Index idxAssetEditAssetId = Index(
+    'idx_asset_edit_asset_id',
+    'CREATE INDEX IF NOT EXISTS idx_asset_edit_asset_id ON asset_edit_entity (asset_id)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -7887,29 +8956,223 @@ class DatabaseAtV15 extends GeneratedDatabase {
     remoteAlbumEntity,
     localAlbumEntity,
     localAlbumAssetEntity,
+    idxLocalAlbumAssetAlbumAsset,
+    idxRemoteAlbumOwnerId,
     idxLocalAssetChecksum,
+    idxLocalAssetCloudId,
+    idxStackPrimaryAssetId,
     idxRemoteAssetOwnerChecksum,
     uQRemoteAssetsOwnerChecksum,
     uQRemoteAssetsOwnerLibraryChecksum,
     idxRemoteAssetChecksum,
+    idxRemoteAssetStackId,
+    idxRemoteAssetLocalDateTimeDay,
+    idxRemoteAssetLocalDateTimeMonth,
     authUserEntity,
     userMetadataEntity,
     partnerEntity,
     remoteExifEntity,
     remoteAlbumAssetEntity,
     remoteAlbumUserEntity,
+    remoteAssetCloudIdEntity,
     memoryEntity,
     memoryAssetEntity,
     personEntity,
     assetFaceEntity,
     storeEntity,
     trashedLocalAssetEntity,
+    assetEditEntity,
+    idxPartnerSharedWithId,
     idxLatLng,
+    idxRemoteAlbumAssetAlbumAsset,
+    idxRemoteAssetCloudId,
+    idxPersonOwnerId,
+    idxAssetFacePersonId,
+    idxAssetFaceAssetId,
     idxTrashedLocalAssetChecksum,
     idxTrashedLocalAssetAlbum,
+    idxAssetEditAssetId,
   ];
   @override
-  int get schemaVersion => 15;
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('remote_asset_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('stack_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('remote_album_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('remote_album_entity', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_album_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('local_album_entity', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('local_album_asset_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_album_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('local_album_asset_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('user_metadata_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('partner_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('partner_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('remote_exif_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_album_asset_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_album_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_album_asset_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_album_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_album_user_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_album_user_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_asset_cloud_id_entity', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('memory_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('memory_asset_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'memory_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('memory_asset_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'user_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('person_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('asset_face_entity', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'person_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('asset_face_entity', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'remote_asset_entity',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('asset_edit_entity', kind: UpdateKind.delete)],
+    ),
+  ]);
+  @override
+  int get schemaVersion => 23;
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);
