@@ -11,9 +11,9 @@
 part of openapi.api;
 
 /// Plugin trigger type
-class PluginTriggerType {
+class WorkflowTrigger {
   /// Instantiate a new enum with the provided [value].
-  const PluginTriggerType._(this.value);
+  const WorkflowTrigger._(this.value);
 
   /// The underlying value of this enum member.
   final String value;
@@ -23,22 +23,22 @@ class PluginTriggerType {
 
   String toJson() => value;
 
-  static const assetCreate = PluginTriggerType._(r'AssetCreate');
-  static const personRecognized = PluginTriggerType._(r'PersonRecognized');
+  static const assetCreate = WorkflowTrigger._(r'AssetCreate');
+  static const personRecognized = WorkflowTrigger._(r'PersonRecognized');
 
-  /// List of all possible values in this [enum][PluginTriggerType].
-  static const values = <PluginTriggerType>[
+  /// List of all possible values in this [enum][WorkflowTrigger].
+  static const values = <WorkflowTrigger>[
     assetCreate,
     personRecognized,
   ];
 
-  static PluginTriggerType? fromJson(dynamic value) => PluginTriggerTypeTypeTransformer().decode(value);
+  static WorkflowTrigger? fromJson(dynamic value) => WorkflowTriggerTypeTransformer().decode(value);
 
-  static List<PluginTriggerType> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <PluginTriggerType>[];
+  static List<WorkflowTrigger> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <WorkflowTrigger>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = PluginTriggerType.fromJson(row);
+        final value = WorkflowTrigger.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -48,16 +48,16 @@ class PluginTriggerType {
   }
 }
 
-/// Transformation class that can [encode] an instance of [PluginTriggerType] to String,
-/// and [decode] dynamic data back to [PluginTriggerType].
-class PluginTriggerTypeTypeTransformer {
-  factory PluginTriggerTypeTypeTransformer() => _instance ??= const PluginTriggerTypeTypeTransformer._();
+/// Transformation class that can [encode] an instance of [WorkflowTrigger] to String,
+/// and [decode] dynamic data back to [WorkflowTrigger].
+class WorkflowTriggerTypeTransformer {
+  factory WorkflowTriggerTypeTransformer() => _instance ??= const WorkflowTriggerTypeTransformer._();
 
-  const PluginTriggerTypeTypeTransformer._();
+  const WorkflowTriggerTypeTransformer._();
 
-  String encode(PluginTriggerType data) => data.value;
+  String encode(WorkflowTrigger data) => data.value;
 
-  /// Decodes a [dynamic value][data] to a PluginTriggerType.
+  /// Decodes a [dynamic value][data] to a WorkflowTrigger.
   ///
   /// If [allowNull] is true and the [dynamic value][data] cannot be decoded successfully,
   /// then null is returned. However, if [allowNull] is false and the [dynamic value][data]
@@ -65,11 +65,11 @@ class PluginTriggerTypeTypeTransformer {
   ///
   /// The [allowNull] is very handy when an API changes and a new enum value is added or removed,
   /// and users are still using an old app with the old code.
-  PluginTriggerType? decode(dynamic data, {bool allowNull = true}) {
+  WorkflowTrigger? decode(dynamic data, {bool allowNull = true}) {
     if (data != null) {
       switch (data) {
-        case r'AssetCreate': return PluginTriggerType.assetCreate;
-        case r'PersonRecognized': return PluginTriggerType.personRecognized;
+        case r'AssetCreate': return WorkflowTrigger.assetCreate;
+        case r'PersonRecognized': return WorkflowTrigger.personRecognized;
         default:
           if (!allowNull) {
             throw ArgumentError('Unknown enum value to decode: $data');
@@ -79,7 +79,7 @@ class PluginTriggerTypeTypeTransformer {
     return null;
   }
 
-  /// Singleton [PluginTriggerTypeTypeTransformer] instance.
-  static PluginTriggerTypeTypeTransformer? _instance;
+  /// Singleton [WorkflowTriggerTypeTransformer] instance.
+  static WorkflowTriggerTypeTransformer? _instance;
 }
 
