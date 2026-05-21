@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter/foundation.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/constants.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
@@ -210,6 +211,11 @@ class BackgroundUploadService {
       case TaskStatus.complete:
         unawaited(_handleLivePhoto(update));
 
+        final localAsset = await _localAssetRepository.getById(update.task.taskId);
+        if (localAsset != null) {
+          unawaited(_uploadThumbnail(localAsset));
+        }
+
         if (CurrentPlatform.isIOS) {
           try {
             final path = await update.task.filePath();
@@ -223,6 +229,25 @@ class BackgroundUploadService {
 
       default:
         break;
+    }
+  }
+
+  Future<void> _uploadThumbnail(LocalAsset asset) async {
+    try {
+      final entity = await _storageRepository.getAssetEntityForAsset(asset);
+      if (entity == null) return;
+      const thumbnailSize = 256;
+      final thumb = await entity.thumbnailDataWithSize(
+        const ThumbnailSize(thumbnailSize, thumbnailSize),
+      );
+      if (thumb == null) return;
+      final thumbKey = _s3Service.currentConfig!.thumbnailKeyFor(
+        asset.name,
+        asset.createdAt,
+      );
+      await _s3Service.putObject(thumbKey, thumb, contentType: 'image/jpeg');
+    } catch (e) {
+      _logger.warning('Thumbnail upload failed for ${asset.id}: $e');
     }
   }
 
