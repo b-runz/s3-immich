@@ -63,5 +63,46 @@ void main() {
       final key = config.s3KeyFor('IMG_1234.JPG', DateTime(2024, 1, 5));
       expect(key, '2024/01/05/IMG_1234.JPG');
     });
+
+    test('thumbnailKeyFor prepends .thumbs/ prefix', () {
+      const config = S3Config(
+        endpoint: 's3.nl-ams.scw.cloud',
+        bucket: 'photos',
+        region: 'nl-ams',
+        accessKey: 'AKIA',
+        secretKey: 'secret',
+        prefix: 'mydevice',
+      );
+      final key = config.thumbnailKeyFor('IMG_1234.JPG', DateTime(2024, 1, 5));
+      expect(key, '.thumbs/mydevice/2024/01/05/IMG_1234.JPG');
+    });
+
+    test('round-trips non-default booleans', () {
+      const config = S3Config(
+        endpoint: 'minio.local',
+        bucket: 'bucket',
+        region: 'us-east-1',
+        accessKey: 'AKIA',
+        secretKey: 'secret',
+        useSSL: false,
+        pathStyle: true,
+      );
+      final restored = S3Config.fromJson(config.toJson());
+      expect(restored.useSSL, isFalse);
+      expect(restored.pathStyle, isTrue);
+    });
+
+    test('equality and hashCode work', () {
+      const a = S3Config(
+        endpoint: 's3.nl-ams.scw.cloud', bucket: 'b', region: 'r',
+        accessKey: 'k', secretKey: 's',
+      );
+      const b = S3Config(
+        endpoint: 's3.nl-ams.scw.cloud', bucket: 'b', region: 'r',
+        accessKey: 'k', secretKey: 's',
+      );
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+    });
   });
 }
