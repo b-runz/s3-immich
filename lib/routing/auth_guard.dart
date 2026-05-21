@@ -28,7 +28,7 @@ class AuthGuard extends AutoRouteGuard {
     } on StoreKeyNotFoundException catch (_) {
       _log.warning('No access token in the store.');
       resolver.next(false);
-      unawaited(router.replaceAll([const LoginRoute()]));
+      unawaited(router.replaceAll([const S3SetupRoute()]));
       return;
     }
 
@@ -54,7 +54,7 @@ class AuthGuard extends AutoRouteGuard {
           return;
         }
         _log.fine('User token is invalid. Redirecting to login');
-        await router.replaceAll([const LoginRoute()]);
+        await router.replaceAll([const S3SetupRoute()]);
         await _authService.clearLocalData();
       }
     } on ApiException catch (e) {
@@ -65,7 +65,7 @@ class AuthGuard extends AutoRouteGuard {
         return;
       }
       _log.warning("Unauthorized access token.");
-      await router.replaceAll([const LoginRoute()]);
+      await router.replaceAll([const S3SetupRoute()]);
       await _authService.clearLocalData();
     } catch (e) {
       _log.warning('Error validating access token from server: $e');
