@@ -33,6 +33,7 @@ typedef $$RemoteAssetEntityTableCreateCompanionBuilder =
       i0.Value<String?> stackId,
       i0.Value<String?> libraryId,
       i0.Value<bool> isEdited,
+      i0.Value<String?> sourceDeviceId,
     });
 typedef $$RemoteAssetEntityTableUpdateCompanionBuilder =
     i1.RemoteAssetEntityCompanion Function({
@@ -56,6 +57,7 @@ typedef $$RemoteAssetEntityTableUpdateCompanionBuilder =
       i0.Value<String?> stackId,
       i0.Value<String?> libraryId,
       i0.Value<bool> isEdited,
+      i0.Value<String?> sourceDeviceId,
     });
 
 final class $$RemoteAssetEntityTableReferences
@@ -210,6 +212,11 @@ class $$RemoteAssetEntityTableFilterComposer
     builder: (column) => i0.ColumnFilters(column),
   );
 
+  i0.ColumnFilters<String> get sourceDeviceId => $composableBuilder(
+    column: $table.sourceDeviceId,
+    builder: (column) => i0.ColumnFilters(column),
+  );
+
   i5.$$UserEntityTableFilterComposer get ownerId {
     final i5.$$UserEntityTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -342,6 +349,11 @@ class $$RemoteAssetEntityTableOrderingComposer
     builder: (column) => i0.ColumnOrderings(column),
   );
 
+  i0.ColumnOrderings<String> get sourceDeviceId => $composableBuilder(
+    column: $table.sourceDeviceId,
+    builder: (column) => i0.ColumnOrderings(column),
+  );
+
   i5.$$UserEntityTableOrderingComposer get ownerId {
     final i5.$$UserEntityTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -449,6 +461,11 @@ class $$RemoteAssetEntityTableAnnotationComposer
   i0.GeneratedColumn<bool> get isEdited =>
       $composableBuilder(column: $table.isEdited, builder: (column) => column);
 
+  i0.GeneratedColumn<String> get sourceDeviceId => $composableBuilder(
+    column: $table.sourceDeviceId,
+    builder: (column) => column,
+  );
+
   i5.$$UserEntityTableAnnotationComposer get ownerId {
     final i5.$$UserEntityTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -531,6 +548,7 @@ class $$RemoteAssetEntityTableTableManager
                 i0.Value<String?> stackId = const i0.Value.absent(),
                 i0.Value<String?> libraryId = const i0.Value.absent(),
                 i0.Value<bool> isEdited = const i0.Value.absent(),
+                i0.Value<String?> sourceDeviceId = const i0.Value.absent(),
               }) => i1.RemoteAssetEntityCompanion(
                 name: name,
                 type: type,
@@ -552,6 +570,7 @@ class $$RemoteAssetEntityTableTableManager
                 stackId: stackId,
                 libraryId: libraryId,
                 isEdited: isEdited,
+                sourceDeviceId: sourceDeviceId,
               ),
           createCompanionCallback:
               ({
@@ -575,6 +594,7 @@ class $$RemoteAssetEntityTableTableManager
                 i0.Value<String?> stackId = const i0.Value.absent(),
                 i0.Value<String?> libraryId = const i0.Value.absent(),
                 i0.Value<bool> isEdited = const i0.Value.absent(),
+                i0.Value<String?> sourceDeviceId = const i0.Value.absent(),
               }) => i1.RemoteAssetEntityCompanion.insert(
                 name: name,
                 type: type,
@@ -596,6 +616,7 @@ class $$RemoteAssetEntityTableTableManager
                 stackId: stackId,
                 libraryId: libraryId,
                 isEdited: isEdited,
+                sourceDeviceId: sourceDeviceId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -911,6 +932,17 @@ class $RemoteAssetEntityTable extends i3.RemoteAssetEntity
     ),
     defaultValue: const i4.Constant(false),
   );
+  static const i0.VerificationMeta _sourceDeviceIdMeta =
+      const i0.VerificationMeta('sourceDeviceId');
+  @override
+  late final i0.GeneratedColumn<String> sourceDeviceId =
+      i0.GeneratedColumn<String>(
+        'source_device_id',
+        aliasedName,
+        true,
+        type: i0.DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<i0.GeneratedColumn> get $columns => [
     name,
@@ -933,6 +965,7 @@ class $RemoteAssetEntityTable extends i3.RemoteAssetEntity
     stackId,
     libraryId,
     isEdited,
+    sourceDeviceId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1065,6 +1098,15 @@ class $RemoteAssetEntityTable extends i3.RemoteAssetEntity
         isEdited.isAcceptableOrUnknown(data['is_edited']!, _isEditedMeta),
       );
     }
+    if (data.containsKey('source_device_id')) {
+      context.handle(
+        _sourceDeviceIdMeta,
+        sourceDeviceId.isAcceptableOrUnknown(
+          data['source_device_id']!,
+          _sourceDeviceIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1161,6 +1203,10 @@ class $RemoteAssetEntityTable extends i3.RemoteAssetEntity
         i0.DriftSqlType.bool,
         data['${effectivePrefix}is_edited'],
       )!,
+      sourceDeviceId: attachedDatabase.typeMapping.read(
+        i0.DriftSqlType.string,
+        data['${effectivePrefix}source_device_id'],
+      ),
     );
   }
 
@@ -1203,6 +1249,7 @@ class RemoteAssetEntityData extends i0.DataClass
   final String? stackId;
   final String? libraryId;
   final bool isEdited;
+  final String? sourceDeviceId;
   const RemoteAssetEntityData({
     required this.name,
     required this.type,
@@ -1224,6 +1271,7 @@ class RemoteAssetEntityData extends i0.DataClass
     this.stackId,
     this.libraryId,
     required this.isEdited,
+    this.sourceDeviceId,
   });
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
@@ -1276,6 +1324,9 @@ class RemoteAssetEntityData extends i0.DataClass
       map['library_id'] = i0.Variable<String>(libraryId);
     }
     map['is_edited'] = i0.Variable<bool>(isEdited);
+    if (!nullToAbsent || sourceDeviceId != null) {
+      map['source_device_id'] = i0.Variable<String>(sourceDeviceId);
+    }
     return map;
   }
 
@@ -1309,6 +1360,7 @@ class RemoteAssetEntityData extends i0.DataClass
       stackId: serializer.fromJson<String?>(json['stackId']),
       libraryId: serializer.fromJson<String?>(json['libraryId']),
       isEdited: serializer.fromJson<bool>(json['isEdited']),
+      sourceDeviceId: serializer.fromJson<String?>(json['sourceDeviceId']),
     );
   }
   @override
@@ -1339,6 +1391,7 @@ class RemoteAssetEntityData extends i0.DataClass
       'stackId': serializer.toJson<String?>(stackId),
       'libraryId': serializer.toJson<String?>(libraryId),
       'isEdited': serializer.toJson<bool>(isEdited),
+      'sourceDeviceId': serializer.toJson<String?>(sourceDeviceId),
     };
   }
 
@@ -1363,6 +1416,7 @@ class RemoteAssetEntityData extends i0.DataClass
     i0.Value<String?> stackId = const i0.Value.absent(),
     i0.Value<String?> libraryId = const i0.Value.absent(),
     bool? isEdited,
+    i0.Value<String?> sourceDeviceId = const i0.Value.absent(),
   }) => i1.RemoteAssetEntityData(
     name: name ?? this.name,
     type: type ?? this.type,
@@ -1388,6 +1442,9 @@ class RemoteAssetEntityData extends i0.DataClass
     stackId: stackId.present ? stackId.value : this.stackId,
     libraryId: libraryId.present ? libraryId.value : this.libraryId,
     isEdited: isEdited ?? this.isEdited,
+    sourceDeviceId: sourceDeviceId.present
+        ? sourceDeviceId.value
+        : this.sourceDeviceId,
   );
   RemoteAssetEntityData copyWithCompanion(i1.RemoteAssetEntityCompanion data) {
     return RemoteAssetEntityData(
@@ -1423,6 +1480,9 @@ class RemoteAssetEntityData extends i0.DataClass
       stackId: data.stackId.present ? data.stackId.value : this.stackId,
       libraryId: data.libraryId.present ? data.libraryId.value : this.libraryId,
       isEdited: data.isEdited.present ? data.isEdited.value : this.isEdited,
+      sourceDeviceId: data.sourceDeviceId.present
+          ? data.sourceDeviceId.value
+          : this.sourceDeviceId,
     );
   }
 
@@ -1448,13 +1508,14 @@ class RemoteAssetEntityData extends i0.DataClass
           ..write('visibility: $visibility, ')
           ..write('stackId: $stackId, ')
           ..write('libraryId: $libraryId, ')
-          ..write('isEdited: $isEdited')
+          ..write('isEdited: $isEdited, ')
+          ..write('sourceDeviceId: $sourceDeviceId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     name,
     type,
     createdAt,
@@ -1475,7 +1536,8 @@ class RemoteAssetEntityData extends i0.DataClass
     stackId,
     libraryId,
     isEdited,
-  );
+    sourceDeviceId,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1499,7 +1561,8 @@ class RemoteAssetEntityData extends i0.DataClass
           other.visibility == this.visibility &&
           other.stackId == this.stackId &&
           other.libraryId == this.libraryId &&
-          other.isEdited == this.isEdited);
+          other.isEdited == this.isEdited &&
+          other.sourceDeviceId == this.sourceDeviceId);
 }
 
 class RemoteAssetEntityCompanion
@@ -1524,6 +1587,7 @@ class RemoteAssetEntityCompanion
   final i0.Value<String?> stackId;
   final i0.Value<String?> libraryId;
   final i0.Value<bool> isEdited;
+  final i0.Value<String?> sourceDeviceId;
   const RemoteAssetEntityCompanion({
     this.name = const i0.Value.absent(),
     this.type = const i0.Value.absent(),
@@ -1545,6 +1609,7 @@ class RemoteAssetEntityCompanion
     this.stackId = const i0.Value.absent(),
     this.libraryId = const i0.Value.absent(),
     this.isEdited = const i0.Value.absent(),
+    this.sourceDeviceId = const i0.Value.absent(),
   });
   RemoteAssetEntityCompanion.insert({
     required String name,
@@ -1567,6 +1632,7 @@ class RemoteAssetEntityCompanion
     this.stackId = const i0.Value.absent(),
     this.libraryId = const i0.Value.absent(),
     this.isEdited = const i0.Value.absent(),
+    this.sourceDeviceId = const i0.Value.absent(),
   }) : name = i0.Value(name),
        type = i0.Value(type),
        id = i0.Value(id),
@@ -1594,6 +1660,7 @@ class RemoteAssetEntityCompanion
     i0.Expression<String>? stackId,
     i0.Expression<String>? libraryId,
     i0.Expression<bool>? isEdited,
+    i0.Expression<String>? sourceDeviceId,
   }) {
     return i0.RawValuesInsertable({
       if (name != null) 'name': name,
@@ -1616,6 +1683,7 @@ class RemoteAssetEntityCompanion
       if (stackId != null) 'stack_id': stackId,
       if (libraryId != null) 'library_id': libraryId,
       if (isEdited != null) 'is_edited': isEdited,
+      if (sourceDeviceId != null) 'source_device_id': sourceDeviceId,
     });
   }
 
@@ -1640,6 +1708,7 @@ class RemoteAssetEntityCompanion
     i0.Value<String?>? stackId,
     i0.Value<String?>? libraryId,
     i0.Value<bool>? isEdited,
+    i0.Value<String?>? sourceDeviceId,
   }) {
     return i1.RemoteAssetEntityCompanion(
       name: name ?? this.name,
@@ -1662,6 +1731,7 @@ class RemoteAssetEntityCompanion
       stackId: stackId ?? this.stackId,
       libraryId: libraryId ?? this.libraryId,
       isEdited: isEdited ?? this.isEdited,
+      sourceDeviceId: sourceDeviceId ?? this.sourceDeviceId,
     );
   }
 
@@ -1732,6 +1802,9 @@ class RemoteAssetEntityCompanion
     if (isEdited.present) {
       map['is_edited'] = i0.Variable<bool>(isEdited.value);
     }
+    if (sourceDeviceId.present) {
+      map['source_device_id'] = i0.Variable<String>(sourceDeviceId.value);
+    }
     return map;
   }
 
@@ -1757,7 +1830,8 @@ class RemoteAssetEntityCompanion
           ..write('visibility: $visibility, ')
           ..write('stackId: $stackId, ')
           ..write('libraryId: $libraryId, ')
-          ..write('isEdited: $isEdited')
+          ..write('isEdited: $isEdited, ')
+          ..write('sourceDeviceId: $sourceDeviceId')
           ..write(')'))
         .toString();
   }
