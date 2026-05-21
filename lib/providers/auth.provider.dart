@@ -34,25 +34,24 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthService _authService;
-  final ApiService _apiService;
-  final UserService _userService;
+  late final AuthService _authService;
+  late final ApiService _apiService;
+  late final UserService _userService;
 
-  final SecureStorageService _secureStorageService;
-  final WidgetService _widgetService;
-  final Ref _ref;
+  late final SecureStorageService _secureStorageService;
+  late final WidgetService _widgetService;
+  late final Ref _ref;
   final _log = Logger("AuthenticationNotifier");
 
   static const Duration _timeoutDuration = Duration(seconds: 7);
 
   AuthNotifier(
-    this._authService,
-    this._apiService,
-    this._userService,
-
-    this._secureStorageService,
-    this._widgetService,
-    this._ref,
+    AuthService authService,
+    ApiService apiService,
+    UserService userService,
+    SecureStorageService secureStorageService,
+    WidgetService widgetService,
+    Ref ref,
   ) : super(
         const AuthState(
           deviceId: "",
@@ -63,7 +62,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
           isAdmin: false,
           isAuthenticated: false,
         ),
-      );
+      ) {
+    _authService = authService;
+    _apiService = apiService;
+    _userService = userService;
+    _secureStorageService = secureStorageService;
+    _widgetService = widgetService;
+    _ref = ref;
+  }
+
+  factory AuthNotifier.stub(AuthState state) => AuthNotifier._stub(state);
+  AuthNotifier._stub(AuthState state) : super(state);
 
   Future<String> validateServerUrl(String url) {
     return _authService.validateServerUrl(url);

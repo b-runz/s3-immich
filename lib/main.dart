@@ -32,6 +32,8 @@ import 'package:immich_mobile/providers/routes.provider.dart';
 import 'package:immich_mobile/providers/theme.provider.dart';
 import 'package:immich_mobile/routing/app_navigation_observer.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_mobile/models/auth/auth_state.model.dart';
+import 'package:immich_mobile/providers/auth.provider.dart';
 import 'package:immich_mobile/services/deep_link.service.dart';
 import 'package:immich_mobile/services/s3/s3_service.dart';
 import 'package:immich_mobile/services/s3/s3_service_provider.dart';
@@ -66,6 +68,19 @@ void main() async {
       overrides: [
         driftProvider.overrideWith(driftOverride(drift)),
         s3ServiceProvider.overrideWithValue(s3Service),
+        authProvider.overrideWith(
+          (ref) => AuthNotifier.stub(
+            const AuthState(
+              deviceId: 'local-device',
+              userId: 'local-user',
+              userEmail: 'local@s3immich',
+              name: 'My Device',
+              profileImagePath: '',
+              isAdmin: false,
+              isAuthenticated: true,
+            ),
+          ),
+        ),
       ],
       child: const MainWidget(),
     ));
