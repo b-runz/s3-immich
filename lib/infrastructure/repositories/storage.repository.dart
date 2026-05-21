@@ -2,13 +2,17 @@ import 'dart:io';
 
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/platform_extensions.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 import 'package:logging/logging.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class StorageRepository {
   final log = Logger('StorageRepository');
+  final S3Service _s3Service;
 
-  StorageRepository();
+  StorageRepository({required S3Service s3Service}) : _s3Service = s3Service;
 
   Future<File?> getFileForAsset(String assetId) async {
     File? file;
@@ -99,7 +103,15 @@ class StorageRepository {
     }
   }
 
-  Future<File?> loadFileFromCloud(String assetId, {PMProgressHandler? progressHandler}) async {
+  Future<File?> loadFileFromCloud(
+    String assetId, {
+    PMProgressHandler? progressHandler,
+    String? s3Key,
+  }) async {
+    if (s3Key != null) {
+      return _loadFromS3(s3Key, assetId);
+    }
+
     try {
       final entity = await AssetEntity.fromId(assetId);
       if (entity == null) {
@@ -110,6 +122,21 @@ class StorageRepository {
       return await entity.loadFile(progressHandler: progressHandler);
     } catch (error, stackTrace) {
       log.warning("Error loading file from cloud for asset $assetId", error, stackTrace);
+      return null;
+    }
+  }
+
+  Future<File?> _loadFromS3(String s3Key, String assetId) async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      final cachedFile = File('${cacheDir.path}/s3_full/$assetId${p.extension(s3Key)}');
+      if (await cachedFile.exists()) return cachedFile;
+      await cachedFile.parent.create(recursive: true);
+      final bytes = await _s3Service.getObject(s3Key);
+      await cachedFile.writeAsBytes(bytes);
+      return cachedFile;
+    } catch (e) {
+      log.warning("Error loading from S3 key $s3Key: $e");
       return null;
     }
   }
