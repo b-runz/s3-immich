@@ -166,8 +166,9 @@ class BackgroundSyncManager {
 
     onRemoteSyncStart?.call();
 
+    // DbSyncService.pull() wired in Task 13; return success for now.
     _syncTask = runInIsolateGentle(
-      computation: (ref) => ref.read(syncStreamServiceProvider).sync(),
+      computation: (_) async => true,
       debugLabel: 'remote-sync',
     );
     return _syncTask!
@@ -186,45 +187,10 @@ class BackgroundSyncManager {
         });
   }
 
-  Future<void> syncWebsocketBatchV1(List<dynamic> batchData) {
-    if (_syncWebsocketTask != null) {
-      return _syncWebsocketTask!.future;
-    }
-    _syncWebsocketTask = _handleWsAssetUploadReadyV1Batch(batchData);
-    return _syncWebsocketTask!.whenComplete(() {
-      _syncWebsocketTask = null;
-    });
-  }
-
-  Future<void> syncWebsocketBatchV2(List<dynamic> batchData) {
-    if (_syncWebsocketTask != null) {
-      return _syncWebsocketTask!.future;
-    }
-    _syncWebsocketTask = _handleWsAssetUploadReadyV2Batch(batchData);
-    return _syncWebsocketTask!.whenComplete(() {
-      _syncWebsocketTask = null;
-    });
-  }
-
-  Future<void> syncWebsocketEditV1(dynamic data) {
-    if (_syncWebsocketTask != null) {
-      return _syncWebsocketTask!.future;
-    }
-    _syncWebsocketTask = _handleWsAssetEditReadyV1(data);
-    return _syncWebsocketTask!.whenComplete(() {
-      _syncWebsocketTask = null;
-    });
-  }
-
-  Future<void> syncWebsocketEditV2(dynamic data) {
-    if (_syncWebsocketTask != null) {
-      return _syncWebsocketTask!.future;
-    }
-    _syncWebsocketTask = _handleWsAssetEditReadyV2(data);
-    return _syncWebsocketTask!.whenComplete(() {
-      _syncWebsocketTask = null;
-    });
-  }
+  Future<void> syncWebsocketBatchV1(List<dynamic> batchData) => Future.value();
+  Future<void> syncWebsocketBatchV2(List<dynamic> batchData) => Future.value();
+  Future<void> syncWebsocketEditV1(dynamic data) => Future.value();
+  Future<void> syncWebsocketEditV2(dynamic data) => Future.value();
 
   Future<void> syncLinkedAlbum() {
     if (_linkedAlbumSyncTask != null) {
@@ -257,22 +223,3 @@ class BackgroundSyncManager {
   }
 }
 
-Cancelable<void> _handleWsAssetUploadReadyV1Batch(List<dynamic> batchData) => runInIsolateGentle(
-  computation: (ref) => ref.read(syncStreamServiceProvider).handleWsAssetUploadReadyV1Batch(batchData),
-  debugLabel: 'websocket-batch',
-);
-
-Cancelable<void> _handleWsAssetUploadReadyV2Batch(List<dynamic> batchData) => runInIsolateGentle(
-  computation: (ref) => ref.read(syncStreamServiceProvider).handleWsAssetUploadReadyV2Batch(batchData),
-  debugLabel: 'websocket-batch',
-);
-
-Cancelable<void> _handleWsAssetEditReadyV1(dynamic data) => runInIsolateGentle(
-  computation: (ref) => ref.read(syncStreamServiceProvider).handleWsAssetEditReadyV1(data),
-  debugLabel: 'websocket-edit',
-);
-
-Cancelable<void> _handleWsAssetEditReadyV2(dynamic data) => runInIsolateGentle(
-  computation: (ref) => ref.read(syncStreamServiceProvider).handleWsAssetEditReadyV2(data),
-  debugLabel: 'websocket-edit',
-);

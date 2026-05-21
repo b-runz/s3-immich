@@ -3,33 +3,23 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:immich_mobile/entities/store.entity.dart';
-import 'package:immich_mobile/main.dart' as app;
-import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
-import 'package:immich_mobile/utils/bootstrap.dart';
+import 'package:s3mmich/entities/store.entity.dart';
+import 'package:s3mmich/main.dart' as app;
+import 'package:s3mmich/providers/infrastructure/db.provider.dart';
+import 'package:s3mmich/utils/bootstrap.dart';
 import 'package:integration_test/integration_test.dart';
 // ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
-
-import 'login_helper.dart';
 
 class ImmichTestHelper {
   final WidgetTester tester;
 
   ImmichTestHelper(this.tester);
 
-  ImmichTestLoginHelper? _loginHelper;
-
-  ImmichTestLoginHelper get loginHelper {
-    _loginHelper ??= ImmichTestLoginHelper(tester);
-    return _loginHelper!;
-  }
-
   static Future<IntegrationTestWidgetsFlutterBinding> initialize() async {
     final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
-    // Load hive, localization...
     await app.initApp();
 
     return binding;
@@ -37,14 +27,11 @@ class ImmichTestHelper {
 
   static Future<void> loadApp(WidgetTester tester) async {
     await EasyLocalization.ensureInitialized();
-    // Clear all data from Isar (reuse existing instance if available)
     final (drift, _) = await Bootstrap.initDomain();
     await Store.clear();
-    // Load main Widget
     await tester.pumpWidget(
       ProviderScope(overrides: [driftProvider.overrideWith(driftOverride(drift))], child: const app.MainWidget()),
     );
-    // Post run tasks
     await EasyLocalization.ensureInitialized();
   }
 }
