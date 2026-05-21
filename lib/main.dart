@@ -33,6 +33,8 @@ import 'package:immich_mobile/providers/theme.provider.dart';
 import 'package:immich_mobile/routing/app_navigation_observer.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/services/deep_link.service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/theme/dynamic_theme.dart';
 import 'package:immich_mobile/theme/theme_data.dart';
 import 'package:immich_mobile/utils/bootstrap.dart';
@@ -57,7 +59,16 @@ void main() async {
     await workerManagerPatch.init(dynamicSpawning: true, isolatesCount: max(Platform.numberOfProcessors - 1, 5));
     await migrateDatabaseIfNeeded(drift);
 
-    runApp(ProviderScope(overrides: [driftProvider.overrideWith(driftOverride(drift))], child: const MainWidget()));
+    final s3Service = S3Service();
+    await s3Service.loadFromStorage();
+
+    runApp(ProviderScope(
+      overrides: [
+        driftProvider.overrideWith(driftOverride(drift)),
+        s3ServiceProvider.overrideWithValue(s3Service),
+      ],
+      child: const MainWidget(),
+    ));
   } catch (error, stack) {
     runApp(BootstrapErrorWidget(error: error.toString(), stack: stack.toString()));
   }
