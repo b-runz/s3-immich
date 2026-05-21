@@ -5,11 +5,9 @@ import 'package:minio_new/minio.dart';
 import 'package:s3mmich/services/s3/s3_config.dart';
 import 'package:s3mmich/services/s3/s3_object_meta.dart';
 
-/// Wraps the minio_new [Minio] client to provide S3 operations for S3mmich.
 class S3Service {
   S3Service() : _client = null, _config = null;
 
-  /// Constructor for testing — injects a pre-built client and config.
   S3Service.withClient(Minio client, S3Config config)
       : _client = client,
         _config = config;
@@ -17,29 +15,21 @@ class S3Service {
   Minio? _client;
   S3Config? _config;
 
-  /// Whether the service has been configured with valid credentials.
   bool get isConfigured => _client != null && _config != null;
 
-  /// The current configuration, or null if not configured.
   S3Config? get currentConfig => _config;
 
-  /// Apply [config], persist to secure storage, and create the Minio client.
   Future<void> configure(S3Config config) async {
     await config.save();
     _apply(config);
   }
 
-  /// Restore configuration from FlutterSecureStorage (called on app start).
   Future<void> loadFromStorage() async {
     final config = await S3Config.load();
     if (config != null) {
       _apply(config);
     }
   }
-
-  // ---------------------------------------------------------------------------
-  // Internal helpers
-  // ---------------------------------------------------------------------------
 
   void _apply(S3Config config) {
     _config = config;
@@ -59,11 +49,6 @@ class S3Service {
     return _client!;
   }
 
-  // ---------------------------------------------------------------------------
-  // S3 operations
-  // ---------------------------------------------------------------------------
-
-  /// Generate a pre-signed PUT URL for [s3Key] valid for [ttl].
   Future<String> presignPut(
     String s3Key, {
     Duration ttl = const Duration(hours: 1),
@@ -76,7 +61,6 @@ class S3Service {
     );
   }
 
-  /// Upload [data] bytes to [s3Key].
   Future<void> putObject(
     String s3Key,
     List<int> data, {
@@ -93,7 +77,6 @@ class S3Service {
     );
   }
 
-  /// Download [s3Key] and return its bytes.
   Future<List<int>> getObject(String s3Key) async {
     final client = _requireClient();
     final stream = await client.getObject(_config!.bucket, s3Key);
@@ -103,7 +86,6 @@ class S3Service {
     );
   }
 
-  /// Return metadata for [s3Key], or null if the object does not exist.
   Future<S3ObjectMeta?> headObject(String s3Key) async {
     final client = _requireClient();
     try {
@@ -115,8 +97,9 @@ class S3Service {
         size: stat.size ?? 0,
       );
     } on MinioS3Error catch (e) {
-      if (e.error?.code == 'NoSuchKey' ||
-          e.message?.contains('NoSuchKey') == true) {
+      final status = e.response?.statusCode;
+      final code = e.error?.code;
+      if (status == 404 || code == 'NoSuchKey' || code == 'NoSuchBucket') {
         return null;
       }
       throw S3Exception('S3 error on headObject($s3Key): ${e.message}');
@@ -125,8 +108,6 @@ class S3Service {
     }
   }
 
-  /// Upload a file from [filePath] to [s3Key], inferring content type from
-  /// the file extension when possible.
   Future<void> putFile(
     String s3Key,
     String filePath, {
@@ -136,7 +117,6 @@ class S3Service {
     await putObject(s3Key, bytes, contentType: contentType);
   }
 
-  /// List all objects under [prefix]. Returns [S3ObjectMeta] for each object.
   Future<List<S3ObjectMeta>> listPrefix(String prefix) async {
     final client = _requireClient();
     final result = await client.listAllObjectsV2(

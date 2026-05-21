@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:minio_new/minio.dart';
 import 'package:minio_new/models.dart' as minio_models;
+import 'package:minio_new/src/minio_client.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:s3mmich/services/s3/s3_config.dart';
 import 'package:s3mmich/services/s3/s3_object_meta.dart';
@@ -222,6 +224,31 @@ void main() {
           () => service.headObject('photos/img.jpg'),
           throwsA(isA<S3Exception>()),
         );
+      });
+
+      test('returns null when S3 returns 404 (real-world HEAD behavior)', () async {
+        final response = MinioResponse.bytes(Uint8List(0), 404);
+        when(() => mockMinio.statObject('test-bucket', any()))
+            .thenThrow(MinioS3Error('Not Found', null, response));
+        final meta = await service.headObject('.meta/s3immich.db');
+        expect(meta, isNull);
+      });
+    });
+
+    group('putFile', () {
+      test('reads file and calls putObject', () async {
+        final dir = await Directory.systemTemp.createTemp('s3svc_test');
+        final file = File('${dir.path}/test.jpg');
+        final content = [1, 2, 3, 4, 5];
+        await file.writeAsBytes(content);
+        when(() => mockMinio.putObject('test-bucket', any(), any(),
+              size: any(named: 'size'),
+              metadata: any(named: 'metadata')))
+            .thenAnswer((_) async => '');
+        await service.putFile('2024/01/05/test.jpg', file.path);
+        verify(() => mockMinio.putObject('test-bucket', '2024/01/05/test.jpg', any(),
+              size: 5, metadata: any(named: 'metadata'))).called(1);
+        await dir.delete(recursive: true);
       });
     });
 

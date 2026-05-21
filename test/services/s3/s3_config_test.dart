@@ -12,7 +12,6 @@ void main() {
         secretKey: 'wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY',
         prefix: 'photos',
         useSSL: true,
-        pathStyle: false,
       );
       final restored = S3Config.fromJson(config.toJson());
       expect(restored.endpoint, config.endpoint);
@@ -22,7 +21,6 @@ void main() {
       expect(restored.secretKey, config.secretKey);
       expect(restored.prefix, config.prefix);
       expect(restored.useSSL, config.useSSL);
-      expect(restored.pathStyle, config.pathStyle);
     });
 
     test('handles null prefix and defaults', () {
@@ -36,7 +34,6 @@ void main() {
       final restored = S3Config.fromJson(config.toJson());
       expect(restored.prefix, isNull);
       expect(restored.useSSL, isTrue);
-      expect(restored.pathStyle, isFalse);
     });
 
     test('s3KeyFor generates date-based path with prefix', () {
@@ -85,11 +82,9 @@ void main() {
         accessKey: 'AKIA',
         secretKey: 'secret',
         useSSL: false,
-        pathStyle: true,
       );
       final restored = S3Config.fromJson(config.toJson());
       expect(restored.useSSL, isFalse);
-      expect(restored.pathStyle, isTrue);
     });
 
     test('equality and hashCode work', () {

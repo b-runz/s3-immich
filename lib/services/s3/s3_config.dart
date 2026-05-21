@@ -9,8 +9,7 @@ class S3Config {
   final String accessKey;
   final String secretKey;
   final String? prefix;
-  final bool useSSL;       // default true
-  final bool pathStyle;    // true for self-hosted MinIO; false for hosted providers
+  final bool useSSL;
 
   const S3Config({
     required this.endpoint,
@@ -20,7 +19,6 @@ class S3Config {
     required this.secretKey,
     this.prefix,
     this.useSSL = true,
-    this.pathStyle = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -31,7 +29,6 @@ class S3Config {
     'secretKey': secretKey,
     if (prefix != null) 'prefix': prefix,
     'useSSL': useSSL,
-    'pathStyle': pathStyle,
   };
 
   factory S3Config.fromJson(Map<String, dynamic> json) => S3Config(
@@ -42,7 +39,6 @@ class S3Config {
     secretKey: json['secretKey'] as String,
     prefix: json['prefix'] as String?,
     useSSL: json['useSSL'] as bool? ?? true,
-    pathStyle: json['pathStyle'] as bool? ?? false,
   );
 
   String s3KeyFor(String filename, DateTime createdAt) {
@@ -65,7 +61,6 @@ class S3Config {
     String? secretKey,
     Object? prefix = _sentinel,
     bool? useSSL,
-    bool? pathStyle,
   }) {
     return S3Config(
       endpoint: endpoint ?? this.endpoint,
@@ -75,7 +70,6 @@ class S3Config {
       secretKey: secretKey ?? this.secretKey,
       prefix: prefix == _sentinel ? this.prefix : prefix as String?,
       useSSL: useSSL ?? this.useSSL,
-      pathStyle: pathStyle ?? this.pathStyle,
     );
   }
 
@@ -88,14 +82,13 @@ class S3Config {
         other.accessKey == accessKey &&
         other.secretKey == secretKey &&
         other.prefix == prefix &&
-        other.useSSL == useSSL &&
-        other.pathStyle == pathStyle;
+        other.useSSL == useSSL;
   }
 
   @override
   int get hashCode {
     return Object.hash(
-        endpoint, bucket, region, accessKey, secretKey, prefix, useSSL, pathStyle);
+        endpoint, bucket, region, accessKey, secretKey, prefix, useSSL);
   }
 
   static const Object _sentinel = Object();
