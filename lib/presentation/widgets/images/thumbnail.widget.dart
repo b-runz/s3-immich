@@ -36,6 +36,7 @@ class Thumbnail extends StatefulWidget {
 
     /// The logical UI size of the thumbnail. This is only used to determine the ideal image resolution and does not affect the widget size.
     Size size = kThumbnailResolution,
+    S3Service? s3Service,
     super.key,
   }) : thumbhashProvider = switch (asset) {
          RemoteAsset() when asset.thumbHash != null && asset.localId == null => ThumbHashProvider(
@@ -43,7 +44,7 @@ class Thumbnail extends StatefulWidget {
          ),
          _ => null,
        },
-       imageProvider = asset == null ? null : getThumbnailImageProvider(asset, size: size);
+       imageProvider = asset == null ? null : getThumbnailImageProvider(asset, size: size, s3Service: s3Service);
 
   @override
   State<Thumbnail> createState() => _ThumbnailState();

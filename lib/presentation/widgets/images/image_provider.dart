@@ -8,6 +8,8 @@ import 'package:immich_mobile/infrastructure/repositories/settings.repository.da
 import 'package:immich_mobile/presentation/widgets/images/local_image_provider.dart';
 import 'package:immich_mobile/presentation/widgets/images/remote_image_provider.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/constants.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/utils/image_providers/s3_thumbnail_provider.dart';
 import 'package:logging/logging.dart';
 
 abstract class CancellableImageProvider<T extends Object> extends ImageProvider<T> {
@@ -176,10 +178,20 @@ ImageProvider getFullImageProvider(BaseAsset asset, {Size size = const Size(1080
   return provider;
 }
 
-ImageProvider? getThumbnailImageProvider(BaseAsset asset, {Size size = kThumbnailResolution, bool edited = true}) {
+ImageProvider? getThumbnailImageProvider(
+  BaseAsset asset, {
+  Size size = kThumbnailResolution,
+  bool edited = true,
+  S3Service? s3Service,
+}) {
   if (_shouldUseLocalAsset(asset)) {
     final id = asset is LocalAsset ? asset.id : (asset as RemoteAsset).localId!;
     return LocalThumbProvider(id: id, size: size, assetType: asset.type);
+  }
+
+  if (s3Service != null && asset.localId == null && s3Service.currentConfig != null) {
+    final thumbKey = s3Service.currentConfig!.thumbnailKeyFor(asset.name, asset.createdAt);
+    return S3ThumbnailProvider(s3Key: thumbKey, s3Service: s3Service);
   }
 
   final assetId = asset is RemoteAsset ? asset.id : (asset as LocalAsset).remoteId;

@@ -108,7 +108,7 @@ class _ThumbnailTileState extends ConsumerState<ThumbnailTile> {
                     // but other solutions have failed thus far.
                     key: ValueKey(isCurrentAsset),
                     tag: '${asset?.heroTag}_$heroIndex',
-                    child: Thumbnail.fromAsset(asset: asset, size: widget.size),
+                    child: Thumbnail.fromAsset(asset: asset, size: widget.size, s3Service: ref.watch(s3ServiceProvider)),
                     // Placeholderbuilder used to hide indicators on first hero animation, since flightShuttleBuilder isn't called until both source and destination hero exist in widget tree.
                     placeholderBuilder: (context, heroSize, child) {
                       if (!_hideIndicators) {
