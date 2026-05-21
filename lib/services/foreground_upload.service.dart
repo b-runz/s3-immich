@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:immich_mobile/domain/models/asset/asset_metadata.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
-import 'package:immich_mobile/domain/models/store.model.dart';
-import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/extensions/network_capability_extensions.dart';
 import 'package:immich_mobile/extensions/platform_extensions.dart';
 import 'package:immich_mobile/extensions/translate_extensions.dart';
@@ -17,7 +13,9 @@ import 'package:immich_mobile/platform/connectivity_api.g.dart';
 import 'package:immich_mobile/providers/infrastructure/platform.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/storage.provider.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
-import 'package:immich_mobile/repositories/upload.repository.dart';
+import 'package:immich_mobile/repositories/upload.repository.dart' show UploadResult;
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:photo_manager/photo_manager.dart' show PMProgressHandler;
@@ -34,11 +32,11 @@ class UploadCallbacks {
 
 final foregroundUploadServiceProvider = Provider((ref) {
   return ForegroundUploadService(
-    ref.watch(uploadRepositoryProvider),
     ref.watch(storageRepositoryProvider),
     ref.watch(backupRepositoryProvider),
     ref.watch(connectivityApiProvider),
     ref.watch(assetMediaRepositoryProvider),
+    ref.watch(s3ServiceProvider),
   );
 });
 
@@ -49,18 +47,18 @@ final foregroundUploadServiceProvider = Provider((ref) {
 /// (foreground mode), and share intent uploads.
 class ForegroundUploadService {
   ForegroundUploadService(
-    this._uploadRepository,
     this._storageRepository,
     this._backupRepository,
     this._connectivityApi,
     this._assetMediaRepository,
+    this._s3Service,
   );
 
-  final UploadRepository _uploadRepository;
   final StorageRepository _storageRepository;
   final DriftBackupRepository _backupRepository;
   final ConnectivityApi _connectivityApi;
   final AssetMediaRepository _assetMediaRepository;
+  final S3Service _s3Service;
   final Logger _logger = Logger('ForegroundUploadService');
 
   bool shouldAbortUpload = false;
@@ -317,89 +315,26 @@ class ForegroundUploadService {
       }
 
       final originalFileName = entity.isLivePhoto ? p.setExtension(fileName, p.extension(file.path)) : fileName;
-      final deviceId = Store.get(StoreKey.deviceId);
 
-      final fields = {
-        // deviceAssetId/deviceId required by server v2.7.5 and below (drop in v4.0 per #27818).
-        'deviceAssetId': asset.localId!,
-        'deviceId': deviceId,
-        'fileCreatedAt': asset.createdAt.toUtc().toIso8601String(),
-        'fileModifiedAt': asset.updatedAt.toUtc().toIso8601String(),
-        'isFavorite': asset.isFavorite.toString(),
-        'duration': (asset.durationMs ?? 0).toString(),
-      };
+      if (cancelToken?.isCompleted == true) {
+        shouldAbortUpload = true;
+        return;
+      }
 
-      // Upload live photo video first if available
-      String? livePhotoVideoId;
+      // Upload live photo video if available
       if (entity.isLivePhoto && livePhotoFile != null) {
         final livePhotoTitle = p.setExtension(originalFileName, p.extension(livePhotoFile.path));
-
-        final onProgress = callbacks.onProgress;
-        final livePhotoResult = await _uploadRepository.uploadFile(
-          file: livePhotoFile,
-          originalFileName: livePhotoTitle,
-          fields: fields,
-          cancelToken: cancelToken,
-          onProgress: onProgress != null
-              ? (bytes, totalBytes) => onProgress(asset.localId!, livePhotoTitle, bytes, totalBytes)
-              : null,
-          logContext: 'livePhotoVideo[${asset.localId}]',
-        );
-
-        if (livePhotoResult.isSuccess && livePhotoResult.remoteAssetId != null) {
-          livePhotoVideoId = livePhotoResult.remoteAssetId;
+        final videoS3Key = _s3Service.currentConfig!.s3KeyFor(livePhotoTitle, asset.createdAt);
+        try {
+          await _s3Service.putFile(videoS3Key, livePhotoFile.path);
+        } catch (e) {
+          _logger.warning('Live photo video upload failed for ${asset.localId}: $e');
         }
       }
 
-      if (livePhotoVideoId != null) {
-        fields['livePhotoVideoId'] = livePhotoVideoId;
-      }
-
-      // Add cloudId metadata only to the still image, not the motion video, becasue when the sync id happens, the motion video can get associated with the wrong still image.
-      if (CurrentPlatform.isIOS && asset.cloudId != null) {
-        fields['metadata'] = jsonEncode([
-          RemoteAssetMetadataItem(
-            key: RemoteAssetMetadataKey.mobileApp,
-            value: RemoteAssetMobileAppMetadata(
-              cloudId: asset.cloudId,
-              createdAt: asset.createdAt.toIso8601String(),
-              adjustmentTime: asset.adjustmentTime?.toIso8601String(),
-              latitude: asset.latitude?.toString(),
-              longitude: asset.longitude?.toString(),
-            ),
-          ),
-        ]);
-      }
-
-      final onProgress = callbacks.onProgress;
-      final result = await _uploadRepository.uploadFile(
-        file: file,
-        originalFileName: originalFileName,
-        fields: fields,
-        cancelToken: cancelToken,
-        onProgress: onProgress != null
-            ? (bytes, totalBytes) => onProgress(asset.localId!, originalFileName, bytes, totalBytes)
-            : null,
-        logContext: 'asset[${asset.localId}]',
-      );
-
-      if (result.isSuccess && result.remoteAssetId != null) {
-        callbacks.onSuccess?.call(asset.localId!, result.remoteAssetId!);
-      } else if (result.isCancelled) {
-        _logger.warning(() => "Backup was cancelled by the user");
-        shouldAbortUpload = true;
-      } else if (result.errorMessage != null) {
-        _logger.severe(
-          () =>
-              "Error(${result.statusCode}) uploading ${asset.localId} | $originalFileName | Created on ${asset.createdAt} | ${result.errorMessage}",
-        );
-
-        callbacks.onError?.call(asset.localId!, result.errorMessage!);
-
-        if (result.errorMessage == "Quota has been exceeded!") {
-          shouldAbortUpload = true;
-        }
-      }
+      final s3Key = _s3Service.currentConfig!.s3KeyFor(originalFileName, asset.createdAt);
+      await _s3Service.putFile(s3Key, file.path);
+      callbacks.onSuccess?.call(asset.localId!, s3Key);
     } catch (error, stackTrace) {
       _logger.severe(() => "Error backup asset: ${error.toString()}", stackTrace);
       callbacks.onError?.call(asset.localId!, error.toString());
@@ -423,28 +358,10 @@ class ForegroundUploadService {
   }) async {
     try {
       final stats = await file.stat();
-      final fileCreatedAt = stats.changed;
-      final fileModifiedAt = stats.modified;
       final filename = p.basename(file.path);
-
-      final fields = {
-        // deviceAssetId/deviceId required by server v2.7.5 and below (drop in v4.0 per #27818).
-        'deviceAssetId': deviceAssetId,
-        'deviceId': Store.get(StoreKey.deviceId),
-        'fileCreatedAt': fileCreatedAt.toUtc().toIso8601String(),
-        'fileModifiedAt': fileModifiedAt.toUtc().toIso8601String(),
-        'isFavorite': 'false',
-        'duration': '0',
-      };
-
-      return await _uploadRepository.uploadFile(
-        file: file,
-        originalFileName: filename,
-        fields: fields,
-        cancelToken: cancelToken,
-        onProgress: onProgress,
-        logContext: 'shareIntent[$deviceAssetId]',
-      );
+      final s3Key = _s3Service.currentConfig!.s3KeyFor(filename, stats.changed);
+      await _s3Service.putFile(s3Key, file.path);
+      return UploadResult.success(remoteAssetId: s3Key);
     } catch (e) {
       return UploadResult.error(errorMessage: e.toString());
     }

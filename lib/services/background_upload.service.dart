@@ -6,10 +6,7 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/constants.dart';
-import 'package:immich_mobile/domain/models/asset/asset_metadata.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
-import 'package:immich_mobile/domain/models/store.model.dart';
-import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/extensions/platform_extensions.dart';
 import 'package:immich_mobile/infrastructure/repositories/backup.repository.dart';
 import 'package:immich_mobile/infrastructure/repositories/local_asset.repository.dart';
@@ -19,7 +16,8 @@ import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/storage.provider.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
 import 'package:immich_mobile/repositories/upload.repository.dart';
-import 'package:immich_mobile/services/api.service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/utils/debug_print.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -31,6 +29,7 @@ final backgroundUploadServiceProvider = Provider((ref) {
     ref.watch(localAssetRepository),
     ref.watch(backupRepositoryProvider),
     ref.watch(assetMediaRepositoryProvider),
+    ref.watch(s3ServiceProvider),
   );
 
   ref.onDispose(service.dispose);
@@ -104,6 +103,7 @@ class BackgroundUploadService {
     this._localAssetRepository,
     this._backupRepository,
     this._assetMediaRepository,
+    this._s3Service,
   ) {
     _uploadRepository.onUploadStatus = _onUploadCallback;
     _uploadRepository.onTaskProgress = _onTaskProgressCallback;
@@ -114,6 +114,7 @@ class BackgroundUploadService {
   final DriftLocalAssetRepository _localAssetRepository;
   final DriftBackupRepository _backupRepository;
   final AssetMediaRepository _assetMediaRepository;
+  final S3Service _s3Service;
   final Logger _logger = Logger('BackgroundUploadService');
 
   final StreamController<TaskStatusUpdate> _taskStatusController = StreamController<TaskStatusUpdate>.broadcast();
@@ -386,47 +387,22 @@ class BackgroundUploadService {
     String? latitude,
     String? longitude,
   }) async {
-    final serverEndpoint = Store.get(StoreKey.serverEndpoint);
-    final url = Uri.parse('$serverEndpoint/assets').toString();
-    final headers = ApiService.getRequestHeaders();
-    final deviceId = Store.get(StoreKey.deviceId);
     final (baseDirectory, directory, filename) = await Task.split(filePath: file.path);
-    final fieldsMap = {
-      'filename': originalFileName ?? filename,
-      // deviceAssetId/deviceId required by server v2.7.5 and below (drop in v4.0 per #27818).
-      'deviceAssetId': deviceAssetId ?? '',
-      'deviceId': deviceId,
-      'fileCreatedAt': createdAt.toUtc().toIso8601String(),
-      'fileModifiedAt': modifiedAt.toUtc().toIso8601String(),
-      'isFavorite': isFavorite?.toString() ?? 'false',
-      'duration': '0',
-      if (fields != null) ...fields,
-      if (CurrentPlatform.isIOS && cloudId != null)
-        'metadata': jsonEncode([
-          RemoteAssetMetadataItem(
-            key: RemoteAssetMetadataKey.mobileApp,
-            value: RemoteAssetMobileAppMetadata(
-              cloudId: cloudId,
-              createdAt: createdAt.toIso8601String(),
-              adjustmentTime: adjustmentTime,
-              latitude: latitude,
-              longitude: longitude,
-            ),
-          ),
-        ]),
-    };
+    final s3Key = _s3Service.currentConfig!.s3KeyFor(
+      originalFileName ?? filename,
+      createdAt,
+    );
+    final url = await _s3Service.presignPut(s3Key);
 
     return UploadTask(
       taskId: deviceAssetId,
       displayName: originalFileName ?? filename,
-      httpRequestMethod: 'POST',
+      httpRequestMethod: 'PUT',
       url: url,
-      headers: headers,
+      headers: const {},
       filename: filename,
-      fields: fieldsMap,
       baseDirectory: baseDirectory,
       directory: directory,
-      fileField: 'assetData',
       metaData: metadata ?? '',
       group: group,
       requiresWiFi: requiresWiFi,
