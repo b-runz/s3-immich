@@ -71,6 +71,8 @@ import 'package:immich_mobile/presentation/pages/search/drift_search.page.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_viewer.page.dart';
 import 'package:immich_mobile/providers/api.provider.dart';
 import 'package:immich_mobile/providers/gallery_permission.provider.dart';
+import 'package:immich_mobile/presentation/pages/s3_setup/s3_setup.page.dart';
+import 'package:immich_mobile/routing/s3_config_guard.dart';
 import 'package:immich_mobile/routing/auth_guard.dart';
 import 'package:immich_mobile/routing/duplicate_guard.dart';
 import 'package:immich_mobile/routing/locked_guard.dart';
@@ -89,6 +91,7 @@ final appRouterProvider = Provider(
     ref.watch(galleryPermissionNotifier.notifier),
     ref.watch(secureStorageServiceProvider),
     ref.watch(localAuthServiceProvider),
+    ref,
   ),
 );
 
@@ -97,6 +100,7 @@ class AppRouter extends RootStackRouter {
   late final AuthGuard _authGuard;
   late final DuplicateGuard _duplicateGuard;
   late final LockedGuard _lockedGuard;
+  late final S3ConfigGuard _s3ConfigGuard;
 
   AppRouter(
     ApiService apiService,
@@ -104,10 +108,12 @@ class AppRouter extends RootStackRouter {
     GalleryPermissionNotifier galleryPermissionNotifier,
     SecureStorageService secureStorageService,
     LocalAuthService localAuthService,
+    Ref ref,
   ) {
     _authGuard = AuthGuard(apiService, authService);
     _duplicateGuard = const DuplicateGuard();
     _lockedGuard = LockedGuard(apiService, secureStorageService, localAuthService);
+    _s3ConfigGuard = S3ConfigGuard(ref);
   }
 
   @override
@@ -120,12 +126,12 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: ChangePasswordRoute.page),
     AutoRoute(
       page: TabShellRoute.page,
-      guards: [_authGuard, _duplicateGuard],
+      guards: [_s3ConfigGuard, _duplicateGuard],
       children: [
-        AutoRoute(page: MainTimelineRoute.page, guards: [_authGuard, _duplicateGuard]),
-        AutoRoute(page: DriftSearchRoute.page, guards: [_authGuard, _duplicateGuard], maintainState: false),
-        AutoRoute(page: DriftLibraryRoute.page, guards: [_authGuard, _duplicateGuard]),
-        AutoRoute(page: DriftAlbumsRoute.page, guards: [_authGuard, _duplicateGuard]),
+        AutoRoute(page: MainTimelineRoute.page, guards: [_s3ConfigGuard, _duplicateGuard]),
+        AutoRoute(page: DriftSearchRoute.page, guards: [_s3ConfigGuard, _duplicateGuard], maintainState: false),
+        AutoRoute(page: DriftLibraryRoute.page, guards: [_s3ConfigGuard, _duplicateGuard]),
+        AutoRoute(page: DriftAlbumsRoute.page, guards: [_s3ConfigGuard, _duplicateGuard]),
       ],
     ),
     AutoRoute(page: ProfilePictureCropRoute.page),

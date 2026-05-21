@@ -1352,7 +1352,23 @@ class LocalTimelineRouteArgs {
 }
 
 
-// Stub — replaced by S3SetupRoute in Task 7.
+/// generated route for
+/// [S3SetupPage]
+class S3SetupRoute extends PageRouteInfo<void> {
+  const S3SetupRoute({List<PageRouteInfo>? children})
+    : super(S3SetupRoute.name, initialChildren: children);
+
+  static const String name = 'S3SetupRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const S3SetupPage();
+    },
+  );
+}
+
+// Stub — kept for backwards-compat while auth_guard.dart still compiles.
 class LoginRoute extends PageRouteInfo<void> {
   const LoginRoute({List<PageRouteInfo>? children})
     : super(LoginRoute.name, initialChildren: children);
