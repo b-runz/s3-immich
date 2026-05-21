@@ -34,6 +34,9 @@ import 'package:immich_mobile/routing/app_navigation_observer.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/models/auth/auth_state.model.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:immich_mobile/services/db_sync.service.dart';
 import 'package:immich_mobile/services/deep_link.service.dart';
 import 'package:immich_mobile/services/s3/s3_service.dart';
 import 'package:immich_mobile/services/s3/s3_service_provider.dart';
@@ -63,6 +66,11 @@ void main() async {
 
     final s3Service = S3Service();
     await s3Service.loadFromStorage();
+
+    final documentsDir = await getApplicationDocumentsDirectory();
+    final dbPath = p.join(documentsDir.path, 'immich.sqlite');
+    final dbSyncService = DbSyncService(s3Service: s3Service, dbPath: dbPath, db: drift);
+    unawaited(dbSyncService.pull());
 
     runApp(ProviderScope(
       overrides: [
