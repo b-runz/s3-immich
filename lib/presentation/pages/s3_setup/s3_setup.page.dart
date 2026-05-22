@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:s3mmich/providers/background_sync.provider.dart';
 import 'package:s3mmich/services/s3/s3_config.dart';
 import 'package:s3mmich/services/s3/s3_service_provider.dart';
 import 'package:s3mmich/routing/router.dart';
@@ -68,6 +69,7 @@ class _S3SetupPageState extends ConsumerState<S3SetupPage> {
       await ref.read(s3ServiceProvider).configure(config);
       if (mounted) {
         unawaited(context.router.replaceAll([const TabShellRoute()]));
+        unawaited(ref.read(backgroundSyncProvider).syncLocal(full: true));
       }
     } catch (e) {
       setState(() {

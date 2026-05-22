@@ -356,8 +356,6 @@ class SplashScreenPageState extends ConsumerState<SplashScreenPage> {
         ),
       );
     } else {
-      log.severe('Missing crucial offline login info - Logging out completely');
-      unawaited(ref.read(authProvider.notifier).logout());
       unawaited(context.replaceRoute(const S3SetupRoute()));
       return;
     }

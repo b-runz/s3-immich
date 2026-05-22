@@ -38,10 +38,13 @@ Cancelable<T?> runInIsolateGentle<T>({
         DartPluginRegistrant.ensureInitialized();
 
         final (drift, logDb) = await Bootstrap.initDomain(shouldBufferLogs: false, listenStoreUpdates: false);
+        final s3Service = S3Service();
+        await s3Service.loadFromStorage();
         final ref = ProviderContainer(
           overrides: [
             cancellationProvider.overrideWithValue(cancelledChecker),
             driftProvider.overrideWith(driftOverride(drift)),
+            s3ServiceProvider.overrideWithValue(s3Service),
           ],
         );
 

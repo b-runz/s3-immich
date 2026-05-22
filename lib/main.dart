@@ -34,6 +34,11 @@ import 'package:immich_mobile/routing/app_navigation_observer.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/models/auth/auth_state.model.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
+import 'package:immich_mobile/domain/models/store.model.dart';
+import 'package:immich_mobile/domain/models/user.model.dart';
+import 'package:immich_mobile/entities/store.entity.dart';
+import 'package:immich_mobile/infrastructure/local_server/local_api_service.dart';
+import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:immich_mobile/services/db_sync.service.dart';
@@ -53,12 +58,29 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:timezone/data/latest.dart';
 
+
 void main() async {
   try {
     ImmichWidgetsBinding();
     unawaited(BackgroundWorkerLockService(BackgroundWorkerLockApi()).lock());
     await EasyLocalization.ensureInitialized();
     final (drift, _) = await Bootstrap.initDomain();
+
+    // Satisfy Store.get() calls in legacy Immich code paths.
+    // LocalApiClient intercepts all API calls so these values are never sent over the network.
+    await Store.put(StoreKey.serverEndpoint, 'http://localhost/api');
+    await Store.put(StoreKey.accessToken, 's3-local');
+    await Store.put(StoreKey.serverUrl, 'http://localhost');
+    await Store.put(
+      StoreKey.currentUser,
+      UserDto(
+        id: 'local-user',
+        email: 'local@s3immich',
+        name: 'My Device',
+        profileChangedAt: DateTime.utc(2020),
+      ),
+    );
+
     await initApp();
     // Warm-up isolate pool for worker manager
     await workerManagerPatch.init(dynamicSpawning: true, isolatesCount: max(Platform.numberOfProcessors - 1, 5));
@@ -70,25 +92,12 @@ void main() async {
     final documentsDir = await getApplicationDocumentsDirectory();
     final dbPath = p.join(documentsDir.path, 'immich.sqlite');
     final dbSyncService = DbSyncService(s3Service: s3Service, dbPath: dbPath, db: drift);
-    unawaited(dbSyncService.pull());
+    if (s3Service.isConfigured) unawaited(dbSyncService.pull());
 
     runApp(ProviderScope(
       overrides: [
         driftProvider.overrideWith(driftOverride(drift)),
         s3ServiceProvider.overrideWithValue(s3Service),
-        authProvider.overrideWith(
-          (ref) => AuthNotifier.stub(
-            const AuthState(
-              deviceId: 'local-device',
-              userId: 'local-user',
-              userEmail: 'local@s3immich',
-              name: 'My Device',
-              profileImagePath: '',
-              isAdmin: false,
-              isAuthenticated: true,
-            ),
-          ),
-        ),
       ],
       child: const MainWidget(),
     ));
