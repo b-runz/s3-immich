@@ -1,28 +1,28 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:immich_mobile/infrastructure/entities/metadata.entity.drift.dart'
+import 'package:immich_mobile/infrastructure/entities/settings.entity.drift.dart'
     as i1;
-import 'package:immich_mobile/infrastructure/entities/metadata.entity.dart'
+import 'package:immich_mobile/infrastructure/entities/settings.entity.dart'
     as i2;
 import 'package:drift/src/runtime/query_builder/query_builder.dart' as i3;
 
-typedef $$MetadataEntityTableCreateCompanionBuilder =
-    i1.MetadataEntityCompanion Function({
+typedef $$SettingsEntityTableCreateCompanionBuilder =
+    i1.SettingsEntityCompanion Function({
       required String key,
       required String value,
       i0.Value<DateTime> updatedAt,
     });
-typedef $$MetadataEntityTableUpdateCompanionBuilder =
-    i1.MetadataEntityCompanion Function({
+typedef $$SettingsEntityTableUpdateCompanionBuilder =
+    i1.SettingsEntityCompanion Function({
       i0.Value<String> key,
       i0.Value<String> value,
       i0.Value<DateTime> updatedAt,
     });
 
-class $$MetadataEntityTableFilterComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.$MetadataEntityTable> {
-  $$MetadataEntityTableFilterComposer({
+class $$SettingsEntityTableFilterComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.$SettingsEntityTable> {
+  $$SettingsEntityTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -45,9 +45,9 @@ class $$MetadataEntityTableFilterComposer
   );
 }
 
-class $$MetadataEntityTableOrderingComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.$MetadataEntityTable> {
-  $$MetadataEntityTableOrderingComposer({
+class $$SettingsEntityTableOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.$SettingsEntityTable> {
+  $$SettingsEntityTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -70,9 +70,9 @@ class $$MetadataEntityTableOrderingComposer
   );
 }
 
-class $$MetadataEntityTableAnnotationComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.$MetadataEntityTable> {
-  $$MetadataEntityTableAnnotationComposer({
+class $$SettingsEntityTableAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.$SettingsEntityTable> {
+  $$SettingsEntityTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -89,47 +89,47 @@ class $$MetadataEntityTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$MetadataEntityTableTableManager
+class $$SettingsEntityTableTableManager
     extends
         i0.RootTableManager<
           i0.GeneratedDatabase,
-          i1.$MetadataEntityTable,
-          i1.MetadataEntityData,
-          i1.$$MetadataEntityTableFilterComposer,
-          i1.$$MetadataEntityTableOrderingComposer,
-          i1.$$MetadataEntityTableAnnotationComposer,
-          $$MetadataEntityTableCreateCompanionBuilder,
-          $$MetadataEntityTableUpdateCompanionBuilder,
+          i1.$SettingsEntityTable,
+          i1.SettingsEntityData,
+          i1.$$SettingsEntityTableFilterComposer,
+          i1.$$SettingsEntityTableOrderingComposer,
+          i1.$$SettingsEntityTableAnnotationComposer,
+          $$SettingsEntityTableCreateCompanionBuilder,
+          $$SettingsEntityTableUpdateCompanionBuilder,
           (
-            i1.MetadataEntityData,
+            i1.SettingsEntityData,
             i0.BaseReferences<
               i0.GeneratedDatabase,
-              i1.$MetadataEntityTable,
-              i1.MetadataEntityData
+              i1.$SettingsEntityTable,
+              i1.SettingsEntityData
             >,
           ),
-          i1.MetadataEntityData,
+          i1.SettingsEntityData,
           i0.PrefetchHooks Function()
         > {
-  $$MetadataEntityTableTableManager(
+  $$SettingsEntityTableTableManager(
     i0.GeneratedDatabase db,
-    i1.$MetadataEntityTable table,
+    i1.$SettingsEntityTable table,
   ) : super(
         i0.TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              i1.$$MetadataEntityTableFilterComposer($db: db, $table: table),
+              i1.$$SettingsEntityTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              i1.$$MetadataEntityTableOrderingComposer($db: db, $table: table),
+              i1.$$SettingsEntityTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () => i1
-              .$$MetadataEntityTableAnnotationComposer($db: db, $table: table),
+              .$$SettingsEntityTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 i0.Value<String> key = const i0.Value.absent(),
                 i0.Value<String> value = const i0.Value.absent(),
                 i0.Value<DateTime> updatedAt = const i0.Value.absent(),
-              }) => i1.MetadataEntityCompanion(
+              }) => i1.SettingsEntityCompanion(
                 key: key,
                 value: value,
                 updatedAt: updatedAt,
@@ -139,7 +139,7 @@ class $$MetadataEntityTableTableManager
                 required String key,
                 required String value,
                 i0.Value<DateTime> updatedAt = const i0.Value.absent(),
-              }) => i1.MetadataEntityCompanion.insert(
+              }) => i1.SettingsEntityCompanion.insert(
                 key: key,
                 value: value,
                 updatedAt: updatedAt,
@@ -152,34 +152,34 @@ class $$MetadataEntityTableTableManager
       );
 }
 
-typedef $$MetadataEntityTableProcessedTableManager =
+typedef $$SettingsEntityTableProcessedTableManager =
     i0.ProcessedTableManager<
       i0.GeneratedDatabase,
-      i1.$MetadataEntityTable,
-      i1.MetadataEntityData,
-      i1.$$MetadataEntityTableFilterComposer,
-      i1.$$MetadataEntityTableOrderingComposer,
-      i1.$$MetadataEntityTableAnnotationComposer,
-      $$MetadataEntityTableCreateCompanionBuilder,
-      $$MetadataEntityTableUpdateCompanionBuilder,
+      i1.$SettingsEntityTable,
+      i1.SettingsEntityData,
+      i1.$$SettingsEntityTableFilterComposer,
+      i1.$$SettingsEntityTableOrderingComposer,
+      i1.$$SettingsEntityTableAnnotationComposer,
+      $$SettingsEntityTableCreateCompanionBuilder,
+      $$SettingsEntityTableUpdateCompanionBuilder,
       (
-        i1.MetadataEntityData,
+        i1.SettingsEntityData,
         i0.BaseReferences<
           i0.GeneratedDatabase,
-          i1.$MetadataEntityTable,
-          i1.MetadataEntityData
+          i1.$SettingsEntityTable,
+          i1.SettingsEntityData
         >,
       ),
-      i1.MetadataEntityData,
+      i1.SettingsEntityData,
       i0.PrefetchHooks Function()
     >;
 
-class $MetadataEntityTable extends i2.MetadataEntity
-    with i0.TableInfo<$MetadataEntityTable, i1.MetadataEntityData> {
+class $SettingsEntityTable extends i2.SettingsEntity
+    with i0.TableInfo<$SettingsEntityTable, i1.SettingsEntityData> {
   @override
   final i0.GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $MetadataEntityTable(this.attachedDatabase, [this._alias]);
+  $SettingsEntityTable(this.attachedDatabase, [this._alias]);
   static const i0.VerificationMeta _keyMeta = const i0.VerificationMeta('key');
   @override
   late final i0.GeneratedColumn<String> key = i0.GeneratedColumn<String>(
@@ -219,10 +219,10 @@ class $MetadataEntityTable extends i2.MetadataEntity
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'metadata';
+  static const String $name = 'settings';
   @override
   i0.VerificationContext validateIntegrity(
-    i0.Insertable<i1.MetadataEntityData> instance, {
+    i0.Insertable<i1.SettingsEntityData> instance, {
     bool isInserting = false,
   }) {
     final context = i0.VerificationContext();
@@ -255,9 +255,9 @@ class $MetadataEntityTable extends i2.MetadataEntity
   @override
   Set<i0.GeneratedColumn> get $primaryKey => {key};
   @override
-  i1.MetadataEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  i1.SettingsEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i1.MetadataEntityData(
+    return i1.SettingsEntityData(
       key: attachedDatabase.typeMapping.read(
         i0.DriftSqlType.string,
         data['${effectivePrefix}key'],
@@ -274,8 +274,8 @@ class $MetadataEntityTable extends i2.MetadataEntity
   }
 
   @override
-  $MetadataEntityTable createAlias(String alias) {
-    return $MetadataEntityTable(attachedDatabase, alias);
+  $SettingsEntityTable createAlias(String alias) {
+    return $SettingsEntityTable(attachedDatabase, alias);
   }
 
   @override
@@ -284,12 +284,12 @@ class $MetadataEntityTable extends i2.MetadataEntity
   bool get isStrict => true;
 }
 
-class MetadataEntityData extends i0.DataClass
-    implements i0.Insertable<i1.MetadataEntityData> {
+class SettingsEntityData extends i0.DataClass
+    implements i0.Insertable<i1.SettingsEntityData> {
   final String key;
   final String value;
   final DateTime updatedAt;
-  const MetadataEntityData({
+  const SettingsEntityData({
     required this.key,
     required this.value,
     required this.updatedAt,
@@ -303,12 +303,12 @@ class MetadataEntityData extends i0.DataClass
     return map;
   }
 
-  factory MetadataEntityData.fromJson(
+  factory SettingsEntityData.fromJson(
     Map<String, dynamic> json, {
     i0.ValueSerializer? serializer,
   }) {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
-    return MetadataEntityData(
+    return SettingsEntityData(
       key: serializer.fromJson<String>(json['key']),
       value: serializer.fromJson<String>(json['value']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -324,17 +324,17 @@ class MetadataEntityData extends i0.DataClass
     };
   }
 
-  i1.MetadataEntityData copyWith({
+  i1.SettingsEntityData copyWith({
     String? key,
     String? value,
     DateTime? updatedAt,
-  }) => i1.MetadataEntityData(
+  }) => i1.SettingsEntityData(
     key: key ?? this.key,
     value: value ?? this.value,
     updatedAt: updatedAt ?? this.updatedAt,
   );
-  MetadataEntityData copyWithCompanion(i1.MetadataEntityCompanion data) {
-    return MetadataEntityData(
+  SettingsEntityData copyWithCompanion(i1.SettingsEntityCompanion data) {
+    return SettingsEntityData(
       key: data.key.present ? data.key.value : this.key,
       value: data.value.present ? data.value.value : this.value,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -343,7 +343,7 @@ class MetadataEntityData extends i0.DataClass
 
   @override
   String toString() {
-    return (StringBuffer('MetadataEntityData(')
+    return (StringBuffer('SettingsEntityData(')
           ..write('key: $key, ')
           ..write('value: $value, ')
           ..write('updatedAt: $updatedAt')
@@ -356,29 +356,29 @@ class MetadataEntityData extends i0.DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is i1.MetadataEntityData &&
+      (other is i1.SettingsEntityData &&
           other.key == this.key &&
           other.value == this.value &&
           other.updatedAt == this.updatedAt);
 }
 
-class MetadataEntityCompanion
-    extends i0.UpdateCompanion<i1.MetadataEntityData> {
+class SettingsEntityCompanion
+    extends i0.UpdateCompanion<i1.SettingsEntityData> {
   final i0.Value<String> key;
   final i0.Value<String> value;
   final i0.Value<DateTime> updatedAt;
-  const MetadataEntityCompanion({
+  const SettingsEntityCompanion({
     this.key = const i0.Value.absent(),
     this.value = const i0.Value.absent(),
     this.updatedAt = const i0.Value.absent(),
   });
-  MetadataEntityCompanion.insert({
+  SettingsEntityCompanion.insert({
     required String key,
     required String value,
     this.updatedAt = const i0.Value.absent(),
   }) : key = i0.Value(key),
        value = i0.Value(value);
-  static i0.Insertable<i1.MetadataEntityData> custom({
+  static i0.Insertable<i1.SettingsEntityData> custom({
     i0.Expression<String>? key,
     i0.Expression<String>? value,
     i0.Expression<DateTime>? updatedAt,
@@ -390,12 +390,12 @@ class MetadataEntityCompanion
     });
   }
 
-  i1.MetadataEntityCompanion copyWith({
+  i1.SettingsEntityCompanion copyWith({
     i0.Value<String>? key,
     i0.Value<String>? value,
     i0.Value<DateTime>? updatedAt,
   }) {
-    return i1.MetadataEntityCompanion(
+    return i1.SettingsEntityCompanion(
       key: key ?? this.key,
       value: value ?? this.value,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -419,7 +419,7 @@ class MetadataEntityCompanion
 
   @override
   String toString() {
-    return (StringBuffer('MetadataEntityCompanion(')
+    return (StringBuffer('SettingsEntityCompanion(')
           ..write('key: $key, ')
           ..write('value: $value, ')
           ..write('updatedAt: $updatedAt')
