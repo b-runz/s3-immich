@@ -289,31 +289,42 @@ class SplashScreenPageState extends ConsumerState<SplashScreenPage> {
   @override
   void initState() {
     super.initState();
-    ref
-        .read(authProvider.notifier)
-        .setOpenApiServiceEndpoint()
-        .then(logConnectionInfo)
-        .whenComplete(() => resumeSession());
+    // Skip the Immich auth dance — go straight to S3 config check.
+    WidgetsBinding.instance.addPostFrameCallback((_) => resumeSession());
   }
 
-  void logConnectionInfo(String? endpoint) {
-    if (endpoint == null) {
+  void resumeSession() {
+    final s3 = ref.read(s3ServiceProvider);
+    if (!s3.isConfigured) {
+      context.replaceRoute(const S3SetupRoute());
       return;
     }
 
-    log.info("Resuming session at $endpoint");
+    // S3 is configured — bootstrap the background services and enter the app.
+    final backgroundManager = ref.read(backgroundSyncProvider);
+    final backupProvider = ref.read(driftBackupProvider.notifier);
+
+    unawaited(_bootstrap(backgroundManager, backupProvider));
+
+    context.replaceRoute(const TabShellRoute());
   }
 
-  void resumeSession() async {
-    final serverUrl = Store.tryGet(StoreKey.serverUrl);
-    final endpoint = Store.tryGet(StoreKey.serverEndpoint);
-    final accessToken = Store.tryGet(StoreKey.accessToken);
+  Future<void> _bootstrap(
+    BackgroundSyncManager backgroundManager,
+    DriftBackupNotifier backupProvider,
+  ) async {
+    try {
+      bool syncSuccess = false;
+      await Future.wait([
+        backgroundManager.syncLocal(full: true),
+        backgroundManager.syncRemote().then((success) => syncSuccess = success),
+      ]);
 
-    if (accessToken != null && serverUrl != null && endpoint != null) {
-      final infoProvider = ref.read(serverInfoProvider.notifier);
-      final wsProvider = ref.read(websocketProvider.notifier);
-      final backgroundManager = ref.read(backgroundSyncProvider);
-      final backupProvider = ref.read(driftBackupProvider.notifier);
+      if (syncSuccess) {
+        await backgroundManager.hashAssets().then((_) => _resumeBackup(backupProvider));
+      } else {
+        await backgroundManager.hashAssets();
+      }
 
       unawaited(
         ref.read(authProvider.notifier).saveAuthInfo(accessToken: accessToken).then(

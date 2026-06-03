@@ -39,6 +39,9 @@ import 'package:immich_mobile/domain/models/user.model.dart';
 import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/infrastructure/local_server/local_api_service.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
+import 'package:immich_mobile/infrastructure/entities/user.entity.drift.dart';
+import 'package:immich_mobile/domain/utils/background_sync.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:immich_mobile/services/db_sync.service.dart';
@@ -81,6 +84,15 @@ void main() async {
       ),
     );
 
+    // Satisfy the FK constraint on remote_asset_entity.owner_id → user_entity.id
+    await drift.into(drift.userEntity).insertOnConflictUpdate(
+      UserEntityCompanion.insert(
+        id: 'local-user',
+        name: 'My Device',
+        email: 'local@s3immich',
+      ),
+    );
+
     await initApp();
     // Warm-up isolate pool for worker manager
     await workerManagerPatch.init(dynamicSpawning: true, isolatesCount: max(Platform.numberOfProcessors - 1, 5));
@@ -92,7 +104,9 @@ void main() async {
     final documentsDir = await getApplicationDocumentsDirectory();
     final dbPath = p.join(documentsDir.path, 'immich.sqlite');
     final dbSyncService = DbSyncService(s3Service: s3Service, dbPath: dbPath, db: drift);
-    if (s3Service.isConfigured) unawaited(dbSyncService.pull());
+    if (s3Service.isConfigured) {
+      unawaited(dbSyncService.pull());
+    }
 
     runApp(ProviderScope(
       overrides: [
