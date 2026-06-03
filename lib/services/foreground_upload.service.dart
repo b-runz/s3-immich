@@ -16,6 +16,8 @@ import 'package:immich_mobile/repositories/asset_media.repository.dart';
 import 'package:immich_mobile/repositories/upload.repository.dart' show UploadResult;
 import 'package:immich_mobile/services/s3/s3_service.dart';
 import 'package:immich_mobile/services/s3/s3_service_provider.dart';
+import 'package:immich_mobile/infrastructure/ml/ml_worker.service.dart';
+import 'package:immich_mobile/providers/infrastructure/ml_worker.provider.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:photo_manager/photo_manager.dart' show PMProgressHandler;
@@ -37,6 +39,7 @@ final foregroundUploadServiceProvider = Provider((ref) {
     ref.watch(connectivityApiProvider),
     ref.watch(assetMediaRepositoryProvider),
     ref.watch(s3ServiceProvider),
+    ref.watch(mlWorkerServiceProvider),
   );
 });
 
@@ -52,6 +55,7 @@ class ForegroundUploadService {
     this._connectivityApi,
     this._assetMediaRepository,
     this._s3Service,
+    this._mlWorker,
   );
 
   final StorageRepository _storageRepository;
@@ -59,6 +63,7 @@ class ForegroundUploadService {
   final ConnectivityApi _connectivityApi;
   final AssetMediaRepository _assetMediaRepository;
   final S3Service _s3Service;
+  final MlWorkerService _mlWorker;
   final Logger _logger = Logger('ForegroundUploadService');
 
   bool shouldAbortUpload = false;
@@ -88,7 +93,7 @@ class ForegroundUploadService {
     _logger.info('Network capabilities: $networkCapabilities, hasWifi/isUnmetered: $hasWifi');
 
     if (useSequentialUpload) {
-      await _uploadSequentially(items: candidates, cancelToken: cancelToken, hasWifi: hasWifi, callbacks: callbacks);
+      await _uploadSequentially(items: candidates, cancelToken: cancelToken, hasWifi: hasWifi, callbacks: callbacks, ownerId: userId);
     } else {
       await _executeWithWorkerPool<LocalAsset>(
         items: candidates,
@@ -97,7 +102,7 @@ class ForegroundUploadService {
           final requireWifi = _shouldRequireWiFi(asset);
           return requireWifi && !hasWifi;
         },
-        processItem: (asset) => _uploadSingleAsset(asset, cancelToken, callbacks: callbacks),
+        processItem: (asset) => _uploadSingleAsset(asset, cancelToken, ownerId: userId, callbacks: callbacks),
       );
     }
   }
@@ -108,6 +113,7 @@ class ForegroundUploadService {
     required Completer<void> cancelToken,
     required bool hasWifi,
     required UploadCallbacks callbacks,
+    required String ownerId,
   }) async {
     await _storageRepository.clearCache();
     shouldAbortUpload = false;
@@ -123,13 +129,14 @@ class ForegroundUploadService {
         continue;
       }
 
-      await _uploadSingleAsset(asset, cancelToken, callbacks: callbacks);
+      await _uploadSingleAsset(asset, cancelToken, ownerId: ownerId, callbacks: callbacks);
     }
   }
 
   /// Manually upload picked local assets
   Future<void> uploadManual(
     List<LocalAsset> localAssets, {
+    required String ownerId,
     Completer<void>? cancelToken,
     UploadCallbacks callbacks = const UploadCallbacks(),
   }) async {
@@ -140,7 +147,7 @@ class ForegroundUploadService {
     await _executeWithWorkerPool<LocalAsset>(
       items: localAssets,
       cancelToken: cancelToken,
-      processItem: (asset) => _uploadSingleAsset(asset, cancelToken, callbacks: callbacks),
+      processItem: (asset) => _uploadSingleAsset(asset, cancelToken, ownerId: ownerId, callbacks: callbacks),
     );
   }
 
@@ -233,6 +240,7 @@ class ForegroundUploadService {
   Future<void> _uploadSingleAsset(
     LocalAsset asset,
     Completer<void>? cancelToken, {
+    required String ownerId,
     required UploadCallbacks callbacks,
   }) async {
     File? file;
@@ -334,6 +342,10 @@ class ForegroundUploadService {
 
       final s3Key = _s3Service.currentConfig!.s3KeyFor(originalFileName, asset.createdAt);
       await _s3Service.putFile(s3Key, file.path);
+      await _backupRepository.markAsBackedUp(asset, s3Key, ownerId);
+      // Enqueue for on-device ML (labels, faces, OCR) while the file is still on disk.
+      _mlWorker.enqueue(asset.localId!, file);
+      unawaited(_mlWorker.start());
       callbacks.onSuccess?.call(asset.localId!, s3Key);
     } catch (error, stackTrace) {
       _logger.severe(() => "Error backup asset: ${error.toString()}", stackTrace);

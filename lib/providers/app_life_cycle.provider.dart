@@ -14,6 +14,9 @@ import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/providers/notification_permission.provider.dart';
 import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/websocket.provider.dart';
+import 'package:immich_mobile/providers/infrastructure/local_photo_watcher.provider.dart';
+import 'package:immich_mobile/infrastructure/ml/ml_worker.service.dart';
+import 'package:immich_mobile/providers/infrastructure/ml_worker.provider.dart';
 import 'package:logging/logging.dart';
 
 enum AppLifeCycleEnum { active, inactive, paused, resumed, detached, hidden }
@@ -36,6 +39,8 @@ class AppLifeCycleNotifier extends StateNotifier<AppLifeCycleEnum> {
 
   void handleAppResume() async {
     state = AppLifeCycleEnum.resumed;
+    // Ensure the photo watcher is running — idempotent, no-op on subsequent resumes.
+    _ref.read(localPhotoWatcherServiceProvider);
 
     // Prevent overlapping resume operations
     if (_resumeOperation != null && !_resumeOperation!.isCompleted) {
