@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path/path.dart' as p;
+import 'package:s3mmich/domain/models/store.model.dart';
+import 'package:s3mmich/domain/services/store.service.dart';
 
 class S3Config {
   final String endpoint;   // hostname only: 's3.nl-ams.scw.cloud'
@@ -93,16 +95,68 @@ class S3Config {
 
   static const Object _sentinel = Object();
   static const _storageKey = 's3_config_v1';
-  static const _storage = FlutterSecureStorage();
+
+  // encryptedSharedPreferences avoids per-entry Keystore keys, which some
+  // Android OEMs silently invalidate after long inactivity or a lock-screen change.
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock_this_device),
+  );
+
+  // Legacy storage – kept only for one-time migration of previously saved credentials.
+  static const _legacyStorage = FlutterSecureStorage();
 
   static Future<S3Config?> load() async {
-    final raw = await _storage.read(key: _storageKey);
-    if (raw == null) return null;
-    return S3Config.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    // 1. Primary: durable secure storage.
+    try {
+      final raw = await _storage.read(key: _storageKey);
+      if (raw != null) {
+        return S3Config.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      }
+    } catch (_) {}
+
+    // 2. Secondary: Drift DB copy (survives Keystore wipes; written on every save()).
+    try {
+      final json = StoreService.I.tryGet(StoreKey.s3ConfigJson);
+      if (json != null) {
+        final config = S3Config.fromJson(jsonDecode(json) as Map<String, dynamic>);
+        // Best-effort re-populate primary storage; don't let a write failure
+        // prevent us from returning the successfully-loaded config.
+        try { await _storage.write(key: _storageKey, value: json); } catch (_) {}
+        return config;
+      }
+    } catch (_) {}
+
+    // 3. Migration: legacy default secure-storage from before this change.
+    try {
+      final legacyRaw = await _legacyStorage.read(key: _storageKey);
+      if (legacyRaw != null) {
+        final config = S3Config.fromJson(jsonDecode(legacyRaw) as Map<String, dynamic>);
+        try {
+          await config.save(); // writes to primary + Drift
+          await _legacyStorage.delete(key: _storageKey);
+        } catch (_) {}
+        return config;
+      }
+    } catch (_) {}
+
+    return null;
   }
 
-  Future<void> save() =>
-      _storage.write(key: _storageKey, value: jsonEncode(toJson()));
+  Future<void> save() async {
+    final json = jsonEncode(toJson());
+    // Write to both stores independently so a broken Keystore/EncryptedSharedPrefs
+    // doesn't prevent the Drift backup from being written.
+    try {
+      await _storage.write(key: _storageKey, value: json);
+    } catch (_) {}
+    try {
+      await StoreService.I.put(StoreKey.s3ConfigJson, json);
+    } catch (_) {}
+  }
 
-  static Future<void> clear() => _storage.delete(key: _storageKey);
+  static Future<void> clear() async {
+    try { await _storage.delete(key: _storageKey); } catch (_) {}
+    try { await StoreService.I.delete(StoreKey.s3ConfigJson); } catch (_) {}
+  }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:s3mmich/domain/models/store.model.dart';
 import 'package:s3mmich/services/s3/s3_service.dart';
 
 class DbSyncService {
@@ -55,6 +56,10 @@ class DbSyncService {
       );
       await db.customStatement(
         'INSERT OR IGNORE INTO remote_album_entity SELECT * FROM remote.remote_album_entity',
+      );
+      // Restore s3 credentials if the local DB has none (e.g. after a Keystore wipe).
+      await db.customStatement(
+        'INSERT OR IGNORE INTO store_entity SELECT * FROM remote.store_entity WHERE id = ${StoreKey.s3ConfigJson.id}',
       );
     } finally {
       await db.customStatement('DETACH DATABASE remote');

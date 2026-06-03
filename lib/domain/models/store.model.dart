@@ -17,6 +17,7 @@ enum StoreKey<T> {
   readonlyModeEnabled<bool>._(138),
 
   syncMigrationStatus<String>._(1013),
+  s3ConfigJson<String>._(2000),
 
   // Legacy keys that have been migrated to the new metadata store
   legacyBackupRequireCharging<bool>._(7),
