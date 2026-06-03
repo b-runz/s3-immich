@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 class LabelMlSchema {
   LabelMlSchema._();

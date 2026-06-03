@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path/path.dart' as p;
-import 'package:s3mmich/domain/models/store.model.dart';
-import 'package:s3mmich/domain/services/store.service.dart';
+import 'package:immich_mobile/domain/models/store.model.dart';
+import 'package:immich_mobile/domain/services/store.service.dart';
 
 class S3Config {
   final String endpoint;   // hostname only: 's3.nl-ams.scw.cloud'

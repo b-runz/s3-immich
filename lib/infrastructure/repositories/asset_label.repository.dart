@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/painting.dart' show Rect;
-import 'package:s3mmich/infrastructure/ml/image_labeler.dart';
-import 'package:s3mmich/infrastructure/ml/label_ml_schema.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/ml/image_labeler.dart';
+import 'package:immich_mobile/infrastructure/ml/label_ml_schema.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 class LabelSummary {
   final String label;

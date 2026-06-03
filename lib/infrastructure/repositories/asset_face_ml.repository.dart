@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/widgets.dart';
-import 'package:s3mmich/infrastructure/ml/face_ml_schema.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/ml/face_ml_schema.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 import 'package:uuid/uuid.dart';
 
 class AssetFaceMlRepository {

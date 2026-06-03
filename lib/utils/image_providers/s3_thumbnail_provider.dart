@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
-import 'package:s3mmich/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 
 class S3ThumbnailProvider extends ImageProvider<S3ThumbnailProvider> {
   final String s3Key;

@@ -1,7 +1,7 @@
 import 'package:openapi/api.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
-import 'package:s3mmich/infrastructure/local_server/local_api_client.dart';
-import 'package:s3mmich/services/api.service.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/local_server/local_api_client.dart';
+import 'package:immich_mobile/services/api.service.dart';
 
 class LocalApiService extends ApiService {
   final Drift _db;

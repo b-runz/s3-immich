@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:s3mmich/infrastructure/ml/ml_worker.service.dart';
+import 'package:immich_mobile/infrastructure/ml/ml_worker.service.dart';
 
 class LocalPhotoWatcherService {
   final MlWorkerService _mlWorker;

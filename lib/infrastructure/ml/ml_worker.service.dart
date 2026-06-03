@@ -4,13 +4,13 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:s3mmich/infrastructure/ml/face_detector.dart';
-import 'package:s3mmich/infrastructure/ml/image_labeler.dart';
-import 'package:s3mmich/infrastructure/ml/ocr_ml_schema.dart';
-import 'package:s3mmich/infrastructure/ml/text_recognizer.dart';
-import 'package:s3mmich/infrastructure/repositories/asset_face_ml.repository.dart';
-import 'package:s3mmich/infrastructure/repositories/asset_label.repository.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/ml/face_detector.dart';
+import 'package:immich_mobile/infrastructure/ml/image_labeler.dart';
+import 'package:immich_mobile/infrastructure/ml/ocr_ml_schema.dart';
+import 'package:immich_mobile/infrastructure/ml/text_recognizer.dart';
+import 'package:immich_mobile/infrastructure/repositories/asset_face_ml.repository.dart';
+import 'package:immich_mobile/infrastructure/repositories/asset_label.repository.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 class MlProgress {
   final String assetId;

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 class PersonHandler {
   // ignore: unused_field

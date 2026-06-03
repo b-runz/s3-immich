@@ -1,19 +1,19 @@
 import 'package:http/http.dart' as http;
 import 'package:openapi/api.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/auth_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/server_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/asset_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/album_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/sync_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/search_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/partner_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/person_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/memory_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/trash_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/activity_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/tag_handler.dart';
-import 'package:s3mmich/infrastructure/local_server/handlers/shared_link_handler.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/auth_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/server_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/asset_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/album_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/sync_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/search_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/partner_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/person_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/memory_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/trash_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/activity_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/tag_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/shared_link_handler.dart';
 
 class LocalApiClient extends ApiClient {
   final Drift _db;

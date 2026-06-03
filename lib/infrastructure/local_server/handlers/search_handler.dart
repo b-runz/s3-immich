@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:openapi/api.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 /// Handles /search/* routes entirely from local SQLite — no Immich server needed.
 ///

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:drift/drift.dart' hide Column;
 import 'package:http/http.dart' as http;
-import 'package:s3mmich/infrastructure/entities/remote_asset.entity.drift.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/entities/remote_asset.entity.drift.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 class TrashHandler {
   final Drift _db;

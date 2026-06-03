@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:minio_new/minio.dart';
-import 'package:s3mmich/services/s3/s3_config.dart';
-import 'package:s3mmich/services/s3/s3_object_meta.dart';
+import 'package:immich_mobile/services/s3/s3_config.dart';
+import 'package:immich_mobile/services/s3/s3_object_meta.dart';
 
 class S3Service {
   S3Service() : _client = null, _config = null;

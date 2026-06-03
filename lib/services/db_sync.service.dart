@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
-import 'package:s3mmich/domain/models/store.model.dart';
-import 'package:s3mmich/services/s3/s3_service.dart';
+import 'package:immich_mobile/domain/models/store.model.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 
 class DbSyncService {
   final S3Service _s3Service;

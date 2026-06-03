@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import 'package:s3mmich/infrastructure/ml/label_ml_schema.dart';
-import 'package:s3mmich/infrastructure/ml/ocr_ml_schema.dart';
-import 'package:s3mmich/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/infrastructure/ml/label_ml_schema.dart';
+import 'package:immich_mobile/infrastructure/ml/ocr_ml_schema.dart';
+import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
 class SearchQuery {
   final String? text;

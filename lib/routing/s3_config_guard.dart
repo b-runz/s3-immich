@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:s3mmich/services/s3/s3_service_provider.dart';
-import 'package:s3mmich/routing/router.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
+import 'package:immich_mobile/routing/router.dart';
 
 class S3ConfigGuard extends AutoRouteGuard {
   final Ref _ref;
