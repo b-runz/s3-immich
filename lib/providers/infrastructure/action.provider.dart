@@ -567,6 +567,7 @@ class ActionNotifier extends Notifier<void> {
     try {
       await _foregroundUploadService.uploadManual(
         assetsToUpload,
+        ownerId: ownerId,
         cancelToken: cancelToken,
         callbacks: UploadCallbacks(
           onProgress: (localAssetId, filename, bytes, totalBytes) {
