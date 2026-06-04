@@ -14,6 +14,7 @@ import 'package:immich_mobile/infrastructure/local_server/handlers/trash_handler
 import 'package:immich_mobile/infrastructure/local_server/handlers/activity_handler.dart';
 import 'package:immich_mobile/infrastructure/local_server/handlers/tag_handler.dart';
 import 'package:immich_mobile/infrastructure/local_server/handlers/shared_link_handler.dart';
+import 'package:immich_mobile/infrastructure/local_server/handlers/map_handler.dart';
 
 class LocalApiClient extends ApiClient {
   final Drift _db;
@@ -28,8 +29,9 @@ class LocalApiClient extends ApiClient {
     Object? body,
     Map<String, String> headerParams,
     Map<String, String> formParams,
-    String? contentType,
-  ) async {
+    String? contentType, {
+    Future<void>? abortTrigger,
+  }) async {
     final route = path.startsWith('/api') ? path.substring(4) : path;
 
     if (route.startsWith('/auth') || route.startsWith('/users/me')) {
@@ -70,6 +72,9 @@ class LocalApiClient extends ApiClient {
     }
     if (route.startsWith('/shared-links')) {
       return SharedLinkHandler().handle(route, method, body);
+    }
+    if (route.startsWith('/map')) {
+      return await MapHandler(_db).handle(route, method, queryParams);
     }
 
     return http.Response('{}', 200);
