@@ -1,4 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
@@ -50,7 +52,7 @@ class DriftTrashPage extends StatelessWidget {
 
             return SliverPadding(
               padding: const EdgeInsets.all(16.0),
-              sliver: SliverToBoxAdapter(child: Text(context.t.trash_page_info(days: trashDays))),
+              sliver: SliverToBoxAdapter(child: Text(LocaleKeys.trash_page_info.tr(namedArgs: {'days': (trashDays).toString()}))),
             );
           },
         ),
@@ -87,7 +89,7 @@ class _TrashKebabMenu extends ConsumerWidget {
           }
           ImmichToast.show(
             context: context,
-            msg: result.success ? successMsg(result.count) : context.t.scaffold_body_error_occurred,
+            msg: result.success ? successMsg(result.count) : LocaleKeys.scaffold_body_error_occurred.tr(),
             toastType: result.success ? ToastType.success : ToastType.error,
           );
         },
@@ -110,28 +112,28 @@ class _TrashKebabMenu extends ConsumerWidget {
       ),
       menuChildren: [
         BaseActionButton(
-          label: context.t.empty_trash,
+          label: LocaleKeys.empty_trash.tr(),
           iconData: Icons.delete_forever_outlined,
           onPressed: () => _confirmAndRun(
             context,
             ref,
-            title: context.t.empty_trash,
-            content: context.t.empty_trash_confirmation,
+            title: LocaleKeys.empty_trash.tr(),
+            content: LocaleKeys.empty_trash_confirmation.tr(),
             action: ref.read(actionProvider.notifier).emptyTrash,
-            successMsg: (count) => context.t.assets_permanently_deleted_count(count: count),
+            successMsg: (count) => LocaleKeys.assets_permanently_deleted_count.tr(namedArgs: {'count': (count).toString()}),
           ),
           menuItem: true,
         ),
         BaseActionButton(
-          label: context.t.restore_all,
+          label: LocaleKeys.restore_all.tr(),
           iconData: Icons.restore_outlined,
           onPressed: () => _confirmAndRun(
             context,
             ref,
-            title: context.t.restore_all,
-            content: context.t.assets_restore_confirmation,
+            title: LocaleKeys.restore_all.tr(),
+            content: LocaleKeys.assets_restore_confirmation.tr(),
             action: ref.read(actionProvider.notifier).restoreAllTrash,
-            successMsg: (count) => context.t.assets_restored_count(count: count),
+            successMsg: (count) => LocaleKeys.assets_restored_count.tr(namedArgs: {'count': (count).toString()}),
           ),
           menuItem: true,
         ),

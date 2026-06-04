@@ -6,9 +6,9 @@ import 'package:minio_new/minio.dart';
 import 'package:minio_new/models.dart' as minio_models;
 import 'package:minio_new/src/minio_client.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:s3mmich/services/s3/s3_config.dart';
-import 'package:s3mmich/services/s3/s3_object_meta.dart';
-import 'package:s3mmich/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_config.dart';
+import 'package:immich_mobile/services/s3/s3_object_meta.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 
 class MockMinio extends Mock implements Minio {}
 

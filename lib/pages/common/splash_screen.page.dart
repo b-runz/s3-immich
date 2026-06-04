@@ -14,7 +14,9 @@ import 'package:immich_mobile/generated/codegen_loader.g.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/infrastructure/repositories/settings.repository.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
+import 'package:immich_mobile/domain/utils/background_sync.dart';
 import 'package:immich_mobile/providers/background_sync.provider.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/providers/backup/drift_backup.provider.dart';
 import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/websocket.provider.dart';
@@ -103,24 +105,24 @@ class _BottomPanelState extends State<_BottomPanel> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title: Text(context.t.reset_sqlite_clear_app_data),
+        title: Text(LocaleKeys.reset_sqlite_clear_app_data.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(context.t.reset_sqlite_confirmation),
+            Text(LocaleKeys.reset_sqlite_confirmation.tr()),
             const SizedBox(height: 12),
             Text(
-              context.t.reset_sqlite_confirmation_note,
+              LocaleKeys.reset_sqlite_confirmation_note.tr(),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogCtx).pop(false), child: Text(context.t.cancel)),
+          TextButton(onPressed: () => Navigator.of(dialogCtx).pop(false), child: Text(LocaleKeys.cancel.tr())),
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(true),
-            child: Text(context.t.confirm, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            child: Text(LocaleKeys.confirm.tr(), style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ),
         ],
       ),
@@ -154,7 +156,7 @@ class _BottomPanelState extends State<_BottomPanel> {
       spacing: 8,
       children: [
         Text(
-          _cleared ? context.t.reset_sqlite_done : context.t.scaffold_body_error_unrecoverable,
+          _cleared ? LocaleKeys.reset_sqlite_done.tr() : LocaleKeys.scaffold_body_error_unrecoverable.tr(),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall,
         ),
@@ -163,12 +165,12 @@ class _BottomPanelState extends State<_BottomPanel> {
           children: [
             _ActionLink(
               icon: Icons.chat_bubble_outline,
-              label: context.t.discord,
+              label: LocaleKeys.discord.tr(),
               onTap: () => launchUrl(Uri.parse('https://discord.immich.app/'), mode: LaunchMode.externalApplication),
             ),
             _ActionLink(
               icon: Icons.bug_report_outlined,
-              label: context.t.profile_drawer_github,
+              label: LocaleKeys.profile_drawer_github.tr(),
               onTap: () => launchUrl(
                 Uri.parse('https://github.com/immich-app/immich/issues'),
                 mode: LaunchMode.externalApplication,
@@ -177,7 +179,7 @@ class _BottomPanelState extends State<_BottomPanel> {
             if (!_cleared)
               _ActionLink(
                 icon: Icons.delete_outline,
-                label: context.t.reset_sqlite_clear_app_data,
+                label: LocaleKeys.reset_sqlite_clear_app_data.tr(),
                 onTap: _clearDatabase,
               ),
           ],
@@ -238,12 +240,12 @@ class _ErrorCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      context.t.scaffold_body_error_occurred,
+                      LocaleKeys.scaffold_body_error_occurred.tr(),
                       style: textTheme.titleSmall?.copyWith(color: scheme.onError),
                     ),
                   ),
                   IconButton(
-                    tooltip: context.t.copy_error,
+                    tooltip: LocaleKeys.copy_error.tr(),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     icon: Icon(Icons.copy_outlined, size: 16, color: scheme.onError),
@@ -263,7 +265,7 @@ class _ErrorCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(context.t.stacktrace, style: textTheme.labelMedium),
+                Text(LocaleKeys.stacktrace.tr(), style: textTheme.labelMedium),
                 const SizedBox(height: 4),
                 SelectableText(stack, style: textTheme.bodySmall?.copyWith(fontFamily: 'GoogleSansCode')),
               ],
@@ -326,55 +328,11 @@ class SplashScreenPageState extends ConsumerState<SplashScreenPage> {
         await backgroundManager.hashAssets();
       }
 
-      unawaited(
-        ref.read(authProvider.notifier).saveAuthInfo(accessToken: accessToken).then(
-          (_) async {
-            try {
-              wsProvider.connect();
-              unawaited(infoProvider.getServerInfo());
-
-              bool syncSuccess = false;
-              await Future.wait([
-                backgroundManager.syncLocal(full: true),
-                backgroundManager.syncRemote().then((success) => syncSuccess = success),
-              ]);
-
-              if (syncSuccess) {
-                await Future.wait([
-                  backgroundManager.hashAssets().then((_) {
-                    _resumeBackup(backupProvider);
-                  }),
-                  _resumeBackup(backupProvider),
-                  // TODO: Bring back when the soft freeze issue is addressed
-                  // backgroundManager.syncCloudIds(),
-                ]);
-              } else {
-                await backgroundManager.hashAssets();
-              }
-
-              if (SettingsRepository.instance.appConfig.backup.syncAlbums) {
-                await backgroundManager.syncLinkedAlbum();
-              }
-            } catch (e) {
-              log.severe('Failed establishing connection to the server: $e');
-            }
-          },
-          onError: (exception) => {
-            log.severe('Failed to update auth info with access token: $accessToken'),
-            ref.read(authProvider.notifier).logout(),
-            context.replaceRoute(const S3SetupRoute()),
-          },
-        ),
-      );
-    } else {
-      unawaited(context.replaceRoute(const S3SetupRoute()));
-      return;
-    }
-
-    // clean install - change the default of the flag
-    // current install not using beta timeline
-    if (context.router.current.name == SplashScreenRoute.name) {
-      unawaited(context.replaceRoute(const TabShellRoute()));
+      if (SettingsRepository.instance.appConfig.backup.syncAlbums) {
+        await backgroundManager.syncLinkedAlbum();
+      }
+    } catch (e) {
+      log.severe('Bootstrap error: $e');
     }
   }
 

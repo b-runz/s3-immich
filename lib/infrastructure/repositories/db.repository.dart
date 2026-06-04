@@ -279,11 +279,15 @@ class Drift extends $Drift {
           from26To27: (m, v27) async {
             await customStatement('ALTER TABLE metadata RENAME TO settings');
           },
-          from27To28: (m, v28) async {
-            await m.addColumn(v28.remoteAssetEntity, v28.remoteAssetEntity.sourceDeviceId);
-          },
         ),
       );
+
+      // v27 -> v28: add sourceDeviceId column (handled outside migrationSteps since schema v28 is not generated)
+      if (from < 28 && to >= 28) {
+        await customStatement(
+          'ALTER TABLE remote_asset_entity ADD COLUMN source_device_id TEXT',
+        );
+      }
 
       if (kDebugMode) {
         // Fail if the migration broke foreign keys

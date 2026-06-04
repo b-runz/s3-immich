@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import 'package:easy_localization/easy_localization.dart';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +28,12 @@ class SharedLinkItem extends ConsumerWidget {
   bool isExpired() => sharedLink.expiresAt?.isBefore(DateTime.now()) ?? false;
 
   Widget buildExpiryDuration(BuildContext context) {
-    var expiresText = context.t.shared_link_expires_never;
+    var expiresText = LocaleKeys.shared_link_expires_never.tr();
     IconData expiryIcon = Icons.schedule;
 
     if (sharedLink.expiresAt != null) {
       if (isExpired()) {
-        expiresText = context.t.expired;
+        expiresText = LocaleKeys.expired.tr();
         expiryIcon = Icons.timer_off_outlined;
       }
 
@@ -43,13 +45,13 @@ class SharedLinkItem extends ConsumerWidget {
         if (difference.inHours % 24 > 12) {
           dayDifference += 1;
         }
-        expiresText = context.t.shared_link_expires_days(count: dayDifference);
+        expiresText = LocaleKeys.shared_link_expires_days.tr(namedArgs: {'count': (dayDifference).toString()});
       } else if (difference.inHours > 0) {
-        expiresText = context.t.shared_link_expires_hours(count: difference.inHours);
+        expiresText = LocaleKeys.shared_link_expires_hours.tr(namedArgs: {'count': (difference.inHours).toString()});
       } else if (difference.inMinutes > 0) {
-        expiresText = context.t.shared_link_expires_minutes(count: difference.inMinutes);
+        expiresText = LocaleKeys.shared_link_expires_minutes.tr(namedArgs: {'count': (difference.inMinutes).toString()});
       } else if (difference.inSeconds > 0) {
-        expiresText = context.t.shared_link_expires_seconds(count: difference.inSeconds);
+        expiresText = LocaleKeys.shared_link_expires_seconds.tr(namedArgs: {'count': (difference.inSeconds).toString()});
       }
     }
 
@@ -80,7 +82,7 @@ class SharedLinkItem extends ConsumerWidget {
           context: context,
           gravity: ToastGravity.BOTTOM,
           toastType: ToastType.error,
-          msg: context.t.shared_link_error_server_url_fetch,
+          msg: LocaleKeys.shared_link_error_server_url_fetch.tr(),
         );
         return;
       }
@@ -92,7 +94,7 @@ class SharedLinkItem extends ConsumerWidget {
       context.scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(
-            context.t.shared_link_clipboard_copied_massage,
+            LocaleKeys.shared_link_clipboard_copied_massage.tr(),
             style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor),
           ),
           duration: const Duration(seconds: 2),
@@ -132,9 +134,9 @@ class SharedLinkItem extends ConsumerWidget {
       return Row(
         spacing: 4,
         children: [
-          if (sharedLink.allowUpload) buildInfoChip(context.t.upload),
-          if (sharedLink.allowDownload) buildInfoChip(context.t.download),
-          if (sharedLink.showMetadata) buildInfoChip(context.t.shared_link_info_chip_metadata),
+          if (sharedLink.allowUpload) buildInfoChip(LocaleKeys.upload.tr()),
+          if (sharedLink.allowDownload) buildInfoChip(LocaleKeys.download.tr()),
+          if (sharedLink.showMetadata) buildInfoChip(LocaleKeys.shared_link_info_chip_metadata.tr()),
         ],
       );
     }

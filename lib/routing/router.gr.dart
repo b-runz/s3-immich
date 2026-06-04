@@ -203,6 +203,21 @@ class AssetViewerRouteArgs {
       currentAlbum.hashCode;
 }
 
+/// generated route for
+/// [ChangePasswordPage]
+class ChangePasswordRoute extends PageRouteInfo<void> {
+  const ChangePasswordRoute({List<PageRouteInfo>? children})
+    : super(ChangePasswordRoute.name, initialChildren: children);
+
+  static const String name = 'ChangePasswordRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ChangePasswordPage();
+    },
+  );
+}
 
 /// generated route for
 /// [CleanupPreviewPage]
@@ -1351,24 +1366,8 @@ class LocalTimelineRouteArgs {
   int get hashCode => key.hashCode ^ album.hashCode;
 }
 
-
 /// generated route for
-/// [S3SetupPage]
-class S3SetupRoute extends PageRouteInfo<void> {
-  const S3SetupRoute({List<PageRouteInfo>? children})
-    : super(S3SetupRoute.name, initialChildren: children);
-
-  static const String name = 'S3SetupRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const S3SetupPage();
-    },
-  );
-}
-
-// Stub — kept for backwards-compat while auth_guard.dart still compiles.
+/// [LoginPage]
 class LoginRoute extends PageRouteInfo<void> {
   const LoginRoute({List<PageRouteInfo>? children})
     : super(LoginRoute.name, initialChildren: children);
@@ -1377,7 +1376,9 @@ class LoginRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) => const SizedBox.shrink(),
+    builder: (data) {
+      return const LoginPage();
+    },
   );
 }
 
@@ -1611,6 +1612,22 @@ class RemoteMediaSummaryRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const RemoteMediaSummaryPage();
+    },
+  );
+}
+
+/// generated route for
+/// [S3SetupPage]
+class S3SetupRoute extends PageRouteInfo<void> {
+  const S3SetupRoute({List<PageRouteInfo>? children})
+    : super(S3SetupRoute.name, initialChildren: children);
+
+  static const String name = 'S3SetupRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const S3SetupPage();
     },
   );
 }

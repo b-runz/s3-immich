@@ -284,8 +284,8 @@ class ImmichAppState extends ConsumerState<ImmichApp> with WidgetsBindingObserve
         ref
             .read(backgroundWorkerFgServiceProvider)
             .saveNotificationMessage(
-              StaticTranslations.instance.uploading_media,
-              StaticTranslations.instance.backup_background_service_default_notification,
+              LocaleKeys.uploading_media.tr(),
+              LocaleKeys.backup_background_service_default_notification.tr(),
             );
       }
     });

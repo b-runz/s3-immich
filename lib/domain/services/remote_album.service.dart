@@ -256,7 +256,7 @@ class RemoteAlbumService {
       },
     );
 
-    await _uploadService.uploadManual(localAssets, callbacks: wrappedCallbacks, cancelToken: cancelToken);
+    await _uploadService.uploadManual(localAssets, ownerId: uploader.id, callbacks: wrappedCallbacks, cancelToken: cancelToken);
     await Future.wait(pendingAdds);
     return addedCount;
   }

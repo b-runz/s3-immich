@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:s3mmich/services/db_sync.service.dart';
-import 'package:s3mmich/services/s3/s3_service.dart';
-import 'package:s3mmich/services/s3/s3_object_meta.dart';
+import 'package:immich_mobile/services/db_sync.service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_object_meta.dart';
 
 class MockS3Service extends Mock implements S3Service {}
 

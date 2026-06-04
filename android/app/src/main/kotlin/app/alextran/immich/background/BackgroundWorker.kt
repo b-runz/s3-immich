@@ -92,7 +92,7 @@ class BackgroundWorker(context: Context, params: WorkerParameters) :
       engine!!.dartExecutor.executeDartEntrypoint(
         DartExecutor.DartEntrypoint(
           loader.findAppBundlePath(),
-          "package:s3mmich/domain/services/background_worker.service.dart",
+          "package:immich_mobile/domain/services/background_worker.service.dart",
           "backgroundSyncNativeEntrypoint"
         )
       )

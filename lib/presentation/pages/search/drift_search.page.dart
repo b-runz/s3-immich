@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -881,7 +882,7 @@ class _QuickLinkList extends StatelessWidget {
             onTap: () => context.pushRoute(const DriftRecentlyTakenRoute()),
           ),
           _QuickLink(
-            title: context.t.recently_added,
+            title: LocaleKeys.recently_added.tr(),
             icon: Icons.upload_outlined,
             isTop: true,
             onTap: () => context.pushRoute(const DriftRecentlyAddedRoute()),

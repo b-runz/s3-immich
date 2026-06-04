@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,15 +34,15 @@ class SharedLinkEditPage extends HookConsumerWidget {
     final externalDomain = ref.watch(serverInfoProvider.select((s) => s.serverConfig.externalDomain));
     final displayServerUrl = externalDomain.isNotEmpty ? externalDomain : getServerUrl();
     final expiryPresets = <(Duration, String)>[
-      (Duration.zero, context.t.never),
-      (const Duration(minutes: 30), context.t.shared_link_edit_expire_after_option_minutes(count: 30)),
-      (const Duration(hours: 1), context.t.shared_link_edit_expire_after_option_hour),
-      (const Duration(hours: 6), context.t.shared_link_edit_expire_after_option_hours(count: 6)),
-      (const Duration(days: 1), context.t.shared_link_edit_expire_after_option_day),
-      (const Duration(days: 7), context.t.shared_link_edit_expire_after_option_days(count: 7)),
-      (const Duration(days: 30), context.t.shared_link_edit_expire_after_option_days(count: 30)),
-      (const Duration(days: 90), context.t.shared_link_edit_expire_after_option_months(count: 3)),
-      (const Duration(days: 365), context.t.shared_link_edit_expire_after_option_year(count: 1)),
+      (Duration.zero, LocaleKeys.never.tr()),
+      (const Duration(minutes: 30), LocaleKeys.shared_link_edit_expire_after_option_minutes.tr(namedArgs: {'count': (30).toString()})),
+      (const Duration(hours: 1), LocaleKeys.shared_link_edit_expire_after_option_hour.tr()),
+      (const Duration(hours: 6), LocaleKeys.shared_link_edit_expire_after_option_hours.tr(namedArgs: {'count': (6).toString()})),
+      (const Duration(days: 1), LocaleKeys.shared_link_edit_expire_after_option_day.tr()),
+      (const Duration(days: 7), LocaleKeys.shared_link_edit_expire_after_option_days.tr(namedArgs: {'count': (7).toString()})),
+      (const Duration(days: 30), LocaleKeys.shared_link_edit_expire_after_option_days.tr(namedArgs: {'count': (30).toString()})),
+      (const Duration(days: 90), LocaleKeys.shared_link_edit_expire_after_option_months.tr(namedArgs: {'count': (3).toString()})),
+      (const Duration(days: 365), LocaleKeys.shared_link_edit_expire_after_option_year.tr(namedArgs: {'count': (1).toString()})),
     ];
     final descriptionController = useTextEditingController(text: existingLink?.description ?? "");
     final descriptionFocusNode = useFocusNode();
@@ -77,18 +78,18 @@ class SharedLinkEditPage extends HookConsumerWidget {
     Widget buildLinkTitle() {
       if (existingLink != null) {
         if (existingLink!.type == SharedLinkSource.album) {
-          return buildSharedLinkRow(leading: context.t.public_album, content: existingLink!.title);
+          return buildSharedLinkRow(leading: LocaleKeys.public_album.tr(), content: existingLink!.title);
         }
 
         if (existingLink!.type == SharedLinkSource.individual) {
           return buildSharedLinkRow(
-            leading: context.t.shared_link_individual_shared,
+            leading: LocaleKeys.shared_link_individual_shared.tr(),
             content: existingLink!.description ?? "--",
           );
         }
       }
 
-      return Text(context.t.create_link_to_share_description, style: const TextStyle(fontWeight: FontWeight.bold));
+      return Text(LocaleKeys.create_link_to_share_description.tr(), style: const TextStyle(fontWeight: FontWeight.bold));
     }
 
     Widget buildDescriptionField() {
@@ -98,11 +99,11 @@ class SharedLinkEditPage extends HookConsumerWidget {
         textInputAction: TextInputAction.done,
         autofocus: false,
         decoration: InputDecoration(
-          labelText: context.t.description,
+          labelText: LocaleKeys.description.tr(),
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           border: const OutlineInputBorder(),
-          hintText: context.t.shared_link_edit_description_hint,
+          hintText: LocaleKeys.shared_link_edit_description_hint.tr(),
           hintStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
         ),
         onTapOutside: (_) => descriptionFocusNode.unfocus(),
@@ -114,11 +115,11 @@ class SharedLinkEditPage extends HookConsumerWidget {
         controller: passwordController,
         autofocus: false,
         decoration: InputDecoration(
-          labelText: context.t.password,
+          labelText: LocaleKeys.password.tr(),
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           border: const OutlineInputBorder(),
-          hintText: context.t.shared_link_edit_password_hint,
+          hintText: LocaleKeys.shared_link_edit_password_hint.tr(),
           hintStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
         ),
       );
@@ -131,10 +132,10 @@ class SharedLinkEditPage extends HookConsumerWidget {
         textInputAction: TextInputAction.done,
         autofocus: false,
         decoration: InputDecoration(
-          labelText: slugController.text.isNotEmpty ? context.t.custom_url : null,
+          labelText: slugController.text.isNotEmpty ? LocaleKeys.custom_url.tr() : null,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           border: const OutlineInputBorder(),
-          hintText: context.t.custom_url,
+          hintText: LocaleKeys.custom_url.tr(),
           prefixText: slugController.text.isNotEmpty ? '/s/' : null,
           prefixStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -148,7 +149,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
         onChanged: (value) => showMetadata.value = value,
         dense: true,
         title: Text(
-          context.t.show_metadata,
+          LocaleKeys.show_metadata.tr(),
           style: themeData.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       );
@@ -160,7 +161,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
         onChanged: (value) => allowDownload.value = value,
         dense: true,
         title: Text(
-          context.t.allow_public_user_to_download,
+          LocaleKeys.allow_public_user_to_download.tr(),
           style: themeData.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       );
@@ -172,7 +173,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
         onChanged: (value) => allowUpload.value = value,
         dense: true,
         title: Text(
-          context.t.allow_public_user_to_upload,
+          LocaleKeys.allow_public_user_to_upload.tr(),
           style: themeData.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       );
@@ -224,11 +225,11 @@ class SharedLinkEditPage extends HookConsumerWidget {
     Widget buildExpiryAfterButton() {
       return ExpansionTile(
         title: Text(
-          context.t.expire_after,
+          LocaleKeys.expire_after.tr(),
           style: themeData.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          expiryAfter.value == null ? context.t.shared_link_expires_never : formatDateTime(expiryAfter.value!),
+          expiryAfter.value == null ? LocaleKeys.shared_link_expires_never.tr() : formatDateTime(expiryAfter.value!),
           style: TextStyle(color: themeData.colorScheme.primary),
         ),
         children: [
@@ -259,7 +260,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
                     child: OutlinedButton.icon(
                       onPressed: selectDate,
                       icon: const Icon(Icons.edit_calendar),
-                      label: Text(context.t.edit_date_and_time),
+                      label: Text(LocaleKeys.edit_date_and_time.tr()),
                     ),
                   ),
                 ],
@@ -278,7 +279,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
       context.scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(
-            context.t.shared_link_clipboard_copied_massage,
+            LocaleKeys.shared_link_clipboard_copied_massage.tr(),
             style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor),
           ),
           duration: const Duration(seconds: 2),
@@ -312,7 +313,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
             ElevatedButton.icon(
               onPressed: () => context.maybePop(),
               icon: const Icon(Icons.check),
-              label: Text(context.t.done, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              label: Text(LocaleKeys.done.tr(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -356,7 +357,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
           context: context,
           gravity: ToastGravity.BOTTOM,
           toastType: ToastType.error,
-          msg: context.t.shared_link_create_error,
+          msg: LocaleKeys.shared_link_create_error.tr(),
         );
       }
     }
@@ -442,7 +443,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(existingLink == null ? context.t.create_link_to_share : context.t.edit_link),
+        title: Text(existingLink == null ? LocaleKeys.create_link_to_share.tr() : LocaleKeys.edit_link.tr()),
         elevation: 0,
         leading: const CloseButton(),
         centerTitle: false,
@@ -502,7 +503,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
                               onPressed: handleDeleteLink,
                               icon: const Icon(Icons.delete_outline),
                               label: Text(
-                                context.t.delete,
+                                LocaleKeys.delete.tr(),
                                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -510,7 +511,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
                             icon: const Icon(Icons.check),
                             onPressed: existingLink != null ? handleEditLink : handleNewLink,
                             label: Text(
-                              existingLink != null ? context.t.shared_link_edit_submit_button : context.t.create_link,
+                              existingLink != null ? LocaleKeys.shared_link_edit_submit_button.tr() : LocaleKeys.create_link.tr(),
                               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                             ),
                           ),

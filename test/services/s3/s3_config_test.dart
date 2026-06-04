@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:s3mmich/services/s3/s3_config.dart';
+import 'package:immich_mobile/services/s3/s3_config.dart';
 
 void main() {
   group('S3Config', () {

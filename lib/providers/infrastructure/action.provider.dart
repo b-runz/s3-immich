@@ -555,6 +555,7 @@ class ActionNotifier extends Notifier<void> {
     final failedAssetIds = <String>{};
     final postUploadTasks = <Future<void>>[];
 
+    final ownerId = ref.read(currentUserProvider)?.id ?? '';
     final progressNotifier = ref.read(assetUploadProgressProvider.notifier);
     final cancelToken = Completer<void>();
     ref.read(manualUploadCancelTokenProvider.notifier).state = cancelToken;
