@@ -12,6 +12,8 @@ class DbSyncService {
 
   static const _remoteKey = '.meta/s3immich.db';
 
+  static DbSyncService? instance;
+
   DbSyncService({
     required S3Service s3Service,
     required String dbPath,

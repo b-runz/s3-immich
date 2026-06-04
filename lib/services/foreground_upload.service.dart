@@ -16,6 +16,7 @@ import 'package:immich_mobile/providers/infrastructure/platform.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/storage.provider.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
 import 'package:immich_mobile/repositories/upload.repository.dart' show UploadResult;
+import 'package:immich_mobile/services/db_sync.service.dart';
 import 'package:immich_mobile/services/s3/s3_service.dart';
 import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/infrastructure/ml/ml_worker.service.dart';
@@ -356,6 +357,7 @@ class ForegroundUploadService {
       }
 
       await _backupRepository.markAsBackedUp(uploadedAsset, s3Key, ownerId);
+      unawaited(DbSyncService.instance?.push());
       if (uploadedAsset.latitude != null && uploadedAsset.longitude != null) {
         EventStream.shared.emit(const MapMarkerReloadEvent());
       }

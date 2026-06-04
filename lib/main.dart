@@ -102,6 +102,7 @@ void main() async {
 
     final dbPath = p.join(documentsDir.path, 'immich.sqlite');
     final dbSyncService = DbSyncService(s3Service: s3Service, dbPath: dbPath, db: drift);
+    DbSyncService.instance = dbSyncService;
     if (s3Service.isConfigured) {
       unawaited(dbSyncService.pull());
     }
