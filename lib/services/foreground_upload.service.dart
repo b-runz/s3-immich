@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
+import 'package:immich_mobile/domain/models/events.model.dart';
+import 'package:immich_mobile/domain/utils/event_stream.dart';
 import 'package:immich_mobile/extensions/network_capability_extensions.dart';
 import 'package:immich_mobile/extensions/platform_extensions.dart';
 import 'package:immich_mobile/extensions/translate_extensions.dart';
@@ -342,7 +344,21 @@ class ForegroundUploadService {
 
       final s3Key = _s3Service.currentConfig!.s3KeyFor(originalFileName, asset.createdAt);
       await _s3Service.putFile(s3Key, file.path);
-      await _backupRepository.markAsBackedUp(asset, s3Key, ownerId);
+
+      // Prefer GPS from local_asset_entity; fall back to reading from AssetEntity
+      // (needed when local sync ran before the native GPS fix was deployed).
+      var uploadedAsset = asset;
+      if (asset.latitude == null || asset.longitude == null) {
+        final latlng = await entity.latlngAsync();
+        if (latlng != null) {
+          uploadedAsset = asset.copyWith(latitude: latlng.latitude, longitude: latlng.longitude);
+        }
+      }
+
+      await _backupRepository.markAsBackedUp(uploadedAsset, s3Key, ownerId);
+      if (uploadedAsset.latitude != null && uploadedAsset.longitude != null) {
+        EventStream.shared.emit(const MapMarkerReloadEvent());
+      }
       // Enqueue for on-device ML (labels, faces, OCR) while the file is still on disk.
       _mlWorker.enqueue(asset.localId!, file);
       unawaited(_mlWorker.start());

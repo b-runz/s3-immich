@@ -142,6 +142,7 @@ class _DriftMapState extends ConsumerState<DriftMap> {
     unawaited(
       _reloadMutex.run(() async {
         if (mounted && (ref.read(mapStateProvider.notifier).setBounds(bounds) || forceReload)) {
+          if (forceReload) ref.invalidate(mapMarkerProvider);
           final markers = await ref.read(mapMarkerProvider(bounds).future);
           await reloadMarkers(markers);
         }

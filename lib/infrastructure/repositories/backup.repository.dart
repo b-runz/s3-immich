@@ -7,6 +7,7 @@ import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/infrastructure/entities/local_asset.entity.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
+import 'package:immich_mobile/infrastructure/entities/exif.entity.drift.dart';
 import 'package:immich_mobile/infrastructure/entities/remote_asset.entity.drift.dart';
 
 final backupRepositoryProvider = Provider<DriftBackupRepository>(
@@ -110,6 +111,16 @@ class DriftBackupRepository extends DriftDatabaseRepository {
         visibility: AssetVisibility.timeline,
       ),
     );
+
+    if (asset.latitude != null && asset.longitude != null) {
+      await _db.into(_db.remoteExifEntity).insertOnConflictUpdate(
+        RemoteExifEntityCompanion.insert(
+          assetId: s3Key,
+          latitude: Value(asset.latitude),
+          longitude: Value(asset.longitude),
+        ),
+      );
+    }
   }
 
   Future<List<LocalAsset>> getCandidates(String userId, {bool onlyHashed = true}) async {
