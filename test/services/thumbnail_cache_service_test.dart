@@ -88,5 +88,48 @@ void main() {
 
       expect(networkHits, 1);
     });
+
+    test('throws on non-2xx HTTP response and does not cache', () async {
+      const s3Key = '.thumbs/2020/03/06/IMG_004.jpg';
+      const fakePresignedUrl = 'https://s3.example.com/presigned';
+
+      when(() => s3.presignGet(s3Key)).thenAnswer((_) async => fakePresignedUrl);
+
+      final svc = ThumbnailCacheService(
+        cacheDir: tempDir,
+        s3: s3,
+        httpClient: MockClient((_) async => http.Response('Forbidden', 403)),
+      );
+
+      await expectLater(svc.getOrFetch(s3Key), throwsA(isA<http.ClientException>()));
+
+      // File must NOT have been written to disk
+      final cacheFile = File('${tempDir.path}/$s3Key');
+      expect(await cacheFile.exists(), isFalse);
+    });
+
+    test('concurrent fetches for same key only hit network once', () async {
+      const s3Key = '.thumbs/2020/03/06/IMG_005.jpg';
+      const fakePresignedUrl = 'https://s3.example.com/presigned';
+      final fakeBytes = Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0]);
+      int networkHits = 0;
+
+      when(() => s3.presignGet(s3Key)).thenAnswer((_) async => fakePresignedUrl);
+
+      final svc = ThumbnailCacheService(
+        cacheDir: tempDir,
+        s3: s3,
+        httpClient: MockClient((_) async {
+          networkHits++;
+          return http.Response.bytes(fakeBytes, 200);
+        }),
+      );
+
+      // Fire two concurrent fetches for the same key
+      final results = await Future.wait([svc.getOrFetch(s3Key), svc.getOrFetch(s3Key)]);
+      expect(results[0], equals(fakeBytes));
+      expect(results[1], equals(fakeBytes));
+      expect(networkHits, 1);
+    });
   });
 }

@@ -10,6 +10,7 @@ class ThumbnailCacheService {
   final Directory _cacheDir;
   final S3Service _s3;
   final http.Client _httpClient;
+  final _inflight = <String, Future<Uint8List>>{};
 
   ThumbnailCacheService({
     required Directory cacheDir,
@@ -24,11 +25,23 @@ class ThumbnailCacheService {
     if (await file.exists()) {
       return file.readAsBytes();
     }
+    return _inflight.putIfAbsent(s3Key, () => _fetch(s3Key, file))
+        .whenComplete(() => _inflight.remove(s3Key));
+  }
+
+  Future<Uint8List> _fetch(String s3Key, File file) async {
     final url = await _s3.presignGet(s3Key);
     final response = await _httpClient.get(Uri.parse(url));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw http.ClientException(
+        'ThumbnailCacheService: HTTP ${response.statusCode} for $s3Key',
+      );
+    }
     final bytes = response.bodyBytes;
     await file.parent.create(recursive: true);
     await file.writeAsBytes(bytes);
     return bytes;
   }
+
+  void dispose() => _httpClient.close();
 }
