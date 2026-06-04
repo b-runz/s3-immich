@@ -63,6 +63,47 @@ class DbSyncService {
       await db.customStatement(
         'INSERT OR IGNORE INTO store_entity SELECT * FROM remote.store_entity WHERE id = ${StoreKey.s3ConfigJson.id}',
       );
+
+      // Merge ML search index — ensure local tables exist first, then sync from remote.
+      await db.customStatement('''
+        CREATE VIRTUAL TABLE IF NOT EXISTS asset_fts USING fts5(
+          asset_id UNINDEXED,
+          ocr_text,
+          labels,
+          tokenize = 'unicode61'
+        )
+      ''');
+      await db.customStatement('''
+        CREATE TABLE IF NOT EXISTS asset_label_entity (
+          id         INTEGER PRIMARY KEY AUTOINCREMENT,
+          asset_id   TEXT NOT NULL,
+          label      TEXT NOT NULL,
+          source     TEXT NOT NULL,
+          confidence REAL NOT NULL,
+          bbox_x     REAL,
+          bbox_y     REAL,
+          bbox_w     REAL,
+          bbox_h     REAL
+        )
+      ''');
+      // FTS: delete+insert so updated OCR/labels replace stale entries.
+      try {
+        await db.customStatement(
+          'DELETE FROM asset_fts WHERE asset_id IN (SELECT asset_id FROM remote.asset_fts)',
+        );
+        await db.customStatement(
+          'INSERT INTO asset_fts(asset_id, ocr_text, labels) '
+          'SELECT asset_id, ocr_text, labels FROM remote.asset_fts',
+        );
+      } catch (_) {}
+      try {
+        await db.customStatement(
+          'INSERT OR IGNORE INTO asset_label_entity'
+          '(asset_id, label, source, confidence, bbox_x, bbox_y, bbox_w, bbox_h) '
+          'SELECT asset_id, label, source, confidence, bbox_x, bbox_y, bbox_w, bbox_h '
+          'FROM remote.asset_label_entity',
+        );
+      } catch (_) {}
     } finally {
       await db.customStatement('DETACH DATABASE remote');
     }
