@@ -124,6 +124,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SplashScreenRoute.page, initial: true),
     AutoRoute(page: LoginRoute.page),
     AutoRoute(page: ChangePasswordRoute.page),
+    AutoRoute(page: S3SetupRoute.page),
     AutoRoute(
       page: TabShellRoute.page,
       guards: [_s3ConfigGuard, _duplicateGuard],
