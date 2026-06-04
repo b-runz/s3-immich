@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:immich_mobile/services/local_user.dart';
 
 class AuthHandler {
 
@@ -25,13 +26,13 @@ class AuthHandler {
   http.Response _login() => http.Response(
     jsonEncode({
       'accessToken': 's3-local',
-      'isAdmin': false,
+      'isAdmin': kLocalUser.isAdmin,
       'isOnboarded': true,
-      'name': 'My Device',
+      'name': kLocalUser.name,
       'profileImagePath': '',
       'shouldChangePassword': false,
-      'userEmail': 'local@s3immich',
-      'userId': 'local-user',
+      'userEmail': kLocalUser.email,
+      'userId': kLocalUserId,
     }),
     200,
     headers: {'content-type': 'application/json'},
@@ -70,11 +71,11 @@ class AuthHandler {
     'avatarColor': 'primary',
     'createdAt': '2020-01-01T00:00:00.000Z',
     'deletedAt': null,
-    'email': 'local@s3immich',
-    'id': 'local-user',
-    'isAdmin': false,
+    'email': kLocalUser.email,
+    'id': kLocalUserId,
+    'isAdmin': kLocalUser.isAdmin,
     'license': null,
-    'name': 'My Device',
+    'name': kLocalUser.name,
     'oauthId': '',
     'profileChangedAt': '2020-01-01T00:00:00.000Z',
     'profileImagePath': '',

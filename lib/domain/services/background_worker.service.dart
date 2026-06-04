@@ -21,6 +21,8 @@ import 'package:immich_mobile/providers/infrastructure/platform.provider.dart' s
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/services/auth.service.dart';
 import 'package:immich_mobile/services/foreground_upload.service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/services/localization.service.dart';
 import 'package:immich_mobile/utils/bootstrap.dart';
 import 'package:immich_mobile/utils/debug_print.dart';
@@ -61,9 +63,12 @@ class BackgroundWorkerBgService extends BackgroundWorkerFlutterApi {
 
   bool _isCleanedUp = false;
 
-  BackgroundWorkerBgService({required this._drift, required this._driftLogger})
+  BackgroundWorkerBgService({required this._drift, required this._driftLogger, required S3Service s3Service})
     : _backgroundHostApi = BackgroundWorkerBgHostApi() {
-    _ref = ProviderContainer(overrides: [driftProvider.overrideWith(driftOverride(_drift))]);
+    _ref = ProviderContainer(overrides: [
+      driftProvider.overrideWith(driftOverride(_drift)),
+      s3ServiceProvider.overrideWithValue(s3Service),
+    ]);
     BackgroundWorkerFlutterApi.setUp(this);
   }
 
@@ -295,5 +300,7 @@ Future<void> backgroundSyncNativeEntrypoint() async {
   DartPluginRegistrant.ensureInitialized();
 
   final (drift, logDB) = await Bootstrap.initDomain(shouldBufferLogs: false, listenStoreUpdates: false);
-  await BackgroundWorkerBgService(drift: drift, driftLogger: logDB).init();
+  final s3Service = S3Service();
+  await s3Service.loadFromStorage();
+  await BackgroundWorkerBgService(drift: drift, driftLogger: logDB, s3Service: s3Service).init();
 }

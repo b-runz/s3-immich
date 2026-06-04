@@ -35,7 +35,6 @@ import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/models/auth/auth_state.model.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
 import 'package:immich_mobile/domain/models/store.model.dart';
-import 'package:immich_mobile/domain/models/user.model.dart';
 import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/infrastructure/local_server/local_api_service.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
@@ -45,9 +44,9 @@ import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:immich_mobile/services/db_sync.service.dart';
+import 'package:immich_mobile/services/local_user.dart';
 import 'package:immich_mobile/services/deep_link.service.dart';
 import 'package:immich_mobile/services/s3/s3_service.dart';
-import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/theme/dynamic_theme.dart';
 import 'package:immich_mobile/theme/theme_data.dart';
 import 'package:immich_mobile/utils/bootstrap.dart';
@@ -74,22 +73,14 @@ void main() async {
     await Store.put(StoreKey.serverEndpoint, 'http://localhost/api');
     await Store.put(StoreKey.accessToken, 's3-local');
     await Store.put(StoreKey.serverUrl, 'http://localhost');
-    await Store.put(
-      StoreKey.currentUser,
-      UserDto(
-        id: 'local-user',
-        email: 'local@s3immich',
-        name: 'My Device',
-        profileChangedAt: DateTime.utc(2020),
-      ),
-    );
+    await Store.put(StoreKey.currentUser, kLocalUser);
 
     // Satisfy the FK constraint on remote_asset_entity.owner_id → user_entity.id
     await drift.into(drift.userEntity).insertOnConflictUpdate(
       UserEntityCompanion.insert(
-        id: 'local-user',
-        name: 'My Device',
-        email: 'local@s3immich',
+        id: kLocalUserId,
+        name: kLocalUser.name,
+        email: kLocalUser.email,
       ),
     );
 
