@@ -49,10 +49,10 @@ class DbSyncService {
     await db.customStatement("ATTACH DATABASE '$remotePath' AS remote");
     try {
       await db.customStatement(
-        'INSERT OR IGNORE INTO remote_asset_entity SELECT * FROM remote.remote_asset_entity',
+        'INSERT OR REPLACE INTO remote_asset_entity SELECT * FROM remote.remote_asset_entity',
       );
       await db.customStatement(
-        'INSERT OR IGNORE INTO remote_exif_entity SELECT * FROM remote.remote_exif_entity',
+        'INSERT OR REPLACE INTO remote_exif_entity SELECT * FROM remote.remote_exif_entity',
       );
       await db.customStatement(
         'INSERT OR IGNORE INTO remote_album_entity SELECT * FROM remote.remote_album_entity',
