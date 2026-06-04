@@ -6,7 +6,11 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
+import 'dart:typed_data';
+
 import 'package:immich_mobile/providers/infrastructure/platform.provider.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/thumbnail_cache.service.dart';
 
 part 'local_image_request.dart';
 part 'remote_image_request.dart';
