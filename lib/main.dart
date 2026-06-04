@@ -47,6 +47,7 @@ import 'package:immich_mobile/services/db_sync.service.dart';
 import 'package:immich_mobile/services/local_user.dart';
 import 'package:immich_mobile/services/deep_link.service.dart';
 import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/thumbnail_cache.service.dart';
 import 'package:immich_mobile/theme/dynamic_theme.dart';
 import 'package:immich_mobile/theme/theme_data.dart';
 import 'package:immich_mobile/utils/bootstrap.dart';
@@ -91,8 +92,14 @@ void main() async {
 
     final s3Service = S3Service();
     await s3Service.loadFromStorage();
+    S3Service.global = s3Service;
 
     final documentsDir = await getApplicationDocumentsDirectory();
+    ThumbnailCacheService.instance = ThumbnailCacheService(
+      cacheDir: Directory(p.join(documentsDir.path, 'thumbcache')),
+      s3: s3Service,
+    );
+
     final dbPath = p.join(documentsDir.path, 'immich.sqlite');
     final dbSyncService = DbSyncService(s3Service: s3Service, dbPath: dbPath, db: drift);
     if (s3Service.isConfigured) {
