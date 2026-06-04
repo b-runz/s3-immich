@@ -34,6 +34,10 @@ dependencies:
   flutter_web_auth_2: ^5.0.2
   fluttertoast: ^8.2.14
   geolocator: ^14.0.2
+  google_mlkit_face_detection: ^0.12.0
+  google_mlkit_image_labeling: ^0.13.0
+  google_mlkit_object_detection: ^0.14.0
+  google_mlkit_text_recognition: ^0.14.0
   home_widget: ^0.8.1
   hooks_riverpod: ^2.6.1
   http: ^1.6.0
@@ -44,6 +48,7 @@ dependencies:
   local_auth: ^2.3.0
   logging: ^1.3.0
   maplibre_gl: ^0.22.0
+  minio_new: ^1.0.2
   native_video_player:
     git:
       url: https://github.com/immich-app/native_video_player
@@ -108,8 +113,13 @@ dev_dependencies:
 
 # cast 2.1.0 declares a loose bonsoir range but its code targets the 5.x API.
 # Pin bonsoir to 5.x until cast releases a version compatible with bonsoir 6.x.
+# minio_new requires intl ^0.18.0, http ^0.13.5, and mime ^1.0.2
+# We override these to the newer versions already in use by other dependencies
 dependency_overrides:
   bonsoir: ^5.1.11
+  intl: ^0.20.2
+  http: ^1.6.0
+  mime: ^2.0.0
 
 flutter:
   uses-material-design: true

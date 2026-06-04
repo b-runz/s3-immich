@@ -32,7 +32,21 @@ import 'package:immich_mobile/providers/routes.provider.dart';
 import 'package:immich_mobile/providers/theme.provider.dart';
 import 'package:immich_mobile/routing/app_navigation_observer.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_mobile/models/auth/auth_state.model.dart';
+import 'package:immich_mobile/providers/auth.provider.dart';
+import 'package:immich_mobile/domain/models/store.model.dart';
+import 'package:immich_mobile/entities/store.entity.dart';
+import 'package:immich_mobile/infrastructure/local_server/local_api_service.dart';
+import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
+import 'package:immich_mobile/infrastructure/entities/user.entity.drift.dart';
+import 'package:immich_mobile/domain/utils/background_sync.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:immich_mobile/services/db_sync.service.dart';
+import 'package:immich_mobile/services/local_user.dart';
 import 'package:immich_mobile/services/deep_link.service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 import 'package:immich_mobile/theme/dynamic_theme.dart';
 import 'package:immich_mobile/theme/theme_data.dart';
 import 'package:immich_mobile/utils/bootstrap.dart';
@@ -46,18 +60,52 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:timezone/data/latest.dart';
 
+
 void main() async {
   try {
     ImmichWidgetsBinding();
     unawaited(BackgroundWorkerLockService(BackgroundWorkerLockApi()).lock());
     await EasyLocalization.ensureInitialized();
     final (drift, _) = await Bootstrap.initDomain();
+
+    // Satisfy Store.get() calls in legacy Immich code paths.
+    // LocalApiClient intercepts all API calls so these values are never sent over the network.
+    await Store.put(StoreKey.serverEndpoint, 'http://localhost/api');
+    await Store.put(StoreKey.accessToken, 's3-local');
+    await Store.put(StoreKey.serverUrl, 'http://localhost');
+    await Store.put(StoreKey.currentUser, kLocalUser);
+
+    // Satisfy the FK constraint on remote_asset_entity.owner_id → user_entity.id
+    await drift.into(drift.userEntity).insertOnConflictUpdate(
+      UserEntityCompanion.insert(
+        id: kLocalUserId,
+        name: kLocalUser.name,
+        email: kLocalUser.email,
+      ),
+    );
+
     await initApp();
     // Warm-up isolate pool for worker manager
     await workerManagerPatch.init(dynamicSpawning: true, isolatesCount: max(Platform.numberOfProcessors - 1, 5));
     await migrateDatabaseIfNeeded(drift);
 
-    runApp(ProviderScope(overrides: [driftProvider.overrideWith(driftOverride(drift))], child: const MainWidget()));
+    final s3Service = S3Service();
+    await s3Service.loadFromStorage();
+
+    final documentsDir = await getApplicationDocumentsDirectory();
+    final dbPath = p.join(documentsDir.path, 'immich.sqlite');
+    final dbSyncService = DbSyncService(s3Service: s3Service, dbPath: dbPath, db: drift);
+    if (s3Service.isConfigured) {
+      unawaited(dbSyncService.pull());
+    }
+
+    runApp(ProviderScope(
+      overrides: [
+        driftProvider.overrideWith(driftOverride(drift)),
+        s3ServiceProvider.overrideWithValue(s3Service),
+      ],
+      child: const MainWidget(),
+    ));
   } catch (error, stack) {
     runApp(BootstrapErrorWidget(error: error.toString(), stack: stack.toString()));
   }
@@ -227,8 +275,8 @@ class ImmichAppState extends ConsumerState<ImmichApp> with WidgetsBindingObserve
         ref
             .read(backgroundWorkerFgServiceProvider)
             .saveNotificationMessage(
-              StaticTranslations.instance.uploading_media,
-              StaticTranslations.instance.backup_background_service_default_notification,
+              LocaleKeys.uploading_media.tr(),
+              LocaleKeys.backup_background_service_default_notification.tr(),
             );
       }
     });

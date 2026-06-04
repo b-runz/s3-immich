@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -153,7 +154,7 @@ class _DriftBackupPageState extends ConsumerState<DriftBackupPage> {
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
-                              context.t.backup_error_sync_failed,
+                              LocaleKeys.backup_error_sync_failed.tr(),
                               style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.error),
                               textAlign: TextAlign.center,
                             ),

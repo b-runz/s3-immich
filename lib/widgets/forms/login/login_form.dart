@@ -22,7 +22,6 @@ import 'package:immich_mobile/providers/gallery_permission.provider.dart';
 import 'package:immich_mobile/providers/oauth.provider.dart';
 import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/websocket.provider.dart';
-import 'package:immich_mobile/repositories/permission.repository.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/provider_utils.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
@@ -193,50 +192,7 @@ class LoginForm extends HookConsumerWidget {
     }
 
     getManageMediaPermission() async {
-      final hasPermission = await ref.read(permissionRepositoryProvider).hasManageMediaPermission();
-      if (!hasPermission) {
-        await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-              elevation: 5,
-              title: Text(
-                'manage_media_access_title',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: context.primaryColor),
-              ).tr(),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: [
-                    const Text('manage_media_access_subtitle', style: TextStyle(fontSize: 14)).tr(),
-                    const SizedBox(height: 4),
-                    const Text('manage_media_access_rationale', style: TextStyle(fontSize: 12)).tr(),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    'cancel'.tr(),
-                    style: TextStyle(fontWeight: FontWeight.w600, color: context.primaryColor),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    unawaited(ref.read(permissionRepositoryProvider).requestManageMediaPermission());
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'manage_media_access_settings'.tr(),
-                    style: TextStyle(fontWeight: FontWeight.w600, color: context.primaryColor),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      // Manage media permission handling is not available in this build
     }
 
     bool isSyncRemoteDeletionsMode() => Platform.isAndroid && Store.get(StoreKey.manageLocalMediaAndroid, false);

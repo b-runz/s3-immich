@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -89,10 +91,10 @@ class SyncStatusAndActions extends HookConsumerWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(context.t.reset_sqlite),
-            content: Text(context.t.reset_sqlite_confirmation),
+            title: Text(LocaleKeys.reset_sqlite.tr()),
+            content: Text(LocaleKeys.reset_sqlite_confirmation.tr()),
             actions: [
-              TextButton(onPressed: () => context.pop(), child: Text(context.t.cancel)),
+              TextButton(onPressed: () => context.pop(), child: Text(LocaleKeys.cancel.tr())),
               TextButton(
                 onPressed: () async {
                   await ref.read(driftProvider).reset();
@@ -102,14 +104,14 @@ class SyncStatusAndActions extends HookConsumerWidget {
                       context: context,
                       barrierDismissible: false,
                       builder: (ctx) => AlertDialog(
-                        title: Text(context.t.reset_sqlite_success),
-                        content: Text(context.t.reset_sqlite_done),
-                        actions: [TextButton(onPressed: () => ctx.pop(), child: Text(context.t.ok))],
+                        title: Text(LocaleKeys.reset_sqlite_success.tr()),
+                        content: Text(LocaleKeys.reset_sqlite_done.tr()),
+                        actions: [TextButton(onPressed: () => ctx.pop(), child: Text(LocaleKeys.ok.tr()))],
                       ),
                     ),
                   );
                 },
-                child: Text(context.t.confirm, style: TextStyle(color: context.colorScheme.error)),
+                child: Text(LocaleKeys.confirm.tr(), style: TextStyle(color: context.colorScheme.error)),
               ),
             ],
           );

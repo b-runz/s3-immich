@@ -7,6 +7,8 @@ import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/infrastructure/entities/local_asset.entity.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
+import 'package:immich_mobile/infrastructure/entities/exif.entity.drift.dart';
+import 'package:immich_mobile/infrastructure/entities/remote_asset.entity.drift.dart';
 
 final backupRepositoryProvider = Provider<DriftBackupRepository>(
   (ref) => DriftBackupRepository(ref.watch(driftProvider)),
@@ -79,6 +81,46 @@ class DriftBackupRepository extends DriftDatabaseRepository {
       remainder: (data['remainder_count'] as int?) ?? 0,
       processing: (data['processing_count'] as int?) ?? 0,
     );
+  }
+
+  /// Write a RemoteAssetEntity row after a successful S3 upload so the asset
+  /// is no longer counted as remainder and the "not in cloud" icon disappears.
+  Future<void> markAsBackedUp(
+    LocalAsset asset,
+    String s3Key,
+    String ownerId,
+  ) async {
+    if (asset.checksum == null) {
+      return;
+    }
+    final now = DateTime.now().toUtc();
+    await _db.into(_db.remoteAssetEntity).insertOnConflictUpdate(
+      RemoteAssetEntityCompanion.insert(
+        id: s3Key,
+        checksum: asset.checksum!,
+        ownerId: ownerId,
+        name: asset.name,
+        type: asset.type,
+        createdAt: Value(asset.createdAt),
+        updatedAt: Value(now),
+        uploadedAt: Value(now),
+        width: Value(asset.width),
+        height: Value(asset.height),
+        durationMs: Value(asset.durationMs),
+        isFavorite: Value(asset.isFavorite),
+        visibility: AssetVisibility.timeline,
+      ),
+    );
+
+    if (asset.latitude != null && asset.longitude != null) {
+      await _db.into(_db.remoteExifEntity).insertOnConflictUpdate(
+        RemoteExifEntityCompanion.insert(
+          assetId: s3Key,
+          latitude: Value(asset.latitude),
+          longitude: Value(asset.longitude),
+        ),
+      );
+    }
   }
 
   Future<List<LocalAsset>> getCandidates(String userId, {bool onlyHashed = true}) async {

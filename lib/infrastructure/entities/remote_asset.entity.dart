@@ -50,6 +50,8 @@ class RemoteAssetEntity extends Table with DriftDefaultsMixin, AssetEntityMixin 
 
   BoolColumn get isEdited => boolean().withDefault(const Constant(false))();
 
+  TextColumn get sourceDeviceId => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

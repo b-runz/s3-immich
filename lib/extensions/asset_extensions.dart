@@ -5,6 +5,13 @@ import 'package:openapi/api.dart' as api;
 
 extension DTOToAsset on api.AssetResponseDto {
   RemoteAsset toDto() {
+    // Recover the device photo_manager ID so LocalThumbProvider can be used:
+    //   • isOffline == true  → id itself is the photo_manager ID (local-only asset)
+    //   • originalPath starts with 'pm:' → search handler encoded it for a backed-up asset
+    final localPhotoId = isOffline
+        ? id
+        : (originalPath.startsWith('pm:') ? originalPath.substring(3) : null);
+
     return RemoteAsset(
       id: id,
       name: originalFileName,
@@ -20,7 +27,7 @@ extension DTOToAsset on api.AssetResponseDto {
       isFavorite: isFavorite,
       livePhotoVideoId: livePhotoVideoId,
       thumbHash: thumbhash,
-      localId: null,
+      localId: localPhotoId,
       type: type.toAssetType(),
       stackId: stack?.id,
       isEdited: isEdited,

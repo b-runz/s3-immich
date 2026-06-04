@@ -126,7 +126,7 @@ class ImmichAppBarDialog extends HookConsumerWidget {
                     await ref.read(authProvider.notifier).logout().whenComplete(() => isLoggingOut.value = false);
 
                     ref.read(websocketProvider.notifier).disconnect();
-                    unawaited(context.replaceRoute(const LoginRoute()));
+                    unawaited(context.replaceRoute(const S3SetupRoute()));
                   },
                 );
               },

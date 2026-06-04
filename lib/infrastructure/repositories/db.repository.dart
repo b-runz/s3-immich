@@ -98,7 +98,7 @@ class Drift extends $Drift {
   }
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 28;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -281,6 +281,13 @@ class Drift extends $Drift {
           },
         ),
       );
+
+      // v27 -> v28: add sourceDeviceId column (handled outside migrationSteps since schema v28 is not generated)
+      if (from < 28 && to >= 28) {
+        await customStatement(
+          'ALTER TABLE remote_asset_entity ADD COLUMN source_device_id TEXT',
+        );
+      }
 
       if (kDebugMode) {
         // Fail if the migration broke foreign keys

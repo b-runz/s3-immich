@@ -1617,6 +1617,22 @@ class RemoteMediaSummaryRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [S3SetupPage]
+class S3SetupRoute extends PageRouteInfo<void> {
+  const S3SetupRoute({List<PageRouteInfo>? children})
+    : super(S3SetupRoute.name, initialChildren: children);
+
+  static const String name = 'S3SetupRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const S3SetupPage();
+    },
+  );
+}
+
+/// generated route for
 /// [SettingsPage]
 class SettingsRoute extends PageRouteInfo<void> {
   const SettingsRoute({List<PageRouteInfo>? children})

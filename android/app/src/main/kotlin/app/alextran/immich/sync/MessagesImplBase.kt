@@ -190,6 +190,7 @@ open class NativeSyncApiImplBase(context: Context) : ImmichPlugin(), ActivityAwa
           )
 
           val isFlipped = orientation == 90 || orientation == 270
+          val gps = if (rawMediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) readGps(numericId, path) else null
           val asset = PlatformAsset(
             id,
             name,
@@ -201,6 +202,8 @@ open class NativeSyncApiImplBase(context: Context) : ImmichPlugin(), ActivityAwa
             duration,
             0L,
             isFavorite,
+            latitude = gps?.first,
+            longitude = gps?.second,
             playbackStyle = playbackStyle,
           )
           yield(AssetResult.ValidAsset(asset, bucketId))
@@ -365,6 +368,26 @@ open class NativeSyncApiImplBase(context: Context) : ImmichPlugin(), ActivityAwa
       arrayOf(albumId, timestamp.toString(), *MEDIA_SELECTION_ARGS),
     )?.use { cursor -> cursor.count.toLong() } ?: 0L
 
+
+  private fun readGps(numericId: Long, path: String): Pair<Double, Double>? {
+    return try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, numericId)
+        val originalUri = MediaStore.setRequireOriginal(uri)
+        ctx.contentResolver.openInputStream(originalUri)?.use { stream ->
+          val exif = ExifInterface(stream)
+          val latLon = FloatArray(2)
+          if (exif.getLatLong(latLon)) Pair(latLon[0].toDouble(), latLon[1].toDouble()) else null
+        }
+      } else {
+        val exif = ExifInterface(path)
+        val latLon = FloatArray(2)
+        if (exif.getLatLong(latLon)) Pair(latLon[0].toDouble(), latLon[1].toDouble()) else null
+      }
+    } catch (_: Exception) {
+      null
+    }
+  }
 
   fun getAssetsForAlbum(albumId: String, updatedTimeCond: Long?): List<PlatformAsset> {
     var selection = "$BUCKET_SELECTION AND $MEDIA_SELECTION"

@@ -555,6 +555,7 @@ class ActionNotifier extends Notifier<void> {
     final failedAssetIds = <String>{};
     final postUploadTasks = <Future<void>>[];
 
+    final ownerId = ref.read(currentUserProvider)?.id ?? '';
     final progressNotifier = ref.read(assetUploadProgressProvider.notifier);
     final cancelToken = Completer<void>();
     ref.read(manualUploadCancelTokenProvider.notifier).state = cancelToken;
@@ -567,6 +568,7 @@ class ActionNotifier extends Notifier<void> {
     try {
       await _foregroundUploadService.uploadManual(
         assetsToUpload,
+        ownerId: ownerId,
         cancelToken: cancelToken,
         callbacks: UploadCallbacks(
           onProgress: (localAssetId, filename, bytes, totalBytes) {
