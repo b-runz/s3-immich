@@ -59,6 +59,16 @@ class SearchHandler {
 
     try {
       final rows = await _db.customSelect(
+        'SELECT asset_id FROM asset_fts WHERE asset_fts MATCH ?',
+        variables: [Variable.withString(query)],
+      ).get();
+      labelIds.addAll(rows.map((r) => r.data['asset_id'] as String));
+    } catch (e, st) {
+      _log.warning('FTS search failed', e, st);
+    }
+
+    try {
+      final rows = await _db.customSelect(
         '''SELECT DISTINCT lae.id
            FROM local_asset_entity lae
            JOIN local_album_asset_entity laae ON laae.asset_id = lae.id
