@@ -36,7 +36,12 @@ class RemoteImageRequest extends ImageRequest {
     final cache = ThumbnailCacheService.instance;
     if (cache == null) return null;
 
-    final bytes = await cache.getOrFetch(uri);
+    final Uint8List bytes;
+    try {
+      bytes = await cache.getOrFetch(uri);
+    } catch (_) {
+      return null;
+    }
     if (_isCancelled) return null;
 
     final frame = await _fromEncodedPlatformBytes(bytes);
@@ -47,7 +52,12 @@ class RemoteImageRequest extends ImageRequest {
     final cache = ThumbnailCacheService.instance;
     if (cache == null) return null;
 
-    final bytes = await cache.getOrFetch(uri);
+    final Uint8List bytes;
+    try {
+      bytes = await cache.getOrFetch(uri);
+    } catch (_) {
+      return null;
+    }
     if (_isCancelled) return null;
 
     final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
