@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
@@ -13,15 +14,19 @@ class OnDeviceFaceDetector {
   Future<List<Rect>> detect(File imageFile) async {
     final inputImage = InputImage.fromFile(imageFile);
     final faces = await _detector.processImage(inputImage);
-    final meta = inputImage.metadata;
-    if (meta == null) {
-      return [];
-    }
-    final w = meta.size.width;
-    final h = meta.size.height;
-    if (w == 0 || h == 0) {
-      return [];
-    }
+    if (faces.isEmpty) return [];
+
+    // InputImage.fromFile does not populate .metadata on Android;
+    // decode the image header separately to get pixel dimensions.
+    final buffer = await ui.ImmutableBuffer.fromFilePath(imageFile.path);
+    final descriptor = await ui.ImageDescriptor.encoded(buffer);
+    final w = descriptor.width.toDouble();
+    final h = descriptor.height.toDouble();
+    buffer.dispose();
+    descriptor.dispose();
+
+    if (w == 0 || h == 0) return [];
+
     return faces
         .map(
           (f) => Rect.fromLTRB(
