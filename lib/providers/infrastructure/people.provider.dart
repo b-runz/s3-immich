@@ -18,7 +18,7 @@ final driftPeopleAssetProvider = FutureProvider.family<List<DriftPerson>, String
   return service.getAssetPeople(assetId);
 });
 
-final driftGetAllPeopleProvider = FutureProvider<List<DriftPerson>>((ref) async {
+final driftGetAllPeopleProvider = StreamProvider<List<DriftPerson>>((ref) {
   final service = ref.watch(driftPeopleServiceProvider);
-  return service.getAllPeople();
+  return service.watchAllPeople();
 });

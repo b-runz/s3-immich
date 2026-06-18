@@ -104,6 +104,11 @@ class DriftPerson {
   final bool isHidden;
   final String? color;
   final DateTime? birthDate;
+  // Normalized bounding box (0–10000) for the thumbnail face, null if no face yet
+  final int? faceBboxX1;
+  final int? faceBboxY1;
+  final int? faceBboxX2;
+  final int? faceBboxY2;
 
   const DriftPerson({
     required this.id,
@@ -116,6 +121,10 @@ class DriftPerson {
     required this.isHidden,
     required this.color,
     this.birthDate,
+    this.faceBboxX1,
+    this.faceBboxY1,
+    this.faceBboxX2,
+    this.faceBboxY2,
   });
 
   DriftPerson copyWith({
@@ -129,6 +138,10 @@ class DriftPerson {
     bool? isHidden,
     String? color,
     DateTime? birthDate,
+    int? faceBboxX1,
+    int? faceBboxY1,
+    int? faceBboxX2,
+    int? faceBboxY2,
   }) {
     return DriftPerson(
       id: id ?? this.id,
@@ -141,6 +154,10 @@ class DriftPerson {
       isHidden: isHidden ?? this.isHidden,
       color: color ?? this.color,
       birthDate: birthDate ?? this.birthDate,
+      faceBboxX1: faceBboxX1 ?? this.faceBboxX1,
+      faceBboxY1: faceBboxY1 ?? this.faceBboxY1,
+      faceBboxX2: faceBboxX2 ?? this.faceBboxX2,
+      faceBboxY2: faceBboxY2 ?? this.faceBboxY2,
     );
   }
 
@@ -175,7 +192,11 @@ class DriftPerson {
         other.isFavorite == isFavorite &&
         other.isHidden == isHidden &&
         other.color == color &&
-        other.birthDate == birthDate;
+        other.birthDate == birthDate &&
+        other.faceBboxX1 == faceBboxX1 &&
+        other.faceBboxY1 == faceBboxY1 &&
+        other.faceBboxX2 == faceBboxX2 &&
+        other.faceBboxY2 == faceBboxY2;
   }
 
   @override
@@ -189,6 +210,10 @@ class DriftPerson {
         isFavorite.hashCode ^
         isHidden.hashCode ^
         color.hashCode ^
-        birthDate.hashCode;
+        birthDate.hashCode ^
+        faceBboxX1.hashCode ^
+        faceBboxY1.hashCode ^
+        faceBboxX2.hashCode ^
+        faceBboxY2.hashCode;
   }
 }

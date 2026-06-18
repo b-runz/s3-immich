@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/providers/infrastructure/people.provider.dart';
-import 'package:immich_mobile/presentation/widgets/images/remote_image_provider.dart';
+import 'package:immich_mobile/presentation/widgets/people/face_avatar.widget.dart';
 import 'package:immich_mobile/routing/router.dart';
-import 'package:immich_mobile/utils/image_url_builder.dart';
 import 'package:immich_mobile/utils/people.utils.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
 
@@ -88,10 +87,9 @@ class _DriftPeopleCollectionPageState extends ConsumerState<DriftPeopleCollectio
                           child: Material(
                             shape: const CircleBorder(side: BorderSide.none),
                             elevation: 3,
-                            child: CircleAvatar(
-                              key: ValueKey(person.id),
-                              maxRadius: isTablet ? 100 / 2 : 96 / 2,
-                              backgroundImage: RemoteImageProvider(url: getFaceThumbnailUrl(person.id)),
+                            child: FaceAvatarWidget(
+                              person: person,
+                              radius: isTablet ? 50 : 48,
                             ),
                           ),
                         ),

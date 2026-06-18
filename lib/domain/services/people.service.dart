@@ -22,6 +22,10 @@ class DriftPeopleService {
     return _repository.getAllPeople();
   }
 
+  Stream<List<DriftPerson>> watchAllPeople() {
+    return _repository.watchAllPeople();
+  }
+
   Future<int> updateName(String personId, String name) async {
     await _personApiRepository.update(personId, name: name);
     return _repository.updateName(personId, name);

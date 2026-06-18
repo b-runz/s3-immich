@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/models/person.model.dart';
+import 'package:immich_mobile/infrastructure/entities/asset_face.entity.drift.dart';
 import 'package:immich_mobile/infrastructure/entities/person.entity.drift.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 
@@ -49,7 +50,7 @@ class DriftPeopleRepository extends DriftDatabaseRepository {
                 faces.isVisible.equals(true) &
                 faces.deletedAt.isNull(),
           )
-          ..groupBy([people.id], having: faces.id.count().isBiggerOrEqualValue(3) | people.name.equals('').not())
+          ..groupBy([people.id], having: faces.id.count().isBiggerOrEqualValue(1) | people.name.equals('').not())
           ..orderBy([
             OrderingTerm(expression: people.name.equals('').not(), mode: OrderingMode.desc),
             OrderingTerm(expression: faces.id.count(), mode: OrderingMode.desc),
@@ -57,8 +58,39 @@ class DriftPeopleRepository extends DriftDatabaseRepository {
 
     return query.map((row) {
       final person = row.readTable(people);
-      return person.toDto();
+      final face = row.readTableOrNull(faces);
+      return person.toDto(face: face);
     }).get();
+  }
+
+  Stream<List<DriftPerson>> watchAllPeople() {
+    final people = _db.personEntity;
+    final faces = _db.assetFaceEntity;
+    final assets = _db.remoteAssetEntity;
+
+    final query =
+        _db.select(people).join([
+            innerJoin(faces, faces.personId.equalsExp(people.id)),
+            innerJoin(assets, assets.id.equalsExp(faces.assetId)),
+          ])
+          ..where(
+            people.isHidden.equals(false) &
+                assets.deletedAt.isNull() &
+                assets.visibility.equalsValue(AssetVisibility.timeline) &
+                faces.isVisible.equals(true) &
+                faces.deletedAt.isNull(),
+          )
+          ..groupBy([people.id], having: faces.id.count().isBiggerOrEqualValue(1) | people.name.equals('').not())
+          ..orderBy([
+            OrderingTerm(expression: people.name.equals('').not(), mode: OrderingMode.desc),
+            OrderingTerm(expression: faces.id.count(), mode: OrderingMode.desc),
+          ]);
+
+    return query.map((row) {
+      final person = row.readTable(people);
+      final face = row.readTableOrNull(faces);
+      return person.toDto(face: face);
+    }).watch();
   }
 
   Future<int> updateName(String personId, String name) {
@@ -75,7 +107,7 @@ class DriftPeopleRepository extends DriftDatabaseRepository {
 }
 
 extension on PersonEntityData {
-  DriftPerson toDto() {
+  DriftPerson toDto({AssetFaceEntityData? face}) {
     return DriftPerson(
       id: id,
       createdAt: createdAt,
@@ -87,6 +119,10 @@ extension on PersonEntityData {
       isHidden: isHidden,
       color: color,
       birthDate: birthDate,
+      faceBboxX1: face?.boundingBoxX1,
+      faceBboxY1: face?.boundingBoxY1,
+      faceBboxX2: face?.boundingBoxX2,
+      faceBboxY2: face?.boundingBoxY2,
     );
   }
 }
