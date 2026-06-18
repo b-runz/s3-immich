@@ -1,0 +1,16 @@
+# Core — always required
+boto3>=1.34
+Pillow>=10.3
+python-dotenv>=1.0
+
+# Face detection — install ONE of:
+# mediapipe>=0.10          # recommended; pure-Python wheels on Linux/macOS/Windows
+# insightface>=0.7; onnxruntime>=1.17   # heavier but richer embeddings
+
+# OCR — install ONE of:
+# easyocr>=1.7
+# pytesseract>=0.3
+
+# Image labeling — install ONE of:
+# torch>=2.1; torchvision>=0.16; open-clip-torch>=2.24   # CLIP zero-shot
+# imageai>=3.0                                            # simpler but older

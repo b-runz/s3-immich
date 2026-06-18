@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.migrate_progress.json
+.migrate_errors.json
+.migrate_temp.db
+.migrate_temp.db-shm
+.migrate_temp.db-wal
+blaze_face_short_range.tflite
