@@ -23,7 +23,7 @@ import 'package:immich_mobile/infrastructure/ml/ml_worker.service.dart';
 import 'package:immich_mobile/providers/infrastructure/ml_worker.provider.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
-import 'package:photo_manager/photo_manager.dart' show PMProgressHandler;
+import 'package:photo_manager/photo_manager.dart' show PMProgressHandler, ThumbnailSize;
 
 /// Callbacks for upload progress and status updates
 class UploadCallbacks {
@@ -345,6 +345,15 @@ class ForegroundUploadService {
 
       final s3Key = _s3Service.currentConfig!.s3KeyFor(originalFileName, asset.createdAt);
       await _s3Service.putFile(s3Key, file.path);
+
+      try {
+        final thumb = await entity.thumbnailDataWithSize(const ThumbnailSize(256, 256));
+        if (thumb != null) {
+          await _s3Service.putObject('.thumbs/$s3Key', thumb, contentType: 'image/jpeg');
+        }
+      } catch (e) {
+        _logger.warning('Thumbnail upload failed for ${asset.localId}: $e');
+      }
 
       // Prefer GPS from local_asset_entity; fall back to reading from AssetEntity
       // (needed when local sync ran before the native GPS fix was deployed).
