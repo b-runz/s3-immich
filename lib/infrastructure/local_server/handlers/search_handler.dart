@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:openapi/api.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/utils/nominatim.dart';
 
 /// Handles /search/* routes entirely from local SQLite — no Immich server needed.
 ///
@@ -33,6 +34,9 @@ class SearchHandler {
   Future<http.Response> _search(Object? rawBody) async {
     final query = _extractQuery(rawBody)?.trim() ?? '';
     if (query.isEmpty) return _emptyResult();
+
+    // Start place-bbox lookup concurrently with the DB text searches.
+    final bboxFuture = _searchByBbox(query);
 
     final q = '%${query.toLowerCase()}%';
 
@@ -92,9 +96,7 @@ class SearchHandler {
       _log.warning('Remote name search failed', e, st);
     }
 
-    if (labelIds.isEmpty && localIds.isEmpty && remoteIds.isEmpty) {
-      return _emptyResult();
-    }
+    // Don't short-circuit here — bboxFuture (Nominatim) may still find results.
 
     // ── Step 2: for label IDs, prefer remote UUID over raw platform ID ──
     //
@@ -186,7 +188,79 @@ class SearchHandler {
       }
     }
 
+    // Merge place-based GPS results, skipping IDs already found by text search.
+    for (final item in await bboxFuture) {
+      final id = item['id'] as String;
+      if (seenIds.add(id)) items.add(item);
+    }
+
     return _assetResult(items.take(_pageSize).toList(), null);
+  }
+
+  // ── Place / bounding-box search ───────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> _searchByBbox(String query) async {
+    try {
+      final places = await searchNominatim(query);
+      if (places.isEmpty) return [];
+      final bbox = places.first.boundingBox;
+      if (bbox == null || bbox.length < 4) return [];
+
+      final southLat = bbox[0];
+      final northLat = bbox[1];
+      final westLon = bbox[2];
+      final eastLon = bbox[3];
+
+      final items = <Map<String, dynamic>>[];
+
+      // Remote assets that have EXIF GPS within the bounding box.
+      try {
+        final rows = await _db.customSelect(
+          '''SELECT r.* FROM remote_asset_entity r
+             JOIN remote_exif_entity e ON e.asset_id = r.id
+             WHERE e.latitude BETWEEN ? AND ?
+               AND e.longitude BETWEEN ? AND ?
+               AND r.deleted_at IS NULL
+             LIMIT 100''',
+          variables: [
+            Variable.withReal(southLat),
+            Variable.withReal(northLat),
+            Variable.withReal(westLon),
+            Variable.withReal(eastLon),
+          ],
+        ).get();
+        for (final r in rows) {
+          items.add(_remoteRowToJson(r));
+        }
+      } catch (e, st) {
+        _log.warning('Remote GPS search failed', e, st);
+      }
+
+      // Local assets that have GPS within the bounding box.
+      try {
+        final rows = await _db.customSelect(
+          '''SELECT * FROM local_asset_entity
+             WHERE latitude BETWEEN ? AND ?
+               AND longitude BETWEEN ? AND ?''',
+          variables: [
+            Variable.withReal(southLat),
+            Variable.withReal(northLat),
+            Variable.withReal(westLon),
+            Variable.withReal(eastLon),
+          ],
+        ).get();
+        for (final r in rows) {
+          items.add(_localRowToJson(r));
+        }
+      } catch (e, st) {
+        _log.warning('Local GPS search failed', e, st);
+      }
+
+      return items;
+    } catch (e, st) {
+      _log.warning('Place bbox search failed', e, st);
+      return [];
+    }
   }
 
   // ── Body parsing ─────────────────────────────────────────────────────────
