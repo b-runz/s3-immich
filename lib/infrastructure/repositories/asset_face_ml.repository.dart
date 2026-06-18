@@ -13,6 +13,18 @@ class AssetFaceMlRepository {
     FaceMlSchema.ensureColumns(_db);
   }
 
+  /// Resolves a local photo_manager ID to the S3 key in remote_asset_entity.
+  /// Returns null if the photo hasn't been uploaded yet.
+  Future<String?> getRemoteIdForLocal(String localId) async {
+    final rows = await _db.customSelect(
+      '''SELECT r.id FROM remote_asset_entity r
+         JOIN local_asset_entity l ON l.checksum = r.checksum
+         WHERE l.id = ?''',
+      variables: [Variable.withString(localId)],
+    ).get();
+    return rows.isEmpty ? null : rows.first.data['id'] as String;
+  }
+
   Future<String> insertFace({
     required String assetId,
     required Rect normBoundingBox,
@@ -31,6 +43,31 @@ class AssetFaceMlRepository {
         (normBoundingBox.right * _coordScale).round(),
         (normBoundingBox.bottom * _coordScale).round(),
       ],
+    );
+    return id;
+  }
+
+  /// Creates a person linked to the given face and returns the new person ID.
+  /// [faceThumbnailKey] is the S3 sub-key for the pre-cropped face image
+  /// (e.g. 'faces/{personId}.jpg'). Falls back to [remoteAssetId] if null,
+  /// which causes the full photo thumbnail to be used as the person thumbnail.
+  Future<String> createPersonForFace({
+    required String faceId,
+    required String remoteAssetId,
+    String? faceThumbnailKey,
+    String? personId,
+  }) async {
+    final id = personId ?? const Uuid().v4();
+    final thumbKey = faceThumbnailKey ?? remoteAssetId;
+    await _db.customStatement(
+      '''INSERT INTO person_entity
+         (id, owner_id, name, face_asset_id, is_favorite, is_hidden)
+         VALUES (?, 'local-user', '', ?, 0, 0)''',
+      [id, thumbKey],
+    );
+    await _db.customStatement(
+      'UPDATE asset_face_entity SET person_id = ? WHERE id = ?',
+      [id, faceId],
     );
     return id;
   }

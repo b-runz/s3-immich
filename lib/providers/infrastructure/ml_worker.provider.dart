@@ -7,9 +7,11 @@ import 'package:immich_mobile/infrastructure/ml/text_recognizer.dart';
 import 'package:immich_mobile/infrastructure/repositories/asset_face_ml.repository.dart';
 import 'package:immich_mobile/infrastructure/repositories/asset_label.repository.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
+import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 
 final mlWorkerServiceProvider = Provider<MlWorkerService>((ref) {
   final db = ref.watch(driftProvider);
+  final s3 = ref.watch(s3ServiceProvider);
   final faceRepo = AssetFaceMlRepository(db);
   final labelRepo = AssetLabelRepository(db);
   // ignore: discarded_futures
@@ -21,6 +23,7 @@ final mlWorkerServiceProvider = Provider<MlWorkerService>((ref) {
     OnDeviceImageLabeler(),
     labelRepo,
     db,
+    s3,
   );
   ref.onDispose(() => service.dispose());
   return service;

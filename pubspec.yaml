@@ -41,6 +41,7 @@ dependencies:
   home_widget: ^0.8.1
   hooks_riverpod: ^2.6.1
   http: ^1.6.0
+  image: ^4.8.0
   image_picker: ^1.2.1
   immich_ui:
     path: './packages/ui'
