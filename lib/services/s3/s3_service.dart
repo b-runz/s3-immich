@@ -15,6 +15,14 @@ class S3Service {
   Minio? _client;
   S3Config? _config;
 
+  // Global singleton set by main.dart so image loaders can presign without Riverpod.
+  static S3Service? _global;
+  static S3Service? get global => _global;
+  static set global(S3Service s) => _global = s;
+
+  // Short-lived presign cache: key → (url, expiry).
+  final _presignGetCache = <String, (String, DateTime)>{};
+
   bool get isConfigured => _client != null && _config != null;
 
   S3Config? get currentConfig => _config;
@@ -59,6 +67,25 @@ class S3Service {
       s3Key,
       expires: ttl.inSeconds,
     );
+  }
+
+  Future<String> presignGet(
+    String s3Key, {
+    Duration ttl = const Duration(hours: 1),
+  }) async {
+    final cached = _presignGetCache[s3Key];
+    if (cached != null && cached.$2.isAfter(DateTime.now())) {
+      return cached.$1;
+    }
+    final client = _requireClient();
+    final url = await client.presignedGetObject(
+      _config!.bucket,
+      s3Key,
+      expires: ttl.inSeconds,
+    );
+    // Expire the cache entry 5 min before the signed URL expires.
+    _presignGetCache[s3Key] = (url, DateTime.now().add(ttl - const Duration(minutes: 5)));
+    return url;
   }
 
   Future<void> putObject(
