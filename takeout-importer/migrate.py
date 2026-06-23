@@ -17,6 +17,7 @@ Options:
     --no-upload DIR     Write all output to DIR (mirrors S3 layout) instead of uploading
     --db-path FILE      Local SQLite output path (default: .migrate_temp.db)
     --progress FILE     Progress file path (default: .migrate_progress.json)
+    --clean             Delete existing DB, progress, and errors files before starting.
 """
 
 import argparse
@@ -82,7 +83,15 @@ def main():
                         help="Write output to local DIR instead of uploading to S3")
     parser.add_argument("--db-path", default=".migrate_temp.db")
     parser.add_argument("--progress", default=".migrate_progress.json")
+    parser.add_argument("--clean", action="store_true",
+                        help="Delete existing DB, progress, and errors files before starting.")
     args = parser.parse_args()
+
+    if args.clean:
+        for f in (args.db_path, args.progress, ".migrate_errors.json"):
+            if os.path.exists(f):
+                os.remove(f)
+                print(f"Removed {f}")
 
     no_upload = args.no_upload
     cfg = TakeoutConfig.from_env(args.env, require_s3=(no_upload is None))
@@ -163,7 +172,7 @@ def main():
                 if album_name not in album_map:
                     aid = album_id_for(album_name)
                     album_map[album_name] = aid
-                    db.insert_album(aid, album_name)
+                    db.insert_album(aid, album_name, cfg.owner_id)
                 db.link_asset_album(asset_id, album_map[album_name])
         db.commit()
     print(f"Inserted {len(asset_list)} assets, {len(album_map)} albums.")
@@ -283,6 +292,12 @@ def main():
         db_bytes = f.read()
     write_all(sink, [(".meta/s3immich.db", db_bytes, "application/octet-stream")])
     print(f"Done. Database → {sink_label}/.meta/s3immich.db")
+
+    # Write locale-independent status file so the Dart app can compare timestamps
+    # without relying on minio's locale-sensitive Last-Modified date parser.
+    status = _json.dumps({"lastModified": int(time.time() * 1000)}).encode()
+    write_all(sink, [(".meta/db-status.json", status, "application/json")])
+    print(f"Status file written: {sink_label}/.meta/db-status.json")
     print(f"Total assets: {len(asset_list)}")
 
 
