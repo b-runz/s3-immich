@@ -141,9 +141,13 @@ class DriftBackupRepository extends DriftDatabaseRepository {
             ) &
             notExistsQuery(
               _db.remoteAssetEntity.selectOnly()
-                ..addColumns([_db.remoteAssetEntity.checksum])
+                ..addColumns([_db.remoteAssetEntity.id])
                 ..where(
-                  _db.remoteAssetEntity.checksum.equalsExp(lae.checksum) & _db.remoteAssetEntity.ownerId.equals(userId),
+                  (_db.remoteAssetEntity.checksum.equalsExp(lae.checksum) |
+                      (_db.remoteAssetEntity.name.equalsExp(lae.name) &
+                          _db.remoteAssetEntity.type.equalsExp(lae.type) &
+                          _db.remoteAssetEntity.localDateTime.equalsExp(lae.createdAt))) &
+                      _db.remoteAssetEntity.ownerId.equals(userId),
                 ),
             ) &
             lae.id.isNotInQuery(_getExcludedSubquery()),
