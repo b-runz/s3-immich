@@ -189,9 +189,8 @@ ImageProvider? getThumbnailImageProvider(
     return LocalThumbProvider(id: id, size: size, assetType: asset.type);
   }
 
-  if (s3Service != null && asset.localId == null && s3Service.currentConfig != null) {
-    final thumbKey = s3Service.currentConfig!.thumbnailKeyFor(asset.name, asset.createdAt);
-    return S3ThumbnailProvider(s3Key: thumbKey, s3Service: s3Service);
+  if (s3Service != null && asset.localId == null && asset is RemoteAsset) {
+    return S3ThumbnailProvider(s3Key: '.thumbs/${asset.id}', s3Service: s3Service);
   }
 
   final assetId = asset is RemoteAsset ? asset.id : (asset as LocalAsset).remoteId;

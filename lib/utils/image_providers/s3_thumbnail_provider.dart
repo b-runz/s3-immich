@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:immich_mobile/services/s3/s3_service.dart';
+import 'package:immich_mobile/services/thumbnail_cache.service.dart';
 
 class S3ThumbnailProvider extends ImageProvider<S3ThumbnailProvider> {
   final String s3Key;
@@ -31,8 +32,14 @@ class S3ThumbnailProvider extends ImageProvider<S3ThumbnailProvider> {
   }
 
   Future<ui.Codec> _loadAsync(S3ThumbnailProvider key, ImageDecoderCallback decode) async {
-    final bytes = await key.s3Service.getObject(key.s3Key);
-    final buffer = await ui.ImmutableBuffer.fromUint8List(Uint8List.fromList(bytes));
+    final Uint8List bytes;
+    final cache = ThumbnailCacheService.instance;
+    if (cache != null) {
+      bytes = await cache.getOrFetch(key.s3Key);
+    } else {
+      bytes = Uint8List.fromList(await key.s3Service.getObject(key.s3Key));
+    }
+    final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
     return decode(buffer);
   }
 

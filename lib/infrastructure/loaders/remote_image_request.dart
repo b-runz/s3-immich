@@ -12,7 +12,7 @@ class RemoteImageRequest extends ImageRequest {
     if (uri.startsWith('.thumbs/')) {
       return _loadFromCache(scale);
     }
-    return _loadFromNative(scale);
+    return _loadFromS3(scale);
   }
 
   @override
@@ -22,7 +22,7 @@ class RemoteImageRequest extends ImageRequest {
     if (uri.startsWith('.thumbs/')) {
       return _codecFromCache();
     }
-    return _codecFromNative();
+    return _codecFromS3();
   }
 
   @override
@@ -80,7 +80,55 @@ class RemoteImageRequest extends ImageRequest {
     return codec;
   }
 
-  // --- original path (presign → native remoteImageApi) ---
+  // --- original path (S3 via Dart/Minio, same transport as thumbnails) ---
+
+  Future<ImageInfo?> _loadFromS3(double scale) async {
+    final s3 = S3Service.global;
+    if (s3 == null || !s3.isConfigured) return null;
+    final List<int> bytes;
+    try {
+      bytes = await s3.getObject(uri);
+    } catch (_) {
+      return null;
+    }
+    if (_isCancelled) return null;
+    final uint8Bytes = bytes is Uint8List ? bytes as Uint8List : Uint8List.fromList(bytes);
+    final frame = await _fromEncodedPlatformBytes(uint8Bytes);
+    return frame == null ? null : ImageInfo(image: frame.image, scale: scale);
+  }
+
+  Future<ui.Codec?> _codecFromS3() async {
+    final s3 = S3Service.global;
+    if (s3 == null || !s3.isConfigured) return null;
+    final List<int> bytes;
+    try {
+      bytes = await s3.getObject(uri);
+    } catch (_) {
+      return null;
+    }
+    if (_isCancelled) return null;
+    final uint8Bytes = bytes is Uint8List ? bytes as Uint8List : Uint8List.fromList(bytes);
+    final buffer = await ui.ImmutableBuffer.fromUint8List(uint8Bytes);
+    if (_isCancelled) {
+      buffer.dispose();
+      return null;
+    }
+    final descriptor = await ui.ImageDescriptor.encoded(buffer);
+    buffer.dispose();
+    if (_isCancelled) {
+      descriptor.dispose();
+      return null;
+    }
+    final codec = await descriptor.instantiateCodec();
+    if (_isCancelled) {
+      descriptor.dispose();
+      codec.dispose();
+      return null;
+    }
+    return codec;
+  }
+
+  // --- original path (presign → native remoteImageApi, kept for reference) ---
 
   Future<ImageInfo?> _loadFromNative(double scale) async {
     final s3 = S3Service.global;
