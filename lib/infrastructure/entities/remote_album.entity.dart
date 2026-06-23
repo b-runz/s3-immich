@@ -3,6 +3,23 @@ import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/infrastructure/entities/remote_asset.entity.dart';
 import 'package:immich_mobile/infrastructure/utils/drift_default.mixin.dart';
 
+/// Handles epoch-ms strings (from S3 importer) and ISO8601 strings (Drift default).
+class EpochOrIsoConverter extends TypeConverter<DateTime, String> {
+  const EpochOrIsoConverter();
+
+  @override
+  DateTime fromSql(String fromDb) {
+    final epochMs = int.tryParse(fromDb);
+    if (epochMs != null) {
+      return DateTime.fromMillisecondsSinceEpoch(epochMs, isUtc: true);
+    }
+    return DateTime.parse(fromDb);
+  }
+
+  @override
+  String toSql(DateTime value) => value.toUtc().toIso8601String();
+}
+
 class RemoteAlbumEntity extends Table with DriftDefaultsMixin {
   const RemoteAlbumEntity();
 
@@ -12,9 +29,9 @@ class RemoteAlbumEntity extends Table with DriftDefaultsMixin {
 
   TextColumn get description => text().withDefault(const Constant(''))();
 
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get createdAt => text().map(const EpochOrIsoConverter())();
 
-  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get updatedAt => text().map(const EpochOrIsoConverter())();
 
   TextColumn get thumbnailAssetId =>
       text().references(RemoteAssetEntity, #id, onDelete: KeyAction.setNull).nullable()();

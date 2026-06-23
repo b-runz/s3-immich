@@ -16,8 +16,8 @@ typedef $$RemoteAlbumEntityTableCreateCompanionBuilder =
       required String id,
       required String name,
       i0.Value<String> description,
-      i0.Value<DateTime> createdAt,
-      i0.Value<DateTime> updatedAt,
+      required DateTime createdAt,
+      required DateTime updatedAt,
       i0.Value<String?> thumbnailAssetId,
       i0.Value<bool> isActivityEnabled,
       required i2.AlbumAssetOrder order,
@@ -105,15 +105,17 @@ class $$RemoteAlbumEntityTableFilterComposer
     builder: (column) => i0.ColumnFilters(column),
   );
 
-  i0.ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => i0.ColumnFilters(column),
-  );
+  i0.ColumnWithTypeConverterFilters<DateTime, DateTime, String> get createdAt =>
+      $composableBuilder(
+        column: $table.createdAt,
+        builder: (column) => i0.ColumnWithTypeConverterFilters(column),
+      );
 
-  i0.ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => i0.ColumnFilters(column),
-  );
+  i0.ColumnWithTypeConverterFilters<DateTime, DateTime, String> get updatedAt =>
+      $composableBuilder(
+        column: $table.updatedAt,
+        builder: (column) => i0.ColumnWithTypeConverterFilters(column),
+      );
 
   i0.ColumnFilters<bool> get isActivityEnabled => $composableBuilder(
     column: $table.isActivityEnabled,
@@ -178,12 +180,12 @@ class $$RemoteAlbumEntityTableOrderingComposer
     builder: (column) => i0.ColumnOrderings(column),
   );
 
-  i0.ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+  i0.ColumnOrderings<String> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => i0.ColumnOrderings(column),
   );
 
-  i0.ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+  i0.ColumnOrderings<String> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => i0.ColumnOrderings(column),
   );
@@ -247,10 +249,10 @@ class $$RemoteAlbumEntityTableAnnotationComposer
     builder: (column) => column,
   );
 
-  i0.GeneratedColumn<DateTime> get createdAt =>
+  i0.GeneratedColumnWithTypeConverter<DateTime, String> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
-  i0.GeneratedColumn<DateTime> get updatedAt =>
+  i0.GeneratedColumnWithTypeConverter<DateTime, String> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   i0.GeneratedColumn<bool> get isActivityEnabled => $composableBuilder(
@@ -346,8 +348,8 @@ class $$RemoteAlbumEntityTableTableManager
                 required String id,
                 required String name,
                 i0.Value<String> description = const i0.Value.absent(),
-                i0.Value<DateTime> createdAt = const i0.Value.absent(),
-                i0.Value<DateTime> updatedAt = const i0.Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
                 i0.Value<String?> thumbnailAssetId = const i0.Value.absent(),
                 i0.Value<bool> isActivityEnabled = const i0.Value.absent(),
                 required i2.AlbumAssetOrder order,
@@ -470,32 +472,24 @@ class $RemoteAlbumEntityTable extends i3.RemoteAlbumEntity
         requiredDuringInsert: false,
         defaultValue: const i4.Constant(''),
       );
-  static const i0.VerificationMeta _createdAtMeta = const i0.VerificationMeta(
-    'createdAt',
-  );
   @override
-  late final i0.GeneratedColumn<DateTime> createdAt =
-      i0.GeneratedColumn<DateTime>(
+  late final i0.GeneratedColumnWithTypeConverter<DateTime, String> createdAt =
+      i0.GeneratedColumn<String>(
         'created_at',
         aliasedName,
         false,
-        type: i0.DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-        defaultValue: i4.currentDateAndTime,
-      );
-  static const i0.VerificationMeta _updatedAtMeta = const i0.VerificationMeta(
-    'updatedAt',
-  );
+        type: i0.DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>(i1.$RemoteAlbumEntityTable.$convertercreatedAt);
   @override
-  late final i0.GeneratedColumn<DateTime> updatedAt =
-      i0.GeneratedColumn<DateTime>(
+  late final i0.GeneratedColumnWithTypeConverter<DateTime, String> updatedAt =
+      i0.GeneratedColumn<String>(
         'updated_at',
         aliasedName,
         false,
-        type: i0.DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-        defaultValue: i4.currentDateAndTime,
-      );
+        type: i0.DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>(i1.$RemoteAlbumEntityTable.$converterupdatedAt);
   static const i0.VerificationMeta _thumbnailAssetIdMeta =
       const i0.VerificationMeta('thumbnailAssetId');
   @override
@@ -582,18 +576,6 @@ class $RemoteAlbumEntityTable extends i3.RemoteAlbumEntity
         ),
       );
     }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('thumbnail_asset_id')) {
       context.handle(
         _thumbnailAssetIdMeta,
@@ -636,14 +618,18 @@ class $RemoteAlbumEntityTable extends i3.RemoteAlbumEntity
         i0.DriftSqlType.string,
         data['${effectivePrefix}description'],
       )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        i0.DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        i0.DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
+      createdAt: i1.$RemoteAlbumEntityTable.$convertercreatedAt.fromSql(
+        attachedDatabase.typeMapping.read(
+          i0.DriftSqlType.string,
+          data['${effectivePrefix}created_at'],
+        )!,
+      ),
+      updatedAt: i1.$RemoteAlbumEntityTable.$converterupdatedAt.fromSql(
+        attachedDatabase.typeMapping.read(
+          i0.DriftSqlType.string,
+          data['${effectivePrefix}updated_at'],
+        )!,
+      ),
       thumbnailAssetId: attachedDatabase.typeMapping.read(
         i0.DriftSqlType.string,
         data['${effectivePrefix}thumbnail_asset_id'],
@@ -666,6 +652,10 @@ class $RemoteAlbumEntityTable extends i3.RemoteAlbumEntity
     return $RemoteAlbumEntityTable(attachedDatabase, alias);
   }
 
+  static i0.TypeConverter<DateTime, String> $convertercreatedAt =
+      const i3.EpochOrIsoConverter();
+  static i0.TypeConverter<DateTime, String> $converterupdatedAt =
+      const i3.EpochOrIsoConverter();
   static i0.JsonTypeConverter2<i2.AlbumAssetOrder, int, int> $converterorder =
       const i0.EnumIndexConverter<i2.AlbumAssetOrder>(
         i2.AlbumAssetOrder.values,
@@ -702,8 +692,16 @@ class RemoteAlbumEntityData extends i0.DataClass
     map['id'] = i0.Variable<String>(id);
     map['name'] = i0.Variable<String>(name);
     map['description'] = i0.Variable<String>(description);
-    map['created_at'] = i0.Variable<DateTime>(createdAt);
-    map['updated_at'] = i0.Variable<DateTime>(updatedAt);
+    {
+      map['created_at'] = i0.Variable<String>(
+        i1.$RemoteAlbumEntityTable.$convertercreatedAt.toSql(createdAt),
+      );
+    }
+    {
+      map['updated_at'] = i0.Variable<String>(
+        i1.$RemoteAlbumEntityTable.$converterupdatedAt.toSql(updatedAt),
+      );
+    }
     if (!nullToAbsent || thumbnailAssetId != null) {
       map['thumbnail_asset_id'] = i0.Variable<String>(thumbnailAssetId);
     }
@@ -855,20 +853,22 @@ class RemoteAlbumEntityCompanion
     required String id,
     required String name,
     this.description = const i0.Value.absent(),
-    this.createdAt = const i0.Value.absent(),
-    this.updatedAt = const i0.Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
     this.thumbnailAssetId = const i0.Value.absent(),
     this.isActivityEnabled = const i0.Value.absent(),
     required i2.AlbumAssetOrder order,
   }) : id = i0.Value(id),
        name = i0.Value(name),
+       createdAt = i0.Value(createdAt),
+       updatedAt = i0.Value(updatedAt),
        order = i0.Value(order);
   static i0.Insertable<i1.RemoteAlbumEntityData> custom({
     i0.Expression<String>? id,
     i0.Expression<String>? name,
     i0.Expression<String>? description,
-    i0.Expression<DateTime>? createdAt,
-    i0.Expression<DateTime>? updatedAt,
+    i0.Expression<String>? createdAt,
+    i0.Expression<String>? updatedAt,
     i0.Expression<String>? thumbnailAssetId,
     i0.Expression<bool>? isActivityEnabled,
     i0.Expression<int>? order,
@@ -920,10 +920,14 @@ class RemoteAlbumEntityCompanion
       map['description'] = i0.Variable<String>(description.value);
     }
     if (createdAt.present) {
-      map['created_at'] = i0.Variable<DateTime>(createdAt.value);
+      map['created_at'] = i0.Variable<String>(
+        i1.$RemoteAlbumEntityTable.$convertercreatedAt.toSql(createdAt.value),
+      );
     }
     if (updatedAt.present) {
-      map['updated_at'] = i0.Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = i0.Variable<String>(
+        i1.$RemoteAlbumEntityTable.$converterupdatedAt.toSql(updatedAt.value),
+      );
     }
     if (thumbnailAssetId.present) {
       map['thumbnail_asset_id'] = i0.Variable<String>(thumbnailAssetId.value);
