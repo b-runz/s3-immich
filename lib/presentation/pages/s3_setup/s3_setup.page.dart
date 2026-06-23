@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/providers/background_sync.provider.dart';
+import 'package:immich_mobile/services/db_sync.service.dart';
 import 'package:immich_mobile/services/s3/s3_config.dart';
 import 'package:immich_mobile/services/s3/s3_service_provider.dart';
 import 'package:immich_mobile/routing/router.dart';
@@ -67,6 +68,7 @@ class _S3SetupPageState extends ConsumerState<S3SetupPage> {
         useSSL: true,
       );
       await ref.read(s3ServiceProvider).configure(config);
+      unawaited(DbSyncService.instance?.pull());
       if (mounted) {
         unawaited(context.router.replaceAll([const TabShellRoute()]));
         unawaited(ref.read(backgroundSyncProvider).syncLocal(full: true));

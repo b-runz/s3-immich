@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:immich_mobile/domain/utils/migrate_cloud_ids.dart' as m;
+import 'package:immich_mobile/services/db_sync.service.dart';
 import 'package:immich_mobile/domain/utils/sync_linked_album.dart';
 import 'package:immich_mobile/providers/infrastructure/sync.provider.dart';
 import 'package:immich_mobile/utils/isolate.dart';
@@ -159,32 +160,16 @@ class BackgroundSyncManager {
         });
   }
 
-  Future<bool> syncRemote() {
-    if (_syncTask != null) {
-      return _syncTask!.future.then((result) => result ?? false).catchError((_) => false);
-    }
-
+  Future<bool> syncRemote() async {
     onRemoteSyncStart?.call();
-
-    // DbSyncService.pull() wired in Task 13; return success for now.
-    _syncTask = runInIsolateGentle(
-      computation: (_) async => true,
-      debugLabel: 'remote-sync',
-    );
-    return _syncTask!
-        .then((result) {
-          final success = result ?? false;
-          onRemoteSyncComplete?.call(success);
-          return success;
-        })
-        .catchError((error) {
-          onRemoteSyncError?.call(error.toString());
-          _syncTask = null;
-          return false;
-        })
-        .whenComplete(() {
-          _syncTask = null;
-        });
+    try {
+      await DbSyncService.instance?.pull();
+      onRemoteSyncComplete?.call(true);
+      return true;
+    } catch (e) {
+      onRemoteSyncError?.call(e.toString());
+      return false;
+    }
   }
 
   Future<void> syncWebsocketBatchV1(List<dynamic> batchData) => Future.value();
