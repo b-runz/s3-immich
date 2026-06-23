@@ -42,7 +42,7 @@ def generate_thumbnail(path: str) -> bytes | None:
             img = img.convert("RGB")
             img.thumbnail((256, 256), Image.LANCZOS)
             buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=85, optimize=True)
+            img.save(buf, format="JPEG", quality=85)
             return buf.getvalue()
     except Exception:
         return None

@@ -3,6 +3,8 @@ import os
 import sqlite3
 from datetime import datetime, timezone
 
+from media_probe import probe_duration_ms
+
 
 # ── Schema DDL (version 28) ────────────────────────────────────────────────
 
@@ -460,15 +462,16 @@ class DbBuilder:
             created_ms = int(os.path.getmtime(photo.local_path) * 1000)
 
         asset_type = 1 if not photo.is_video else 2
+        duration_ms = probe_duration_ms(photo.local_path) if photo.is_video else None
 
         self._conn.execute("""
             INSERT OR IGNORE INTO remote_asset_entity
               (id, name, type, created_at, updated_at, checksum,
                is_favorite, owner_id, local_date_time, visibility,
-               uploaded_at, source_device_id)
-            VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, 0, ?, 'google-takeout')
+               uploaded_at, source_device_id, duration_ms)
+            VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, 0, ?, 'google-takeout', ?)
         """, (asset_id, photo.filename, asset_type, created_ms,
-              now_ms, checksum, owner_id, created_ms, now_ms))
+              now_ms, checksum, owner_id, created_ms, now_ms, duration_ms))
 
         self._conn.execute("""
             INSERT OR IGNORE INTO remote_exif_entity
@@ -510,18 +513,27 @@ class DbBuilder:
             VALUES (?, ?, 'imageLabeler', ?)
         """, (asset_id, label, confidence))
 
-    def insert_album(self, album_id: str, name: str) -> None:
+    def insert_album(self, album_id: str, name: str, owner_id: str) -> None:
         now_ms = int(datetime.now(tz=timezone.utc).timestamp() * 1000)
         self._conn.execute("""
             INSERT OR IGNORE INTO remote_album_entity
               (id, name, description, created_at, updated_at, "order")
             VALUES (?, ?, '', ?, ?, 0)
         """, (album_id, name, now_ms, now_ms))
+        # role 2 = owner (AlbumUserRole enum: editor=0, viewer=1, owner=2)
+        self._conn.execute("""
+            INSERT OR IGNORE INTO remote_album_user_entity (album_id, user_id, role)
+            VALUES (?, ?, 2)
+        """, (album_id, owner_id))
 
     def link_asset_album(self, asset_id: str, album_id: str) -> None:
         self._conn.execute("""
             INSERT OR IGNORE INTO remote_album_asset_entity (asset_id, album_id)
             VALUES (?, ?)
+        """, (asset_id, album_id))
+        self._conn.execute("""
+            UPDATE remote_album_entity SET thumbnail_asset_id = ?
+            WHERE id = ? AND thumbnail_asset_id IS NULL
         """, (asset_id, album_id))
 
     def insert_owner(self, owner_id: str, name: str, email: str) -> None:

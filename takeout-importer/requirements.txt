@@ -12,5 +12,11 @@ python-dotenv>=1.0
 # pytesseract>=0.3
 
 # Image labeling — install ONE of:
-# torch>=2.1; torchvision>=0.16; open-clip-torch>=2.24   # CLIP zero-shot
+# torch>=2.1; torchvision>=0.16; open-clip-torch>=2.24   # CLIP zero-shot (19 labels)
 # imageai>=3.0                                            # simpler but older
+
+# RAM+ open-vocabulary labeling (6400+ tags) — recommended over CLIP:
+# 1. pip install git+https://github.com/xinyu1205/recognize-anything.git
+# 2. pip install transformers>=4.30 fairscale huggingface_hub
+# Note: the ram package requires a one-time patch for transformers 5.x compatibility —
+#       see ram_label_pipeline.py for details. Weights (~1.5 GB) auto-download on first run.
