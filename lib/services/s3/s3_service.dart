@@ -130,6 +130,16 @@ class S3Service {
         return null;
       }
       throw S3Exception('S3 error on headObject($s3Key): ${e.message}');
+    } on FormatException {
+      // minio_new parses Last-Modified with a locale-dependent DateFormat, so
+      // it throws on non-English devices (e.g. Danish). Return a far-future
+      // date so pull() always considers the remote DB newer and proceeds.
+      return S3ObjectMeta(
+        key: s3Key,
+        etag: '',
+        lastModified: DateTime.utc(9999),
+        size: 0,
+      );
     } catch (e) {
       throw S3Exception('Unexpected error on headObject($s3Key): $e');
     }
@@ -142,6 +152,11 @@ class S3Service {
   }) async {
     final bytes = await File(filePath).readAsBytes();
     await putObject(s3Key, bytes, contentType: contentType);
+  }
+
+  Future<void> deleteObject(String s3Key) async {
+    final client = _requireClient();
+    await client.removeObject(_config!.bucket, s3Key);
   }
 
   Future<List<S3ObjectMeta>> listPrefix(String prefix) async {
