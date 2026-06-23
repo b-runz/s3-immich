@@ -4,10 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/infrastructure/entities/remote_asset.entity.drift.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 
 class AssetHandler {
   final Drift _db;
-  AssetHandler(this._db);
+  final S3Service _s3;
+  AssetHandler(this._db, this._s3);
 
   Future<http.Response> handle(
     String route,
@@ -63,7 +65,17 @@ class AssetHandler {
     return await _getAsset(id);
   }
 
+  Future<void> _deleteS3Objects(String assetId) async {
+    if (!_s3.isConfigured) return;
+    // assetId is the S3 key (includes prefix if configured)
+    await Future.wait([
+      _s3.deleteObject(assetId).catchError((_) {}),
+      _s3.deleteObject('.thumbs/$assetId').catchError((_) {}),
+    ]);
+  }
+
   Future<http.Response> _deleteAsset(String id) async {
+    await _deleteS3Objects(id);
     await (_db.remoteAssetEntity.delete()
           ..where((t) => t.id.equals(id)))
         .go();
@@ -74,6 +86,7 @@ class AssetHandler {
     if (body is Map) {
       final ids = (body['ids'] as List?)?.cast<String>() ?? <String>[];
       for (final id in ids) {
+        await _deleteS3Objects(id);
         await (_db.remoteAssetEntity.delete()
               ..where((t) => t.id.equals(id)))
             .go();

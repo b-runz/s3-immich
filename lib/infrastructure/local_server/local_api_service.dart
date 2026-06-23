@@ -2,16 +2,18 @@ import 'package:openapi/api.dart';
 import 'package:immich_mobile/infrastructure/repositories/db.repository.dart';
 import 'package:immich_mobile/infrastructure/local_server/local_api_client.dart';
 import 'package:immich_mobile/services/api.service.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 
 class LocalApiService extends ApiService {
   final Drift _db;
+  final S3Service _s3;
 
-  LocalApiService(this._db) {
+  LocalApiService(this._db, this._s3) {
     _injectLocalClient();
   }
 
   void _injectLocalClient() {
-    final client = LocalApiClient(_db);
+    final client = LocalApiClient(_db, _s3);
     authenticationApi = AuthenticationApi(client);
     oAuthApi = AuthenticationApi(client);
     usersApi = UsersApi(client);

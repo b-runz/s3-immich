@@ -15,11 +15,13 @@ import 'package:immich_mobile/infrastructure/local_server/handlers/activity_hand
 import 'package:immich_mobile/infrastructure/local_server/handlers/tag_handler.dart';
 import 'package:immich_mobile/infrastructure/local_server/handlers/shared_link_handler.dart';
 import 'package:immich_mobile/infrastructure/local_server/handlers/map_handler.dart';
+import 'package:immich_mobile/services/s3/s3_service.dart';
 
 class LocalApiClient extends ApiClient {
   final Drift _db;
+  final S3Service _s3;
 
-  LocalApiClient(this._db) : super(basePath: 'http://localhost');
+  LocalApiClient(this._db, this._s3) : super(basePath: 'http://localhost');
 
   @override
   Future<http.Response> invokeAPI(
@@ -47,7 +49,7 @@ class LocalApiClient extends ApiClient {
       return await SearchHandler(_db).handle(route, method, body);
     }
     if (route.startsWith('/assets')) {
-      return await AssetHandler(_db).handle(route, method, body);
+      return await AssetHandler(_db, _s3).handle(route, method, body);
     }
     if (route.startsWith('/albums')) {
       return await AlbumHandler(_db).handle(route, method, body);
